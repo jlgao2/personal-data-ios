@@ -22,11 +22,15 @@ struct ContentView: View {
                     if let bundle = store.bundle {
                         TodayHeaderView(bundle: bundle)
                         ActionLoopView(cards: bundle.action_loop, live: store.liveValues)
+                        VitalsView(vitals: bundle.vitals, live: store.liveValues)
+                        if let items = bundle.profile?.prep_checklist_template, !items.isEmpty {
+                            PrepChecklistView(items: items)
+                        }
                         if let stack = bundle.profile?.supplement_stack, !stack.isEmpty {
                             StackView(items: stack)
                         }
-                        if let items = bundle.profile?.prep_checklist_template, !items.isEmpty {
-                            PrepChecklistView(items: items)
+                        if !bundle.workouts.isEmpty {
+                            WorkoutsView(workouts: bundle.workouts)
                         }
                         if let g = bundle.genomics {
                             GenomicsView(genomics: g)
@@ -39,8 +43,29 @@ struct ContentView: View {
             .navigationTitle("Personal Data")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(Color.black, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        Task { await store.uploadTodaySamples() }
+                    } label: {
+                        Image(systemName: "icloud.and.arrow.up")
+                    }
+                }
+            }
             .refreshable {
                 await store.bootstrap()
+            }
+            .overlay(alignment: .bottom) {
+                if let msg = store.lastUploadResult {
+                    Text(msg)
+                        .font(.caption2.monospaced())
+                        .padding(8)
+                        .background(Color.cyan.opacity(0.15))
+                        .foregroundStyle(.cyan)
+                        .cornerRadius(4)
+                        .padding(.bottom, 12)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
             }
         }
     }

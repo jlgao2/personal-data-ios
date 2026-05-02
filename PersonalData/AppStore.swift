@@ -7,6 +7,15 @@ final class AppStore: ObservableObject {
     @Published var liveValues: [String: Double] = [:]
     @Published var loading = true
     @Published var lastError: String?
+    @Published var lastUploadResult: String?
+
+    func uploadTodaySamples() async {
+        if let url = await SampleExporter.uploadDaily() {
+            lastUploadResult = "Uploaded \(url.lastPathComponent)"
+        } else {
+            lastUploadResult = "No samples uploaded (no HK auth or no recent data)"
+        }
+    }
 
     func bootstrap() async {
         loading = true
