@@ -1,0 +1,48 @@
+name: PersonalData
+options:
+  bundleIdPrefix: com.jlgao
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: en
+
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    MARKETING_VERSION: "0.1"
+    CURRENT_PROJECT_VERSION: "1"
+    INFOPLIST_KEY_UILaunchScreen_Generation: "YES"
+    INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+    PRODUCT_BUNDLE_IDENTIFIER: com.jlgao.PersonalData
+    DEVELOPMENT_TEAM: ""
+
+targets:
+  PersonalData:
+    type: application
+    platform: iOS
+    sources:
+      - path: PersonalData
+        excludes:
+          - "**/.DS_Store"
+    info:
+      path: PersonalData/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: Personal Data
+        UILaunchScreen:
+          UIColorName: ""
+        NSHealthShareUsageDescription: Reads heart rate, sleep, weight, and other vitals to surface daily targets vs your genome and lab profile.
+        NSHealthUpdateUsageDescription: Optional — write session annotations back to your health record.
+    entitlements:
+      path: PersonalData/Resources/PersonalData.entitlements
+      properties:
+        com.apple.developer.healthkit: true
+        com.apple.developer.healthkit.access:
+          - health-records
+        com.apple.developer.icloud-container-identifiers:
+          - iCloud.com.jlgao.PersonalData
+        com.apple.developer.icloud-services:
+          - CloudDocuments
+        com.apple.developer.ubiquity-container-identifiers:
+          - iCloud.com.jlgao.PersonalData
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: "1,2"
