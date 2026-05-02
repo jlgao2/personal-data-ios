@@ -24,6 +24,10 @@
 	<string>Reads heart rate, sleep, weight, and other vitals to surface daily targets vs your genome and lab profile.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Optional — write session annotations back to your health record.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>

@@ -9,6 +9,18 @@ struct IOSBundle: Codable {
     let action_loop: [ActionCard]
     let profile: HealthProfile?
     let genomics: Genomics?
+    let med_alerts: [MedAlertEvent]?
+}
+
+struct MedAlertEvent: Codable, Identifiable {
+    let medication: String
+    let drug_class: String?
+    let reason: String?
+    let fhir_status: String?
+    let started: String?
+    let severity: String?
+
+    var id: String { medication + (started ?? "") }
 }
 
 struct Genomics: Codable {

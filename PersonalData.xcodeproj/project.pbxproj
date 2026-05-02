@@ -17,9 +17,11 @@
 		6CD5021C02AD2BB157C84C26 /* VitalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EAE8C0B2A8347315A45346B /* VitalsView.swift */; };
 		9F466078C12FE0B91D1106E3 /* WorkoutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60BB737C649CB6E1361A1D0 /* WorkoutsView.swift */; };
 		AC35C669A33592D1E94485BA /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B599EEE2CD1AEB123A781593 /* HealthStore.swift */; };
+		B0F87F5130019E924346FA85 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E8355612035475EB55F7B1F /* Notifications.swift */; };
 		B30F40B248A70CF953DA86E1 /* SampleExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE8E70162C3514E5A2C55A5 /* SampleExporter.swift */; };
 		B94AE1E67435EC3FA6B5858E /* GenomicsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348943DBF0CD04223F9B5F68 /* GenomicsView.swift */; };
 		F58F659DD7D0F03C1DCEDFFF /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC4CD4CE9307F463855056A /* AppStore.swift */; };
+		F8BC9C384DEFF642B4AC897C /* MedAlertsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF596177D08BF0DD7F3290FC /* MedAlertsView.swift */; };
 		FBC77D01EA11DC80D2775AB0 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27ADEE03ADF79EC6DD352BDA /* Bundle.swift */; };
 		FC78E7A6811FC7BCA23663A2 /* ActionLoopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4563E50DBDC0265A19FA2C4 /* ActionLoopView.swift */; };
 /* End PBXBuildFile section */
@@ -34,6 +36,7 @@
 		53322F5AB8F839397ED2531E /* DataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoader.swift; sourceTree = "<group>"; };
 		5EE8E70162C3514E5A2C55A5 /* SampleExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleExporter.swift; sourceTree = "<group>"; };
 		6F9CD45BCA0B2B8EE62A13BF /* StackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackView.swift; sourceTree = "<group>"; };
+		7E8355612035475EB55F7B1F /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		93B9D72995D030D73BB3492D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9CB520DDC6CC1632BCAD4871 /* PrepChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepChecklistView.swift; sourceTree = "<group>"; };
 		9EAE8C0B2A8347315A45346B /* VitalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VitalsView.swift; sourceTree = "<group>"; };
@@ -42,6 +45,7 @@
 		DB45948DFD6A409E535CC033 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E613F83646B6516B48355B1C /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		EEC4CD4CE9307F463855056A /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
+		EF596177D08BF0DD7F3290FC /* MedAlertsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedAlertsView.swift; sourceTree = "<group>"; };
 		F60BB737C649CB6E1361A1D0 /* WorkoutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -53,6 +57,7 @@
 				EEC4CD4CE9307F463855056A /* AppStore.swift */,
 				93B9D72995D030D73BB3492D /* ContentView.swift */,
 				53322F5AB8F839397ED2531E /* DataLoader.swift */,
+				7E8355612035475EB55F7B1F /* Notifications.swift */,
 				3BE7F41E9110134EC9AB2EAA /* HealthKit */,
 				3480CCC512A8A5DBFED743F4 /* Models */,
 				3D243B9B05CBD5F641E361B0 /* Resources */,
@@ -109,6 +114,7 @@
 			children = (
 				A4563E50DBDC0265A19FA2C4 /* ActionLoopView.swift */,
 				348943DBF0CD04223F9B5F68 /* GenomicsView.swift */,
+				EF596177D08BF0DD7F3290FC /* MedAlertsView.swift */,
 				9CB520DDC6CC1632BCAD4871 /* PrepChecklistView.swift */,
 				6F9CD45BCA0B2B8EE62A13BF /* StackView.swift */,
 				379D3FA99435713F6A48C0B8 /* TodayHeaderView.swift */,
@@ -196,6 +202,8 @@
 				431648E72D56BC29AB29B1EB /* DataLoader.swift in Sources */,
 				B94AE1E67435EC3FA6B5858E /* GenomicsView.swift in Sources */,
 				AC35C669A33592D1E94485BA /* HealthStore.swift in Sources */,
+				F8BC9C384DEFF642B4AC897C /* MedAlertsView.swift in Sources */,
+				B0F87F5130019E924346FA85 /* Notifications.swift in Sources */,
 				0E914B24F4648C50A92BB4FB /* PrepChecklistView.swift in Sources */,
 				B30F40B248A70CF953DA86E1 /* SampleExporter.swift in Sources */,
 				2B7FBA051D19E76421E067E0 /* StackView.swift in Sources */,

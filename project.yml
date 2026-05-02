@@ -31,6 +31,8 @@ targets:
           UIColorName: ""
         NSHealthShareUsageDescription: Reads heart rate, sleep, weight, and other vitals to surface daily targets vs your genome and lab profile.
         NSHealthUpdateUsageDescription: Optional — write session annotations back to your health record.
+        UIBackgroundModes:
+          - fetch
     entitlements:
       path: PersonalData/Resources/PersonalData.entitlements
       properties:

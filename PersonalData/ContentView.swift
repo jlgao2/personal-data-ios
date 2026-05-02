@@ -29,6 +29,10 @@ struct ContentView: View {
                         if let stack = bundle.profile?.supplement_stack, !stack.isEmpty {
                             StackView(items: stack)
                         }
+                        MedAlertsView(
+                            alerts: bundle.med_alerts ?? [],
+                            avoidClasses: bundle.profile?.medications_to_avoid ?? []
+                        )
                         if !bundle.workouts.isEmpty {
                             WorkoutsView(workouts: bundle.workouts)
                         }

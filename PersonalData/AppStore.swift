@@ -24,12 +24,20 @@ final class AppStore: ObservableObject {
         } catch {
             lastError = "HealthKit authorization failed: \(error.localizedDescription)"
         }
+        _ = await NotificationManager.shared.requestAuthorization()
         do {
             bundle = try await DataLoader.shared.loadBundle()
         } catch {
             lastError = "Bundle load failed: \(error.localizedDescription)"
         }
         await refreshLive()
+        if let cards = bundle?.action_loop {
+            let fired = await NotificationManager.shared.diffAndNotify(
+                cards: cards, live: liveValues)
+            if !fired.isEmpty {
+                lastUploadResult = "Notified: \(fired.count) card\(fired.count == 1 ? "" : "s") changed state"
+            }
+        }
         loading = false
     }
 
