@@ -8,6 +8,28 @@ struct IOSBundle: Codable {
     let workouts: [Workout]
     let action_loop: [ActionCard]
     let profile: HealthProfile?
+    let genomics: Genomics?
+}
+
+struct Genomics: Codable {
+    let total: Int?
+    let tier_counts: [String: Int]?
+    let by_source: [String: [Finding]]?
+}
+
+struct Finding: Codable, Identifiable {
+    let id: String
+    let source_tsv: String
+    let gene: String?
+    let rsid: String?
+    let chrom: String?
+    let pos: Int?
+    let ref: String?
+    let alt: String?
+    let genotype: String?
+    let tier: String?
+    let summary: String?
+    // meta is omitted for now — JSON shape varies by source.
 }
 
 struct VitalSeries: Codable {

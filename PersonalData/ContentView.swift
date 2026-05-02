@@ -28,6 +28,9 @@ struct ContentView: View {
                         if let items = bundle.profile?.prep_checklist_template, !items.isEmpty {
                             PrepChecklistView(items: items)
                         }
+                        if let g = bundle.genomics {
+                            GenomicsView(genomics: g)
+                        }
                     }
                 }
                 .padding()

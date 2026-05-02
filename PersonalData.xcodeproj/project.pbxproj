@@ -15,6 +15,7 @@
 		4FCED48349303758C15D9724 /* sample_bundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 15A9B3FEAE18E496F6A81E34 /* sample_bundle.json */; };
 		6B5A6EE8DA5339E35859587D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B9D72995D030D73BB3492D /* ContentView.swift */; };
 		AC35C669A33592D1E94485BA /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B599EEE2CD1AEB123A781593 /* HealthStore.swift */; };
+		B94AE1E67435EC3FA6B5858E /* GenomicsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348943DBF0CD04223F9B5F68 /* GenomicsView.swift */; };
 		F58F659DD7D0F03C1DCEDFFF /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC4CD4CE9307F463855056A /* AppStore.swift */; };
 		FBC77D01EA11DC80D2775AB0 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27ADEE03ADF79EC6DD352BDA /* Bundle.swift */; };
 		FC78E7A6811FC7BCA23663A2 /* ActionLoopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4563E50DBDC0265A19FA2C4 /* ActionLoopView.swift */; };
@@ -25,6 +26,7 @@
 		15A9B3FEAE18E496F6A81E34 /* sample_bundle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = sample_bundle.json; sourceTree = "<group>"; };
 		1D61559AE20E97F8BF7D3478 /* PersonalData.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PersonalData.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		27ADEE03ADF79EC6DD352BDA /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
+		348943DBF0CD04223F9B5F68 /* GenomicsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenomicsView.swift; sourceTree = "<group>"; };
 		379D3FA99435713F6A48C0B8 /* TodayHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayHeaderView.swift; sourceTree = "<group>"; };
 		53322F5AB8F839397ED2531E /* DataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoader.swift; sourceTree = "<group>"; };
 		6F9CD45BCA0B2B8EE62A13BF /* StackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackView.swift; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				A4563E50DBDC0265A19FA2C4 /* ActionLoopView.swift */,
+				348943DBF0CD04223F9B5F68 /* GenomicsView.swift */,
 				9CB520DDC6CC1632BCAD4871 /* PrepChecklistView.swift */,
 				6F9CD45BCA0B2B8EE62A13BF /* StackView.swift */,
 				379D3FA99435713F6A48C0B8 /* TodayHeaderView.swift */,
@@ -182,6 +185,7 @@
 				FBC77D01EA11DC80D2775AB0 /* Bundle.swift in Sources */,
 				6B5A6EE8DA5339E35859587D /* ContentView.swift in Sources */,
 				431648E72D56BC29AB29B1EB /* DataLoader.swift in Sources */,
+				B94AE1E67435EC3FA6B5858E /* GenomicsView.swift in Sources */,
 				AC35C669A33592D1E94485BA /* HealthStore.swift in Sources */,
 				0E914B24F4648C50A92BB4FB /* PrepChecklistView.swift in Sources */,
 				2B7FBA051D19E76421E067E0 /* StackView.swift in Sources */,
