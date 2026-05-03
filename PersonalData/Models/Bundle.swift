@@ -10,6 +10,33 @@ struct IOSBundle: Codable {
     let profile: HealthProfile?
     let genomics: Genomics?
     let med_alerts: [MedAlertEvent]?
+    let adapted_session: AdaptedSession?
+}
+
+struct AdaptedSession: Codable {
+    let program_day: String?
+    let prescribed: String?
+    let traffic_light: String?         // "green" | "amber" | "red"
+    let intensity_modifier: Double?
+    let intensity_reason: String?
+    let swaps: [SessionSwap]?
+    let removed: [SessionItem]?
+    let added: [SessionItem]?
+    let notes: [String]?
+    let rules_fired: [String]?
+}
+
+struct SessionSwap: Codable, Identifiable {
+    let original: String
+    let replacement: String
+    let reason: String?
+    var id: String { original }
+}
+
+struct SessionItem: Codable, Identifiable {
+    let item: String
+    let reason: String?
+    var id: String { item }
 }
 
 struct MedAlertEvent: Codable, Identifiable {
