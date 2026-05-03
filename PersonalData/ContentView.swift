@@ -2,21 +2,21 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var store: AppStore
-    @State private var selectedTab: Tab = .today
+    @State private var selectedTab: Tab = .interventions
 
     enum Tab: String, Hashable {
-        case today, trends, profile
+        case interventions, plan, profile
     }
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            todayTab
-                .tabItem { Label("Today", systemImage: "target") }
-                .tag(Tab.today)
+            interventionsTab
+                .tabItem { Label("Now", systemImage: "target") }
+                .tag(Tab.interventions)
 
-            trendsTab
-                .tabItem { Label("Trends", systemImage: "chart.line.uptrend.xyaxis") }
-                .tag(Tab.trends)
+            planTab
+                .tabItem { Label("Plan", systemImage: "scope") }
+                .tag(Tab.plan)
 
             profileTab
                 .tabItem { Label("Profile", systemImage: "person.text.rectangle") }
@@ -38,10 +38,10 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Today
+    // MARK: - Interventions (today)
 
     @ViewBuilder
-    private var todayTab: some View {
+    private var interventionsTab: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
@@ -55,6 +55,10 @@ struct ContentView: View {
                             AdaptedSessionView(adapted: adapted, prescribedSession: prescribed)
                         }
                         ActionLoopView(cards: bundle.action_loop, live: store.liveValues)
+                        MedAlertsView(
+                            alerts: bundle.med_alerts ?? [],
+                            avoidClasses: bundle.profile?.medications_to_avoid ?? []
+                        )
                         if let stack = bundle.profile?.supplement_stack, !stack.isEmpty {
                             StackView(items: stack)
                         }
@@ -66,7 +70,7 @@ struct ContentView: View {
                 .padding()
             }
             .background(Color.black.ignoresSafeArea())
-            .navigationTitle("Today")
+            .navigationTitle("Now")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(Color.black, for: .navigationBar)
             .toolbar { uploadToolbar }
@@ -74,14 +78,17 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Trends
+    // MARK: - Plan & Vision
 
     @ViewBuilder
-    private var trendsTab: some View {
+    private var planTab: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 28) {
                     if let bundle = store.bundle {
+                        if let p = bundle.profile {
+                            PlanTabView(profile: p, vitals: bundle.vitals, workouts: bundle.workouts)
+                        }
                         WeeklyRecapView(vitals: bundle.vitals, workouts: bundle.workouts)
                         VitalsView(vitals: bundle.vitals, live: store.liveValues)
                         if !bundle.workouts.isEmpty {
@@ -92,7 +99,7 @@ struct ContentView: View {
                 .padding()
             }
             .background(Color.black.ignoresSafeArea())
-            .navigationTitle("Trends")
+            .navigationTitle("Plan")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(Color.black, for: .navigationBar)
         }
@@ -109,10 +116,12 @@ struct ContentView: View {
                         if let p = bundle.profile {
                             HealthProfileView(profile: p)
                         }
-                        MedAlertsView(
-                            alerts: bundle.med_alerts ?? [],
-                            avoidClasses: bundle.profile?.medications_to_avoid ?? []
-                        )
+                        // Reference list of drug classes to avoid (separate
+                        // from Interventions which surfaces firing alerts only)
+                        if let avoid = bundle.profile?.medications_to_avoid,
+                           !avoid.isEmpty {
+                            MedReferenceView(classes: avoid)
+                        }
                         if let g = bundle.genomics {
                             GenomicsView(genomics: g)
                         }

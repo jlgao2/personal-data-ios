@@ -136,6 +136,25 @@ struct HealthProfile: Codable {
     let current_medications: [String]?
     let active_conditions: ActiveConditions?
     let action_plan_immediate: [String]?
+    let action_plan_short_term_4_to_8_weeks: [String]?
+    let action_plan_medium_term_2_to_3_months: [String]?
+    let action_plan_ongoing: [String]?
+    let vision_statement: String?
+    let goals: [Goal]?
+}
+
+struct Goal: Codable, Identifiable {
+    let name: String
+    let current: Double?
+    let target: Double?
+    let baseline: Double?
+    let units: String?
+    let direction: String?      // "increase" | "decrease"
+    let deadline: String?       // ISO date
+    let category: String?
+    let note: String?
+
+    var id: String { name }
 }
 
 struct Supplement: Codable, Identifiable {
