@@ -5,7 +5,7 @@ struct ContentView: View {
     @State private var selectedTab: Tab = .interventions
 
     enum Tab: String, Hashable {
-        case interventions, plan, profile
+        case interventions, plan, profile, social
     }
 
     var body: some View {
@@ -17,6 +17,10 @@ struct ContentView: View {
             planTab
                 .tabItem { Label("Plan", systemImage: "scope") }
                 .tag(Tab.plan)
+
+            socialTab
+                .tabItem { Label("Social", systemImage: "person.2") }
+                .tag(Tab.social)
 
             profileTab
                 .tabItem { Label("Profile", systemImage: "person.text.rectangle") }
@@ -105,6 +109,31 @@ struct ContentView: View {
             }
             .background(Color.black.ignoresSafeArea())
             .navigationTitle("Plan")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.black, for: .navigationBar)
+        }
+    }
+
+    // MARK: - Social
+
+    @ViewBuilder
+    private var socialTab: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 28) {
+                    if let s = store.bundle?.social {
+                        SocialView(summary: s)
+                    } else {
+                        Text("No social data — run refresh.sh with the social-media-graph repo present.")
+                            .font(.footnote.italic())
+                            .foregroundStyle(.secondary)
+                            .padding()
+                    }
+                }
+                .padding()
+            }
+            .background(Color.black.ignoresSafeArea())
+            .navigationTitle("Social")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(Color.black, for: .navigationBar)
         }

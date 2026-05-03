@@ -11,6 +11,37 @@ struct IOSBundle: Codable {
     let genomics: Genomics?
     let med_alerts: [MedAlertEvent]?
     let adapted_session: AdaptedSession?
+    let social: SocialSummary?
+}
+
+struct SocialSummary: Codable {
+    let generated: String?
+    let today: String?
+    let total_people: Int?
+    let reach_out: [SocialPerson]?
+    let birthdays: [SocialBirthday]?
+}
+
+struct SocialPerson: Codable, Identifiable {
+    let id: String?
+    let name: String?
+    let attention_score: Int?
+    let days_since_last: Int?
+    let last_msg_from: String?
+    let last_excerpt: String?
+    let about_what: String?
+    let sources: [String]?
+    let msg_count: Int?
+    let has_portrait: Bool?
+}
+
+struct SocialBirthday: Codable, Identifiable {
+    let id: String?
+    let name: String?
+    let month: Int?
+    let day: Int?
+    let days_until: Int?
+    let year_known: Bool?
 }
 
 struct AdaptedSession: Codable {
