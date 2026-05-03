@@ -1,10 +1,14 @@
 import SwiftUI
 
-/// Plan & Vision tab content. Composes the 4 sub-views.
+/// Plan & Vision tab content.
+/// Action Loop sits between Goals and Roadmap because it's the same shape
+/// (target vs measured) — genome-derived targets next to user-set goals.
 struct PlanTabView: View {
     let profile: HealthProfile
     let vitals: [String: VitalSeries]
     let workouts: [Workout]
+    let actionLoop: [ActionCard]
+    let live: [String: Double]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 28) {
@@ -14,6 +18,7 @@ struct PlanTabView: View {
             if let goals = profile.goals, !goals.isEmpty {
                 GoalsView(goals: goals)
             }
+            ActionLoopView(cards: actionLoop, live: live)
             RoadmapView(profile: profile)
             StreakView(vitals: vitals, workouts: workouts)
         }

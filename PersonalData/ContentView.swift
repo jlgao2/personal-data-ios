@@ -54,7 +54,6 @@ struct ContentView: View {
                             let prescribed = bundle.profile?.daily_protocol?[dayKey]
                             AdaptedSessionView(adapted: adapted, prescribedSession: prescribed)
                         }
-                        ActionLoopView(cards: bundle.action_loop, live: store.liveValues)
                         MedAlertsView(
                             alerts: bundle.med_alerts ?? [],
                             avoidClasses: bundle.profile?.medications_to_avoid ?? []
@@ -87,7 +86,13 @@ struct ContentView: View {
                 VStack(alignment: .leading, spacing: 28) {
                     if let bundle = store.bundle {
                         if let p = bundle.profile {
-                            PlanTabView(profile: p, vitals: bundle.vitals, workouts: bundle.workouts)
+                            PlanTabView(
+                                profile: p,
+                                vitals: bundle.vitals,
+                                workouts: bundle.workouts,
+                                actionLoop: bundle.action_loop,
+                                live: store.liveValues
+                            )
                         }
                         WeeklyRecapView(vitals: bundle.vitals, workouts: bundle.workouts)
                         VitalsView(vitals: bundle.vitals, live: store.liveValues)
