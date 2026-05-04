@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var store: AppStore
+    @StateObject private var calStore = CalendarStore.shared
     @State private var selectedTab: Tab = .interventions
 
     enum Tab: String, Hashable {
@@ -58,6 +59,10 @@ struct ContentView: View {
                             let prescribed = bundle.profile?.daily_protocol?[dayKey]
                             AdaptedSessionView(adapted: adapted, prescribedSession: prescribed)
                         }
+                        UpcomingEventsView(
+                            bundleEvents: bundle.calendar ?? [],
+                            store: calStore
+                        )
                         MedAlertsView(
                             alerts: bundle.med_alerts ?? [],
                             avoidClasses: bundle.profile?.medications_to_avoid ?? []

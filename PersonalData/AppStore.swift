@@ -25,6 +25,8 @@ final class AppStore: ObservableObject {
             lastError = "HealthKit authorization failed: \(error.localizedDescription)"
         }
         _ = await NotificationManager.shared.requestAuthorization()
+        // Calendar — silently load if previously authorized
+        await CalendarStore.shared.loadUpcoming()
         do {
             bundle = try await DataLoader.shared.loadBundle()
         } catch {

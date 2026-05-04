@@ -12,6 +12,17 @@ struct IOSBundle: Codable {
     let med_alerts: [MedAlertEvent]?
     let adapted_session: AdaptedSession?
     let social: SocialSummary?
+    let calendar: [CalendarEvent]?
+}
+
+struct CalendarEvent: Codable, Identifiable {
+    let id: String?
+    let summary: String?
+    let start: String?
+    let end: String?
+    let all_day: Bool?
+    let location: String?
+    let url: String?
 }
 
 struct SocialSummary: Codable {
