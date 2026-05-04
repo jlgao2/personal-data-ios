@@ -49,6 +49,9 @@ private struct ReachOutView: View {
 
 private struct PersonRow: View {
     let person: SocialPerson
+    @ObservedObject private var calStore = CalendarStore.shared
+    @State private var scheduled = false
+    @State private var scheduleError: String? = nil
 
     private var tierColor: Color {
         switch person.attention_score ?? 0 {
@@ -95,11 +98,50 @@ private struct PersonRow: View {
                     .italic()
                     .lineLimit(1)
             }
+            // Calendar action: create a 30-min check-in event tomorrow at 10am.
+            if calStore.authorized, !scheduled {
+                Button(action: { Task { await scheduleCheckIn() } }) {
+                    Text("+ SCHEDULE CHECK-IN")
+                        .font(.caption2.monospaced())
+                        .foregroundStyle(.cyan)
+                        .tracking(2)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .overlay(RoundedRectangle(cornerRadius: 2).stroke(Color.cyan, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+                .padding(.top, 4)
+            }
+            if scheduled {
+                Text("✓ ADDED TO CALENDAR")
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.green)
+                    .tracking(2)
+                    .padding(.top, 4)
+            }
+            if let e = scheduleError {
+                Text(e)
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.orange)
+            }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.black.opacity(0.4))
+    }
+
+    private func scheduleCheckIn() async {
+        var when = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
+        var comps = Calendar.current.dateComponents([.year, .month, .day], from: when)
+        comps.hour = 10
+        when = Calendar.current.date(from: comps) ?? when
+        let title = "Reach out: \(person.name ?? "Friend")"
+        let notes = [person.about_what, person.last_excerpt.map { "Last: \"\($0)\"" }]
+            .compactMap { $0 }.joined(separator: "\n\n")
+        let ok = await calStore.createEvent(title: title, date: when,
+                                            duration: 30 * 60, notes: notes)
+        if ok { scheduled = true } else { scheduleError = calStore.lastError }
     }
 }
 

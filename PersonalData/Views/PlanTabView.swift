@@ -77,6 +77,9 @@ struct GoalsView: View {
 
 private struct GoalRow: View {
     let goal: Goal
+    @ObservedObject private var calStore = CalendarStore.shared
+    @State private var added: Bool = false
+    @State private var addedError: String? = nil
 
     private var pct: Double {
         guard let baseline = goal.baseline,
@@ -170,11 +173,49 @@ private struct GoalRow: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(3)
             }
+            // Calendar action: create a check-in event 7 days before the deadline.
+            if calStore.authorized, goal.deadline != nil, !added {
+                Button(action: { Task { await addReminder() } }) {
+                    Text("+ ADD REMINDER")
+                        .font(.caption2.monospaced())
+                        .foregroundStyle(.cyan)
+                        .tracking(2)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .overlay(RoundedRectangle(cornerRadius: 2).stroke(Color.cyan, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+                .padding(.top, 4)
+            }
+            if added {
+                Text("✓ ADDED TO CALENDAR")
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.green)
+                    .tracking(2)
+                    .padding(.top, 4)
+            }
+            if let e = addedError {
+                Text(e)
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.orange)
+            }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.black.opacity(0.4))
+    }
+
+    private func addReminder() async {
+        guard let dlString = goal.deadline else { return }
+        let f = ISO8601DateFormatter()
+        guard let dl = f.date(from: dlString + "T09:00:00Z") else { return }
+        let remindAt = dl.addingTimeInterval(-7 * 86_400)
+        let title = "Goal check-in: \(goal.name)"
+        let notes = goal.note ?? ""
+        let ok = await calStore.createEvent(title: title, date: remindAt,
+                                            duration: 30 * 60, notes: notes)
+        if ok { added = true } else { addedError = calStore.lastError }
     }
 }
 
