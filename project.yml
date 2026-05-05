@@ -10,9 +10,6 @@ settings:
     SWIFT_VERSION: "5.10"
     MARKETING_VERSION: "0.1"
     CURRENT_PROJECT_VERSION: "1"
-    INFOPLIST_KEY_UILaunchScreen_Generation: "YES"
-    INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
-    PRODUCT_BUNDLE_IDENTIFIER: com.jlgao.PersonalData
     DEVELOPMENT_TEAM: ""
 
 targets:
@@ -34,6 +31,11 @@ targets:
         NSCalendarsFullAccessUsageDescription: Surfaces your upcoming events on the Now tab and lets you create reminders from Goals + Reach Out.
         UIBackgroundModes:
           - fetch
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
     entitlements:
       path: PersonalData/Resources/PersonalData.entitlements
       properties:
@@ -46,6 +48,34 @@ targets:
           - CloudDocuments
         com.apple.developer.ubiquity-container-identifiers:
           - iCloud.com.jlgao.PersonalData
+        com.apple.security.application-groups:
+          - group.com.jlgao.PersonalData
     settings:
       base:
         TARGETED_DEVICE_FAMILY: "1,2"
+        PRODUCT_BUNDLE_IDENTIFIER: com.jlgao.PersonalData
+    dependencies:
+      - target: FrontalLobeWidget
+
+  FrontalLobeWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: FrontalLobeWidget
+        excludes:
+          - "**/.DS_Store"
+    info:
+      path: FrontalLobeWidget/Info.plist
+      properties:
+        CFBundleDisplayName: Frontal Lobe
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: FrontalLobeWidget/FrontalLobeWidget.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.jlgao.PersonalData
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jlgao.PersonalData.FrontalLobeWidget
+        SKIP_INSTALL: YES

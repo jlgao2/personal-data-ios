@@ -33,6 +33,10 @@ final class AppStore: ObservableObject {
             lastError = "Bundle load failed: \(error.localizedDescription)"
         }
         await refreshLive()
+        // Push a slim snapshot to the App Group so widgets can read it.
+        if let b = bundle {
+            WidgetSnapshotWriter.update(from: b)
+        }
         if let cards = bundle?.action_loop {
             let fired = await NotificationManager.shared.diffAndNotify(
                 cards: cards, live: liveValues)

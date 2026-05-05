@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Personal Data</string>
+	<string>Frontal Lobe</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -20,6 +20,8 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>INFOPLIST_KEY_UILaunchScreen_Generation</key>
+	<true/>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>Surfaces your upcoming events on the Now tab and lets you create reminders from Goals + Reach Out.</string>
 	<key>NSHealthShareUsageDescription</key>
@@ -35,5 +37,11 @@
 		<key>UIColorName</key>
 		<string></string>
 	</dict>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
 </dict>
 </plist>
