@@ -183,6 +183,13 @@ struct HealthProfile: Codable {
     let action_plan_ongoing: [String]?
     let vision_statement: String?
     let goals: [Goal]?
+    let abstinences: [Abstinence]?
+
+    struct Abstinence: Codable, Identifiable {
+        let key: String?
+        let label: String
+        var id: String { key ?? label }
+    }
 }
 
 struct Goal: Codable, Identifiable {

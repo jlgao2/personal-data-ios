@@ -54,24 +54,25 @@ struct ContentView: View {
                     if let err = store.lastError { errorBanner(err) }
                     if let bundle = store.bundle {
                         TodayHeaderView(bundle: bundle)
+                        TimelineView(bundle: bundle, calStore: calStore)
                         if let adapted = bundle.adapted_session {
                             let dayKey = adapted.program_day ?? ""
                             let prescribed = bundle.profile?.daily_protocol?[dayKey]
                             AdaptedSessionView(adapted: adapted, prescribedSession: prescribed)
                         }
-                        UpcomingEventsView(
-                            bundleEvents: bundle.calendar ?? [],
-                            store: calStore
-                        )
+                        if let abst = bundle.profile?.abstinences, !abst.isEmpty {
+                            AbstinenceBarView(abstinences: abst)
+                        }
                         MedAlertsView(
                             alerts: bundle.med_alerts ?? [],
                             avoidClasses: bundle.profile?.medications_to_avoid ?? []
                         )
-                        if let stack = bundle.profile?.supplement_stack, !stack.isEmpty {
-                            StackView(items: stack)
-                        }
-                        if let items = bundle.profile?.prep_checklist_template, !items.isEmpty {
-                            PrepChecklistView(items: items)
+                        // Calendar connect prompt — only when not yet authorized
+                        if !calStore.authorized {
+                            UpcomingEventsView(
+                                bundleEvents: bundle.calendar ?? [],
+                                store: calStore
+                            )
                         }
                     }
                 }
