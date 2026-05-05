@@ -26,7 +26,7 @@ targets:
     info:
       path: PersonalData/Resources/Info.plist
       properties:
-        CFBundleDisplayName: Personal Data
+        CFBundleDisplayName: Frontal Lobe
         UILaunchScreen:
           UIColorName: ""
         NSHealthShareUsageDescription: Reads heart rate, sleep, weight, and other vitals to surface daily targets vs your genome and lab profile.
