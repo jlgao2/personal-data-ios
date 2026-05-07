@@ -48,6 +48,9 @@ struct ContentView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: store.lastUploadResult)
+        .sheet(isPresented: $showTransportSettings) {
+            TransportSettingsView()
+        }
     }
 
     // MARK: - Interventions (today)
@@ -60,7 +63,6 @@ struct ContentView: View {
                     if store.loading { ProgressView("Loading…").frame(maxWidth: .infinity, alignment: .center) }
                     if let err = store.lastError { errorBanner(err) }
                     if let bundle = store.bundle {
-                        TodayHeaderView(bundle: bundle)
                         TimelineView(bundle: bundle, calStore: calStore)
                         if let adapted = bundle.adapted_session {
                             let dayKey = adapted.program_day ?? ""
@@ -74,7 +76,6 @@ struct ContentView: View {
                             alerts: bundle.med_alerts ?? [],
                             avoidClasses: bundle.profile?.medications_to_avoid ?? []
                         )
-                        // Calendar connect prompt — only when not yet authorized
                         if !calStore.authorized {
                             UpcomingEventsView(
                                 bundleEvents: bundle.calendar ?? [],
@@ -84,13 +85,23 @@ struct ContentView: View {
                     }
                 }
                 .padding()
+                .padding(.top, 32)   // breathing room under the dynamic island / status pill
             }
-            .background(Color.black.ignoresSafeArea())
-            .navigationTitle("Now")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.black, for: .navigationBar)
-            .toolbar { uploadToolbar }
-            .refreshable { await store.bootstrap() }
+            .background { AnimatedAuraBackground() }
+            .toolbar(.hidden, for: .navigationBar)
+            .refreshable {
+                await store.bootstrap()
+                await store.uploadTodaySamples()
+            }
+            .overlay(alignment: .topTrailing) {
+                TransportStatusPill(
+                    bundleExportedAt: store.bundle?.exported_at,
+                    lastError: store.lastTransportError,
+                    presentSettings: $showTransportSettings
+                )
+                .padding(.top, 8)
+                .padding(.trailing, 16)
+            }
         }
     }
 
@@ -187,23 +198,10 @@ struct ContentView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showTransportSettings) {
-                TransportSettingsView()
-            }
         }
     }
 
     // MARK: - Shared
-
-    private var uploadToolbar: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
-            Button {
-                Task { await store.uploadTodaySamples() }
-            } label: {
-                Image(systemName: "arrow.up.circle")
-            }
-        }
-    }
 
     private func errorBanner(_ msg: String) -> some View {
         Text(msg)
