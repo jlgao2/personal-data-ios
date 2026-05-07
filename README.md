@@ -9,8 +9,30 @@ overriding cached values from the laptop bundle.
 - ✅ Builds (`Debug` for `iphonesimulator`, Xcode 26.3)
 - ✅ Renders Now (Today timeline + Adapted Session), Plan, Social, Profile
 - ✅ Widgets: Hero, Session, Reach Out (Lock + Home screen)
+- ✅ Laptop ↔ phone transport over LAN HTTP (bearer-token auth)
 - ⚠ HealthKit reads work on real device only (simulator has no Health data)
-- ⚠ Laptop ↔ phone transport: see follow-up commit
+
+## Architecture
+
+```
+┌───────────────────────┐                    ┌──────────────────────────┐
+│  laptop pipeline      │  GET /v1/bundle    │  Prefrontal Cortex (iOS) │
+│  pipeline/ios_serve   │ ─────────────────▶ │  DataLoader              │
+│  :8787 (bearer auth)  │                    │  + Documents/last_bundle │
+│                       │  POST /v1/samples  │                          │
+│  output/ios_export/   │ ◀───────────────── │  SampleExporter          │
+│   ├ ios_bundle.json   │                    │  HealthStore (live HK)   │
+│   └ samples_*.json    │                    └──────────────────────────┘
+└───────────────────────┘
+        same Wi-Fi LAN
+```
+
+Pair the phone with the laptop in **Profile → ⚙ → Laptop sync**:
+enter `http://<laptop-LAN-IP>:8787` and the bearer token printed by
+`pipeline/ios_serve.sh` on the laptop. Tap **Test connection** then **Save**.
+
+The pipeline repo's [README "iOS sync" section](https://github.com/jlgao2/personal-genome-pipeline#ios-sync-prefrontal-cortex-companion-app)
+covers the laptop side.
 
 ## Build
 
