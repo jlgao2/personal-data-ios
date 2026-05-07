@@ -13,6 +13,48 @@ struct IOSBundle: Codable {
     let adapted_session: AdaptedSession?
     let social: SocialSummary?
     let calendar: [CalendarEvent]?
+    let correlations: CorrelationsBundle?
+}
+
+struct CorrelationsBundle: Codable {
+    let correlations: [CorrelationFinding]?
+    let day_of_week: [DOWStat]?
+}
+
+struct CorrelationFinding: Codable, Identifiable {
+    let name: String
+    let n: Int
+    let trend: String              // "positive" | "negative" | "neutral"
+    let summary: String?
+    let actionable: String?
+    let metric_a: Double?
+    let metric_b: Double?
+    let metric_a_label: String?
+    let metric_b_label: String?
+    let unit: String?
+    let r: Double?
+    let table: [SportDelta]?
+
+    var id: String { name }
+}
+
+struct SportDelta: Codable, Identifiable {
+    let sport: String
+    let n: Int
+    let delta_rhr: Double
+
+    var id: String { sport }
+}
+
+struct DOWStat: Codable, Identifiable {
+    let dow: String                // "Mon" .. "Sun"
+    let sleep: Double?             // minutes
+    let rhr: Double?
+    let tl: Double?                // training load
+    let workouts: Int
+    let n: Int
+
+    var id: String { dow }
 }
 
 struct CalendarEvent: Codable, Identifiable {

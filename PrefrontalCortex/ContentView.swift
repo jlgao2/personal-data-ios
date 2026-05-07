@@ -123,6 +123,14 @@ struct ContentView: View {
                             )
                         }
                         WeeklyRecapView(vitals: bundle.vitals, workouts: bundle.workouts)
+                        if let corr = bundle.correlations {
+                            if let findings = corr.correlations, !findings.isEmpty {
+                                CorrelationsView(findings: findings)
+                            }
+                            if let dow = corr.day_of_week, !dow.isEmpty {
+                                DOWHeatmapView(stats: dow)
+                            }
+                        }
                         VitalsView(vitals: bundle.vitals, live: store.liveValues)
                         if !bundle.workouts.isEmpty {
                             WorkoutsView(workouts: bundle.workouts)
