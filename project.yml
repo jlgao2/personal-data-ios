@@ -74,3 +74,37 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.jlgao.PrefrontalCortex.PrefrontalCortexWidget
         SKIP_INSTALL: YES
+
+# Both schemes launch the host app. Without this, the auto-generated widget
+# scheme tries to launch the extension binary directly — iOS can't do that
+# (extensions are loaded by the host or by the system), so Xcode reports
+# "Could not attach to pid: <N>" / "no such process". Making the widget
+# scheme run the host app means picking either scheme works.
+schemes:
+  PrefrontalCortex:
+    build:
+      targets:
+        PrefrontalCortex: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+  PrefrontalCortexWidget:
+    build:
+      targets:
+        PrefrontalCortex: all
+        PrefrontalCortexWidget: all
+    run:
+      config: Debug
+      executable: PrefrontalCortex
+    profile:
+      config: Release
+      executable: PrefrontalCortex
+    analyze:
+      config: Debug
+    archive:
+      config: Release
