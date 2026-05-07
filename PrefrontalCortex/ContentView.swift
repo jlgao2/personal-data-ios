@@ -40,8 +40,14 @@ struct ContentView: View {
                     .foregroundStyle(.cyan)
                     .cornerRadius(4)
                     .padding(.bottom, 80)
+                    .transition(.opacity)
+                    .task(id: msg) {
+                        try? await Task.sleep(for: .seconds(2.5))
+                        withAnimation { store.lastUploadResult = nil }
+                    }
             }
         }
+        .animation(.easeInOut(duration: 0.3), value: store.lastUploadResult)
     }
 
     // MARK: - Interventions (today)

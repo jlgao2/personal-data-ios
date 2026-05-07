@@ -10,6 +10,10 @@ struct SampleExporter {
         var rows: [[String: Any]] = []
 
         func add(_ type: String, _ value: Double, unit: String) {
+            // Drop zeros — HealthKit sometimes returns 0 when no recent data
+            // exists in the lookback window (sleep, vo2max). Real values for
+            // RHR / weight / BP / sleep are never 0 in any clinically-useful sense.
+            guard value > 0 else { return }
             let now = ISO8601DateFormatter().string(from: Date())
             rows.append([
                 "ts":     now,

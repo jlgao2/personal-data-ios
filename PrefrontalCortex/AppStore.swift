@@ -18,6 +18,25 @@ final class AppStore: ObservableObject {
         }
     }
 
+    /// Lighter-weight than bootstrap(): no auth requests, no calendar/notification
+    /// spam, no loading-flash. Refreshes the bundle, live HK values, and widget
+    /// snapshot on foreground transition.
+    func refreshOnForeground() async {
+        await CalendarStore.shared.loadUpcoming()
+        do {
+            bundle = try await DataLoader.shared.loadBundle()
+            lastTransportError = nil
+        } catch let e as TransportError {
+            lastTransportError = e
+        } catch {
+            // non-transport errors are surfaced on next bootstrap
+        }
+        await refreshLive()
+        if let b = bundle {
+            WidgetSnapshotWriter.update(from: b)
+        }
+    }
+
     func bootstrap() async {
         loading = true
         do {
