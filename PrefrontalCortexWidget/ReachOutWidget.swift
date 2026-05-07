@@ -26,13 +26,13 @@ struct ReachOutEntry: TimelineEntry {
 // MARK: - Widget
 
 struct ReachOutWidget: Widget {
-    let kind = "FrontalLobeReachOut"
+    let kind = "PrefrontalCortexReachOut"
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: ReachOutProvider()) { entry in
             ReachOutWidgetView(snapshot: entry.snapshot)
                 .containerBackground(.black, for: .widget)
         }
-        .configurationDisplayName("Frontal Lobe · Reach Out")
+        .configurationDisplayName("Prefrontal Cortex · Reach Out")
         .description("Top person needing attention today.")
         .supportedFamilies([.systemSmall, .accessoryRectangular, .accessoryInline])
     }

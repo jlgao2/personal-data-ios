@@ -1,0 +1,590 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0E1038C8C4C2E62EB41B979F /* WeeklyRecapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5649DA3EFD054D4AA7AA70F /* WeeklyRecapView.swift */; };
+		1C05C2299DF8415064EA68E4 /* PrefrontalCortexWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		24D36ECC16F49C9A171B0ACA /* DataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9E20F1413ED37D4F33F289 /* DataLoader.swift */; };
+		25DC0CD155FC7C015FF7B7AC /* PrepChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5923EEFFB65C137A165223 /* PrepChecklistView.swift */; };
+		260D1FD7EE49C52923084E48 /* TodayHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4129F24E672E4704E4F0EC4B /* TodayHeaderView.swift */; };
+		29C78052C4A214F6F51FA299 /* ReachOutWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A95A0809E4577DA3EC2AAF /* ReachOutWidget.swift */; };
+		43B296DDF029BA9C6975094D /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B603FEC1FEE012D1E97610 /* HealthStore.swift */; };
+		446309996D2BF7FA01BFE74A /* StackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557DB433C84126FC75B2AF52 /* StackView.swift */; };
+		4BC742CDBF46C79B53F5D51F /* CalendarStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8B527DA8380933E8F6CA9A /* CalendarStore.swift */; };
+		4E4E8B6F9B3C7C6851B59A34 /* WorkoutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDA89289885460CF309A52B /* WorkoutsView.swift */; };
+		56CA6B8D4F88CB18F16FCCE5 /* HealthProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECEA1D8862C5E08A3460C10D /* HealthProfileView.swift */; };
+		59EAC5A452EFEAAB4697D94A /* AdaptedSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BE6EE78BCEA78C7FA8AA9F /* AdaptedSessionView.swift */; };
+		6C71BEF25BDB39325C68C8C0 /* PlanTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B6CECAC5F23E6EDED54107 /* PlanTabView.swift */; };
+		7319F7561F8A5DB47F9D99BD /* VitalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCE7ED06BC81271F0ABADB1 /* VitalsView.swift */; };
+		7343D34926F03AE8AF097838 /* WidgetSnapshotWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0A65C7B78D5885DE143AA0 /* WidgetSnapshotWriter.swift */; };
+		745766DC65277A58544E36C8 /* SampleExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E1E8B4C8CEBF4F91E20DC7 /* SampleExporter.swift */; };
+		853D3DD8D11A848C33019AFC /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7C3271B3F0795A38C496A8 /* Notifications.swift */; };
+		9C9BEC0E6DB6B55B12B7FCEA /* UpcomingEventsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */; };
+		A0D3AFB4B192999F0B5BF5BF /* SessionWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6AA2869E1C0DBFEBBF5F912 /* SessionWidget.swift */; };
+		AA62064FD9AD499336B8B2ED /* AbstinenceBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7C71856D8BB30EBFE6705A /* AbstinenceBarView.swift */; };
+		AC8AA5E8C50D97F870B45311 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C711E0E3A2EBFEA645C0E763 /* AppStore.swift */; };
+		B26CD4CAB7B67F498B57C0FF /* PrefrontalCortexWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7029F04609FE7711909E499F /* PrefrontalCortexWidgetBundle.swift */; };
+		BBAE93EDE0A633BEB7329896 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4B45A3F87E88F76B4C774B /* App.swift */; };
+		C8184071DD103801C2B4CDCC /* GenomicsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6BE7054D5CF649868F94F /* GenomicsView.swift */; };
+		CB75433BC4B91CECB6D97424 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0EDEAAB13326E848CA3C3E2 /* Bundle.swift */; };
+		CC44B2755427C5F66DF61A6F /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4963CF4D114C9F3EE61477 /* TimelineView.swift */; };
+		CF0EB1ACB21035551D502F41 /* sample_bundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 7EF815A7496F1F0972A2D6ED /* sample_bundle.json */; };
+		D290CD07C1BAC2EF3DCDAE79 /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744D3B8F91BCD3408F6AE99E /* WidgetSnapshot.swift */; };
+		E1EA7C66BD1B1A4417719864 /* ActionLoopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DF600C39513829392C28AA /* ActionLoopView.swift */; };
+		E42927CA28EAA0B4A475781C /* SocialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A76360A24D8213529C18D9 /* SocialView.swift */; };
+		E6198CDE48405800A2634F16 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE1DBFF025F3858AADA1B0D0 /* ContentView.swift */; };
+		EB9F700A0D535ABE7DC4322F /* MedAlertsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B5ED653FA19D4E97A0FFDB /* MedAlertsView.swift */; };
+		F87336E98889727B383EB7A0 /* HeroWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F866D5118D26371A1E50CA4C /* HeroWidget.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3392ACDA42553DED47CC565C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB9DA3E2D27C6369804937FC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C740D41B96D2FD25F411AD73;
+			remoteInfo = PrefrontalCortexWidget;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		739E58F6F1B5774FCD9E2639 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				1C05C2299DF8415064EA68E4 /* PrefrontalCortexWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		06A95A0809E4577DA3EC2AAF /* ReachOutWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReachOutWidget.swift; sourceTree = "<group>"; };
+		0D7C3271B3F0795A38C496A8 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
+		0DA6BE7054D5CF649868F94F /* GenomicsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenomicsView.swift; sourceTree = "<group>"; };
+		13BEE568095D6B8EFE3A8A43 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		1A5923EEFFB65C137A165223 /* PrepChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepChecklistView.swift; sourceTree = "<group>"; };
+		25B6CECAC5F23E6EDED54107 /* PlanTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanTabView.swift; sourceTree = "<group>"; };
+		318E4861F4BDDB8438347982 /* PrefrontalCortex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PrefrontalCortex.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3BDA89289885460CF309A52B /* WorkoutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutsView.swift; sourceTree = "<group>"; };
+		4129F24E672E4704E4F0EC4B /* TodayHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayHeaderView.swift; sourceTree = "<group>"; };
+		47E1E8B4C8CEBF4F91E20DC7 /* SampleExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleExporter.swift; sourceTree = "<group>"; };
+		51B603FEC1FEE012D1E97610 /* HealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
+		557DB433C84126FC75B2AF52 /* StackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackView.swift; sourceTree = "<group>"; };
+		55BE6EE78BCEA78C7FA8AA9F /* AdaptedSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptedSessionView.swift; sourceTree = "<group>"; };
+		5D7C71856D8BB30EBFE6705A /* AbstinenceBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbstinenceBarView.swift; sourceTree = "<group>"; };
+		5E4963CF4D114C9F3EE61477 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
+		5F4B45A3F87E88F76B4C774B /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		6136BB9719DE848FE949B115 /* PrefrontalCortexWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrefrontalCortexWidget.entitlements; sourceTree = "<group>"; };
+		6B0A65C7B78D5885DE143AA0 /* WidgetSnapshotWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotWriter.swift; sourceTree = "<group>"; };
+		6C9E20F1413ED37D4F33F289 /* DataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoader.swift; sourceTree = "<group>"; };
+		7029F04609FE7711909E499F /* PrefrontalCortexWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefrontalCortexWidgetBundle.swift; sourceTree = "<group>"; };
+		744D3B8F91BCD3408F6AE99E /* WidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshot.swift; sourceTree = "<group>"; };
+		77E4E8E7120A9943314812A1 /* PrefrontalCortex.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrefrontalCortex.entitlements; sourceTree = "<group>"; };
+		7CCE7ED06BC81271F0ABADB1 /* VitalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VitalsView.swift; sourceTree = "<group>"; };
+		7EF815A7496F1F0972A2D6ED /* sample_bundle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = sample_bundle.json; sourceTree = "<group>"; };
+		85B5ED653FA19D4E97A0FFDB /* MedAlertsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedAlertsView.swift; sourceTree = "<group>"; };
+		9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingEventsView.swift; sourceTree = "<group>"; };
+		94DF600C39513829392C28AA /* ActionLoopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionLoopView.swift; sourceTree = "<group>"; };
+		A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = PrefrontalCortexWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD8B527DA8380933E8F6CA9A /* CalendarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStore.swift; sourceTree = "<group>"; };
+		AE1DBFF025F3858AADA1B0D0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		C711E0E3A2EBFEA645C0E763 /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
+		D2F135FF57EF665F0E7E623A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		E0EDEAAB13326E848CA3C3E2 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
+		E1A76360A24D8213529C18D9 /* SocialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialView.swift; sourceTree = "<group>"; };
+		E6AA2869E1C0DBFEBBF5F912 /* SessionWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionWidget.swift; sourceTree = "<group>"; };
+		ECEA1D8862C5E08A3460C10D /* HealthProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileView.swift; sourceTree = "<group>"; };
+		F5649DA3EFD054D4AA7AA70F /* WeeklyRecapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyRecapView.swift; sourceTree = "<group>"; };
+		F866D5118D26371A1E50CA4C /* HeroWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroWidget.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		22816B1D3985C22B382ABB23 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5D7C71856D8BB30EBFE6705A /* AbstinenceBarView.swift */,
+				94DF600C39513829392C28AA /* ActionLoopView.swift */,
+				55BE6EE78BCEA78C7FA8AA9F /* AdaptedSessionView.swift */,
+				0DA6BE7054D5CF649868F94F /* GenomicsView.swift */,
+				ECEA1D8862C5E08A3460C10D /* HealthProfileView.swift */,
+				85B5ED653FA19D4E97A0FFDB /* MedAlertsView.swift */,
+				25B6CECAC5F23E6EDED54107 /* PlanTabView.swift */,
+				1A5923EEFFB65C137A165223 /* PrepChecklistView.swift */,
+				E1A76360A24D8213529C18D9 /* SocialView.swift */,
+				557DB433C84126FC75B2AF52 /* StackView.swift */,
+				5E4963CF4D114C9F3EE61477 /* TimelineView.swift */,
+				4129F24E672E4704E4F0EC4B /* TodayHeaderView.swift */,
+				9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */,
+				7CCE7ED06BC81271F0ABADB1 /* VitalsView.swift */,
+				F5649DA3EFD054D4AA7AA70F /* WeeklyRecapView.swift */,
+				3BDA89289885460CF309A52B /* WorkoutsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		3369153BB8E3E89E8216DA4D /* PrefrontalCortexWidget */ = {
+			isa = PBXGroup;
+			children = (
+				F866D5118D26371A1E50CA4C /* HeroWidget.swift */,
+				D2F135FF57EF665F0E7E623A /* Info.plist */,
+				6136BB9719DE848FE949B115 /* PrefrontalCortexWidget.entitlements */,
+				7029F04609FE7711909E499F /* PrefrontalCortexWidgetBundle.swift */,
+				06A95A0809E4577DA3EC2AAF /* ReachOutWidget.swift */,
+				E6AA2869E1C0DBFEBBF5F912 /* SessionWidget.swift */,
+				744D3B8F91BCD3408F6AE99E /* WidgetSnapshot.swift */,
+			);
+			path = PrefrontalCortexWidget;
+			sourceTree = "<group>";
+		};
+		62397D79FFAC524A4F29CB29 /* PrefrontalCortex */ = {
+			isa = PBXGroup;
+			children = (
+				5F4B45A3F87E88F76B4C774B /* App.swift */,
+				C711E0E3A2EBFEA645C0E763 /* AppStore.swift */,
+				AE1DBFF025F3858AADA1B0D0 /* ContentView.swift */,
+				6C9E20F1413ED37D4F33F289 /* DataLoader.swift */,
+				0D7C3271B3F0795A38C496A8 /* Notifications.swift */,
+				6B0A65C7B78D5885DE143AA0 /* WidgetSnapshotWriter.swift */,
+				96BC6E7ABE69D3C3B7306C7C /* EventKit */,
+				99B7FCA4D3EE0A87E124C182 /* HealthKit */,
+				AA918D206966EEA7D609BB10 /* Models */,
+				E48D21CD4EAC12F89A5258A2 /* Resources */,
+				22816B1D3985C22B382ABB23 /* Views */,
+			);
+			path = PrefrontalCortex;
+			sourceTree = "<group>";
+		};
+		8A540932C82D1E9FF816E7AC = {
+			isa = PBXGroup;
+			children = (
+				62397D79FFAC524A4F29CB29 /* PrefrontalCortex */,
+				3369153BB8E3E89E8216DA4D /* PrefrontalCortexWidget */,
+				A623912F3473E6F7BB93E5F9 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		96BC6E7ABE69D3C3B7306C7C /* EventKit */ = {
+			isa = PBXGroup;
+			children = (
+				AD8B527DA8380933E8F6CA9A /* CalendarStore.swift */,
+			);
+			path = EventKit;
+			sourceTree = "<group>";
+		};
+		99B7FCA4D3EE0A87E124C182 /* HealthKit */ = {
+			isa = PBXGroup;
+			children = (
+				51B603FEC1FEE012D1E97610 /* HealthStore.swift */,
+				47E1E8B4C8CEBF4F91E20DC7 /* SampleExporter.swift */,
+			);
+			path = HealthKit;
+			sourceTree = "<group>";
+		};
+		A623912F3473E6F7BB93E5F9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				318E4861F4BDDB8438347982 /* PrefrontalCortex.app */,
+				A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AA918D206966EEA7D609BB10 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				E0EDEAAB13326E848CA3C3E2 /* Bundle.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E48D21CD4EAC12F89A5258A2 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				13BEE568095D6B8EFE3A8A43 /* Info.plist */,
+				77E4E8E7120A9943314812A1 /* PrefrontalCortex.entitlements */,
+				7EF815A7496F1F0972A2D6ED /* sample_bundle.json */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		66B373569183C7125334D491 /* PrefrontalCortex */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A645DD4ED23865CBCA71DC51 /* Build configuration list for PBXNativeTarget "PrefrontalCortex" */;
+			buildPhases = (
+				DC963F6AFE05F41A3A2ADFFB /* Sources */,
+				219B69B4DC70ACA3AF0D36B3 /* Resources */,
+				739E58F6F1B5774FCD9E2639 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				33804DE3D27269BB842456E3 /* PBXTargetDependency */,
+			);
+			name = PrefrontalCortex;
+			packageProductDependencies = (
+			);
+			productName = PrefrontalCortex;
+			productReference = 318E4861F4BDDB8438347982 /* PrefrontalCortex.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C740D41B96D2FD25F411AD73 /* PrefrontalCortexWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E0FA3FD1295970BFD65D0117 /* Build configuration list for PBXNativeTarget "PrefrontalCortexWidget" */;
+			buildPhases = (
+				14F0FC7402CF0D4965A6AF29 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PrefrontalCortexWidget;
+			packageProductDependencies = (
+			);
+			productName = PrefrontalCortexWidget;
+			productReference = A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AB9DA3E2D27C6369804937FC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					66B373569183C7125334D491 = {
+						DevelopmentTeam = "";
+					};
+					C740D41B96D2FD25F411AD73 = {
+						DevelopmentTeam = "";
+					};
+				};
+			};
+			buildConfigurationList = F095B75AA37754CF61D568B4 /* Build configuration list for PBXProject "PrefrontalCortex" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 8A540932C82D1E9FF816E7AC;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = A623912F3473E6F7BB93E5F9 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				66B373569183C7125334D491 /* PrefrontalCortex */,
+				C740D41B96D2FD25F411AD73 /* PrefrontalCortexWidget */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		219B69B4DC70ACA3AF0D36B3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CF0EB1ACB21035551D502F41 /* sample_bundle.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		14F0FC7402CF0D4965A6AF29 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F87336E98889727B383EB7A0 /* HeroWidget.swift in Sources */,
+				B26CD4CAB7B67F498B57C0FF /* PrefrontalCortexWidgetBundle.swift in Sources */,
+				29C78052C4A214F6F51FA299 /* ReachOutWidget.swift in Sources */,
+				A0D3AFB4B192999F0B5BF5BF /* SessionWidget.swift in Sources */,
+				D290CD07C1BAC2EF3DCDAE79 /* WidgetSnapshot.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC963F6AFE05F41A3A2ADFFB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA62064FD9AD499336B8B2ED /* AbstinenceBarView.swift in Sources */,
+				E1EA7C66BD1B1A4417719864 /* ActionLoopView.swift in Sources */,
+				59EAC5A452EFEAAB4697D94A /* AdaptedSessionView.swift in Sources */,
+				BBAE93EDE0A633BEB7329896 /* App.swift in Sources */,
+				AC8AA5E8C50D97F870B45311 /* AppStore.swift in Sources */,
+				CB75433BC4B91CECB6D97424 /* Bundle.swift in Sources */,
+				4BC742CDBF46C79B53F5D51F /* CalendarStore.swift in Sources */,
+				E6198CDE48405800A2634F16 /* ContentView.swift in Sources */,
+				24D36ECC16F49C9A171B0ACA /* DataLoader.swift in Sources */,
+				C8184071DD103801C2B4CDCC /* GenomicsView.swift in Sources */,
+				56CA6B8D4F88CB18F16FCCE5 /* HealthProfileView.swift in Sources */,
+				43B296DDF029BA9C6975094D /* HealthStore.swift in Sources */,
+				EB9F700A0D535ABE7DC4322F /* MedAlertsView.swift in Sources */,
+				853D3DD8D11A848C33019AFC /* Notifications.swift in Sources */,
+				6C71BEF25BDB39325C68C8C0 /* PlanTabView.swift in Sources */,
+				25DC0CD155FC7C015FF7B7AC /* PrepChecklistView.swift in Sources */,
+				745766DC65277A58544E36C8 /* SampleExporter.swift in Sources */,
+				E42927CA28EAA0B4A475781C /* SocialView.swift in Sources */,
+				446309996D2BF7FA01BFE74A /* StackView.swift in Sources */,
+				CC44B2755427C5F66DF61A6F /* TimelineView.swift in Sources */,
+				260D1FD7EE49C52923084E48 /* TodayHeaderView.swift in Sources */,
+				9C9BEC0E6DB6B55B12B7FCEA /* UpcomingEventsView.swift in Sources */,
+				7319F7561F8A5DB47F9D99BD /* VitalsView.swift in Sources */,
+				0E1038C8C4C2E62EB41B979F /* WeeklyRecapView.swift in Sources */,
+				7343D34926F03AE8AF097838 /* WidgetSnapshotWriter.swift in Sources */,
+				4E4E8B6F9B3C7C6851B59A34 /* WorkoutsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		33804DE3D27269BB842456E3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C740D41B96D2FD25F411AD73 /* PrefrontalCortexWidget */;
+			targetProxy = 3392ACDA42553DED47CC565C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		121149E72E6B15DADBE15699 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Release;
+		};
+		30C93BA7F0994B77A07C7A17 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Debug;
+		};
+		31F76F4DBC0DB5A2B4E4857D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = PrefrontalCortexWidget/PrefrontalCortexWidget.entitlements;
+				INFOPLIST_FILE = PrefrontalCortexWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jlgao.PrefrontalCortex.PrefrontalCortexWidget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		65F7B5C1073A80C3CFBE3DE2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PrefrontalCortex/Resources/PrefrontalCortex.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = PrefrontalCortex/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jlgao.PrefrontalCortex;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CA9266B3626BDA5707246680 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = PrefrontalCortexWidget/PrefrontalCortexWidget.entitlements;
+				INFOPLIST_FILE = PrefrontalCortexWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jlgao.PrefrontalCortex.PrefrontalCortexWidget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D510198455AAD51BD647D4A1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PrefrontalCortex/Resources/PrefrontalCortex.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = PrefrontalCortex/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jlgao.PrefrontalCortex;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A645DD4ED23865CBCA71DC51 /* Build configuration list for PBXNativeTarget "PrefrontalCortex" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65F7B5C1073A80C3CFBE3DE2 /* Debug */,
+				D510198455AAD51BD647D4A1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E0FA3FD1295970BFD65D0117 /* Build configuration list for PBXNativeTarget "PrefrontalCortexWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CA9266B3626BDA5707246680 /* Debug */,
+				31F76F4DBC0DB5A2B4E4857D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F095B75AA37754CF61D568B4 /* Build configuration list for PBXProject "PrefrontalCortex" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				30C93BA7F0994B77A07C7A17 /* Debug */,
+				121149E72E6B15DADBE15699 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AB9DA3E2D27C6369804937FC /* Project object */;
+}

@@ -4,7 +4,7 @@ import HealthKit
 /// Reads recent HealthKit samples and writes a JSON drop the laptop pipeline
 /// will pick up on its next refresh.sh run. One file per day.
 struct SampleExporter {
-    private static let containerID = "iCloud.com.jlgao.PersonalData"
+    private static let containerID = "iCloud.com.jlgao.PrefrontalCortex"
 
     /// Pull the latest reading for each sample type the laptop spine cares about.
     static func dailySamples() async -> [[String: Any]] {

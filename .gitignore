@@ -1,6 +1,6 @@
-*.xcodeproj/xcuserdata/
-*.xcworkspace/xcuserdata/
+**/xcuserdata/
+**/xcuserstate
 build/
 DerivedData/
 .DS_Store
-PersonalData/Resources/sample_bundle.json
+PrefrontalCortex/Resources/sample_bundle.json

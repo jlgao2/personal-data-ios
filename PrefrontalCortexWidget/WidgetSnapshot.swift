@@ -19,7 +19,7 @@ struct WidgetSnapshot: Codable {
 }
 
 enum WidgetSnapshotIO {
-    static let appGroup = "group.com.jlgao.PersonalData"
+    static let appGroup = "group.com.jlgao.PrefrontalCortex"
     static let filename = "widget_snapshot.json"
 
     static var url: URL? {

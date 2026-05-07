@@ -26,13 +26,13 @@ struct SessionEntry: TimelineEntry {
 // MARK: - Widget
 
 struct SessionWidget: Widget {
-    let kind = "FrontalLobeSession"
+    let kind = "PrefrontalCortexSession"
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: SessionProvider()) { entry in
             SessionWidgetView(snapshot: entry.snapshot)
                 .containerBackground(.black, for: .widget)
         }
-        .configurationDisplayName("Frontal Lobe · Session + Stack")
+        .configurationDisplayName("Prefrontal Cortex · Session + Stack")
         .description("Today's session label, intensity, and stack adherence.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }

@@ -43,13 +43,13 @@ struct HeroEntry: TimelineEntry {
 // MARK: - Widget
 
 struct HeroWidget: Widget {
-    let kind = "FrontalLobeHero"
+    let kind = "PrefrontalCortexHero"
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: HeroProvider()) { entry in
             HeroWidgetView(snapshot: entry.snapshot)
                 .containerBackground(.black, for: .widget)
         }
-        .configurationDisplayName("Frontal Lobe · Now")
+        .configurationDisplayName("Prefrontal Cortex · Now")
         .description("Today's most-actionable signal at a glance.")
         .supportedFamilies([
             .systemSmall, .systemMedium,

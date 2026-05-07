@@ -1,4 +1,4 @@
-name: PersonalData
+name: PrefrontalCortex
 options:
   bundleIdPrefix: com.jlgao
   deploymentTarget:
@@ -13,17 +13,17 @@ settings:
     DEVELOPMENT_TEAM: ""
 
 targets:
-  PersonalData:
+  PrefrontalCortex:
     type: application
     platform: iOS
     sources:
-      - path: PersonalData
+      - path: PrefrontalCortex
         excludes:
           - "**/.DS_Store"
     info:
-      path: PersonalData/Resources/Info.plist
+      path: PrefrontalCortex/Resources/Info.plist
       properties:
-        CFBundleDisplayName: Frontal Lobe
+        CFBundleDisplayName: Prefrontal Cortex
         UILaunchScreen:
           UIColorName: ""
         NSHealthShareUsageDescription: Reads heart rate, sleep, weight, and other vitals to surface daily targets vs your genome and lab profile.
@@ -37,45 +37,37 @@ targets:
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
     entitlements:
-      path: PersonalData/Resources/PersonalData.entitlements
+      path: PrefrontalCortex/Resources/PrefrontalCortex.entitlements
       properties:
         com.apple.developer.healthkit: true
-        com.apple.developer.healthkit.access:
-          - health-records
-        com.apple.developer.icloud-container-identifiers:
-          - iCloud.com.jlgao.PersonalData
-        com.apple.developer.icloud-services:
-          - CloudDocuments
-        com.apple.developer.ubiquity-container-identifiers:
-          - iCloud.com.jlgao.PersonalData
         com.apple.security.application-groups:
-          - group.com.jlgao.PersonalData
+          - group.com.jlgao.PrefrontalCortex
     settings:
       base:
         TARGETED_DEVICE_FAMILY: "1,2"
-        PRODUCT_BUNDLE_IDENTIFIER: com.jlgao.PersonalData
+        PRODUCT_BUNDLE_IDENTIFIER: com.jlgao.PrefrontalCortex
     dependencies:
-      - target: FrontalLobeWidget
+      - target: PrefrontalCortexWidget
 
-  FrontalLobeWidget:
+  PrefrontalCortexWidget:
     type: app-extension
     platform: iOS
     sources:
-      - path: FrontalLobeWidget
+      - path: PrefrontalCortexWidget
         excludes:
           - "**/.DS_Store"
     info:
-      path: FrontalLobeWidget/Info.plist
+      path: PrefrontalCortexWidget/Info.plist
       properties:
-        CFBundleDisplayName: Frontal Lobe
+        CFBundleDisplayName: Prefrontal Cortex
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     entitlements:
-      path: FrontalLobeWidget/FrontalLobeWidget.entitlements
+      path: PrefrontalCortexWidget/PrefrontalCortexWidget.entitlements
       properties:
         com.apple.security.application-groups:
-          - group.com.jlgao.PersonalData
+          - group.com.jlgao.PrefrontalCortex
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.jlgao.PersonalData.FrontalLobeWidget
+        PRODUCT_BUNDLE_IDENTIFIER: com.jlgao.PrefrontalCortex.PrefrontalCortexWidget
         SKIP_INSTALL: YES

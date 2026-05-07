@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct PersonalDataApp: App {
+struct PrefrontalCortexApp: App {
     @StateObject private var store = AppStore()
 
     var body: some Scene {

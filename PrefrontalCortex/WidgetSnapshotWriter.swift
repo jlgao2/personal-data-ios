@@ -75,7 +75,7 @@ struct WidgetSnapshotWriter {
 
     private static func appGroupURL() -> URL? {
         FileManager.default
-            .containerURL(forSecurityApplicationGroupIdentifier: "group.com.jlgao.PersonalData")?
+            .containerURL(forSecurityApplicationGroupIdentifier: "group.com.jlgao.PrefrontalCortex")?
             .appendingPathComponent("widget_snapshot.json")
     }
 }
