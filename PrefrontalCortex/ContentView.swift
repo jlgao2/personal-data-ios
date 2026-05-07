@@ -4,6 +4,7 @@ struct ContentView: View {
     @EnvironmentObject var store: AppStore
     @StateObject private var calStore = CalendarStore.shared
     @State private var selectedTab: Tab = .interventions
+    @State private var showTransportSettings = false
 
     enum Tab: String, Hashable {
         case interventions, plan, profile, social
@@ -173,6 +174,16 @@ struct ContentView: View {
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(Color.black, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showTransportSettings = true } label: {
+                        Image(systemName: "gearshape")
+                    }
+                }
+            }
+            .sheet(isPresented: $showTransportSettings) {
+                TransportSettingsView()
+            }
         }
     }
 
@@ -183,7 +194,7 @@ struct ContentView: View {
             Button {
                 Task { await store.uploadTodaySamples() }
             } label: {
-                Image(systemName: "icloud.and.arrow.up")
+                Image(systemName: "arrow.up.circle")
             }
         }
     }

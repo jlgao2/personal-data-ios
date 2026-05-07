@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0E1038C8C4C2E62EB41B979F /* WeeklyRecapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5649DA3EFD054D4AA7AA70F /* WeeklyRecapView.swift */; };
 		1C05C2299DF8415064EA68E4 /* PrefrontalCortexWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		1FFDE9EACD9CA92CF2D15D5A /* TransportClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086AC9497BBB1C47E305924B /* TransportClient.swift */; };
 		24D36ECC16F49C9A171B0ACA /* DataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9E20F1413ED37D4F33F289 /* DataLoader.swift */; };
 		25DC0CD155FC7C015FF7B7AC /* PrepChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5923EEFFB65C137A165223 /* PrepChecklistView.swift */; };
 		260D1FD7EE49C52923084E48 /* TodayHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4129F24E672E4704E4F0EC4B /* TodayHeaderView.swift */; };
@@ -19,10 +20,12 @@
 		4E4E8B6F9B3C7C6851B59A34 /* WorkoutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDA89289885460CF309A52B /* WorkoutsView.swift */; };
 		56CA6B8D4F88CB18F16FCCE5 /* HealthProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECEA1D8862C5E08A3460C10D /* HealthProfileView.swift */; };
 		59EAC5A452EFEAAB4697D94A /* AdaptedSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BE6EE78BCEA78C7FA8AA9F /* AdaptedSessionView.swift */; };
+		5AECEE170CC49677E2116618 /* TransportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620539A39D5D3A8FC3B28392 /* TransportSettingsView.swift */; };
 		6C71BEF25BDB39325C68C8C0 /* PlanTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B6CECAC5F23E6EDED54107 /* PlanTabView.swift */; };
 		7319F7561F8A5DB47F9D99BD /* VitalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCE7ED06BC81271F0ABADB1 /* VitalsView.swift */; };
 		7343D34926F03AE8AF097838 /* WidgetSnapshotWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0A65C7B78D5885DE143AA0 /* WidgetSnapshotWriter.swift */; };
 		745766DC65277A58544E36C8 /* SampleExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E1E8B4C8CEBF4F91E20DC7 /* SampleExporter.swift */; };
+		7A4C635333E2854D71DA3FB7 /* TransportStatusPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F14F8C03DE8FED59DE62CC /* TransportStatusPill.swift */; };
 		853D3DD8D11A848C33019AFC /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7C3271B3F0795A38C496A8 /* Notifications.swift */; };
 		9C9BEC0E6DB6B55B12B7FCEA /* UpcomingEventsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */; };
 		A0D3AFB4B192999F0B5BF5BF /* SessionWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6AA2869E1C0DBFEBBF5F912 /* SessionWidget.swift */; };
@@ -35,9 +38,11 @@
 		CC44B2755427C5F66DF61A6F /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4963CF4D114C9F3EE61477 /* TimelineView.swift */; };
 		CF0EB1ACB21035551D502F41 /* sample_bundle.json in Resources */ = {isa = PBXBuildFile; fileRef = 7EF815A7496F1F0972A2D6ED /* sample_bundle.json */; };
 		D290CD07C1BAC2EF3DCDAE79 /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744D3B8F91BCD3408F6AE99E /* WidgetSnapshot.swift */; };
+		DEB9C0366CA9C847FEA8178B /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = E684221FB8C4DDAB93886C3A /* Keychain.swift */; };
 		E1EA7C66BD1B1A4417719864 /* ActionLoopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DF600C39513829392C28AA /* ActionLoopView.swift */; };
 		E42927CA28EAA0B4A475781C /* SocialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A76360A24D8213529C18D9 /* SocialView.swift */; };
 		E6198CDE48405800A2634F16 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE1DBFF025F3858AADA1B0D0 /* ContentView.swift */; };
+		E62D90EA2080592A48B57E34 /* TransportSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA6452022D4422ED78891D /* TransportSettings.swift */; };
 		EB9F700A0D535ABE7DC4322F /* MedAlertsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B5ED653FA19D4E97A0FFDB /* MedAlertsView.swift */; };
 		F87336E98889727B383EB7A0 /* HeroWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F866D5118D26371A1E50CA4C /* HeroWidget.swift */; };
 /* End PBXBuildFile section */
@@ -68,6 +73,7 @@
 
 /* Begin PBXFileReference section */
 		06A95A0809E4577DA3EC2AAF /* ReachOutWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReachOutWidget.swift; sourceTree = "<group>"; };
+		086AC9497BBB1C47E305924B /* TransportClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportClient.swift; sourceTree = "<group>"; };
 		0D7C3271B3F0795A38C496A8 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		0DA6BE7054D5CF649868F94F /* GenomicsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenomicsView.swift; sourceTree = "<group>"; };
 		13BEE568095D6B8EFE3A8A43 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -84,6 +90,7 @@
 		5E4963CF4D114C9F3EE61477 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		5F4B45A3F87E88F76B4C774B /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		6136BB9719DE848FE949B115 /* PrefrontalCortexWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrefrontalCortexWidget.entitlements; sourceTree = "<group>"; };
+		620539A39D5D3A8FC3B28392 /* TransportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportSettingsView.swift; sourceTree = "<group>"; };
 		6B0A65C7B78D5885DE143AA0 /* WidgetSnapshotWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotWriter.swift; sourceTree = "<group>"; };
 		6C9E20F1413ED37D4F33F289 /* DataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoader.swift; sourceTree = "<group>"; };
 		7029F04609FE7711909E499F /* PrefrontalCortexWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefrontalCortexWidgetBundle.swift; sourceTree = "<group>"; };
@@ -97,10 +104,13 @@
 		A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = PrefrontalCortexWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD8B527DA8380933E8F6CA9A /* CalendarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStore.swift; sourceTree = "<group>"; };
 		AE1DBFF025F3858AADA1B0D0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		BBEA6452022D4422ED78891D /* TransportSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportSettings.swift; sourceTree = "<group>"; };
 		C711E0E3A2EBFEA645C0E763 /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
 		D2F135FF57EF665F0E7E623A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D8F14F8C03DE8FED59DE62CC /* TransportStatusPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportStatusPill.swift; sourceTree = "<group>"; };
 		E0EDEAAB13326E848CA3C3E2 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		E1A76360A24D8213529C18D9 /* SocialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialView.swift; sourceTree = "<group>"; };
+		E684221FB8C4DDAB93886C3A /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		E6AA2869E1C0DBFEBBF5F912 /* SessionWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionWidget.swift; sourceTree = "<group>"; };
 		ECEA1D8862C5E08A3460C10D /* HealthProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileView.swift; sourceTree = "<group>"; };
 		F5649DA3EFD054D4AA7AA70F /* WeeklyRecapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyRecapView.swift; sourceTree = "<group>"; };
@@ -108,6 +118,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		05E78D572BB4389103E0D1B2 /* Transport */ = {
+			isa = PBXGroup;
+			children = (
+				E684221FB8C4DDAB93886C3A /* Keychain.swift */,
+				086AC9497BBB1C47E305924B /* TransportClient.swift */,
+				BBEA6452022D4422ED78891D /* TransportSettings.swift */,
+			);
+			path = Transport;
+			sourceTree = "<group>";
+		};
 		22816B1D3985C22B382ABB23 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -123,6 +143,8 @@
 				557DB433C84126FC75B2AF52 /* StackView.swift */,
 				5E4963CF4D114C9F3EE61477 /* TimelineView.swift */,
 				4129F24E672E4704E4F0EC4B /* TodayHeaderView.swift */,
+				620539A39D5D3A8FC3B28392 /* TransportSettingsView.swift */,
+				D8F14F8C03DE8FED59DE62CC /* TransportStatusPill.swift */,
 				9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */,
 				7CCE7ED06BC81271F0ABADB1 /* VitalsView.swift */,
 				F5649DA3EFD054D4AA7AA70F /* WeeklyRecapView.swift */,
@@ -158,6 +180,7 @@
 				99B7FCA4D3EE0A87E124C182 /* HealthKit */,
 				AA918D206966EEA7D609BB10 /* Models */,
 				E48D21CD4EAC12F89A5258A2 /* Resources */,
+				05E78D572BB4389103E0D1B2 /* Transport */,
 				22816B1D3985C22B382ABB23 /* Views */,
 			);
 			path = PrefrontalCortex;
@@ -333,6 +356,7 @@
 				C8184071DD103801C2B4CDCC /* GenomicsView.swift in Sources */,
 				56CA6B8D4F88CB18F16FCCE5 /* HealthProfileView.swift in Sources */,
 				43B296DDF029BA9C6975094D /* HealthStore.swift in Sources */,
+				DEB9C0366CA9C847FEA8178B /* Keychain.swift in Sources */,
 				EB9F700A0D535ABE7DC4322F /* MedAlertsView.swift in Sources */,
 				853D3DD8D11A848C33019AFC /* Notifications.swift in Sources */,
 				6C71BEF25BDB39325C68C8C0 /* PlanTabView.swift in Sources */,
@@ -342,6 +366,10 @@
 				446309996D2BF7FA01BFE74A /* StackView.swift in Sources */,
 				CC44B2755427C5F66DF61A6F /* TimelineView.swift in Sources */,
 				260D1FD7EE49C52923084E48 /* TodayHeaderView.swift in Sources */,
+				1FFDE9EACD9CA92CF2D15D5A /* TransportClient.swift in Sources */,
+				E62D90EA2080592A48B57E34 /* TransportSettings.swift in Sources */,
+				5AECEE170CC49677E2116618 /* TransportSettingsView.swift in Sources */,
+				7A4C635333E2854D71DA3FB7 /* TransportStatusPill.swift in Sources */,
 				9C9BEC0E6DB6B55B12B7FCEA /* UpcomingEventsView.swift in Sources */,
 				7319F7561F8A5DB47F9D99BD /* VitalsView.swift in Sources */,
 				0E1038C8C4C2E62EB41B979F /* WeeklyRecapView.swift in Sources */,

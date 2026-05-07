@@ -8,12 +8,13 @@ final class AppStore: ObservableObject {
     @Published var loading = true
     @Published var lastError: String?
     @Published var lastUploadResult: String?
+    @Published var lastTransportError: TransportError?
 
     func uploadTodaySamples() async {
-        if let url = await SampleExporter.uploadDaily() {
-            lastUploadResult = "Uploaded \(url.lastPathComponent)"
+        if let msg = await SampleExporter.uploadDaily() {
+            lastUploadResult = msg
         } else {
-            lastUploadResult = "No samples uploaded (no HK auth or no recent data)"
+            lastUploadResult = "Set laptop URL + token in Settings first"
         }
     }
 
@@ -29,6 +30,10 @@ final class AppStore: ObservableObject {
         await CalendarStore.shared.loadUpcoming()
         do {
             bundle = try await DataLoader.shared.loadBundle()
+            lastTransportError = nil
+        } catch let e as TransportError {
+            lastTransportError = e
+            lastError = e.localizedDescription
         } catch {
             lastError = "Bundle load failed: \(error.localizedDescription)"
         }

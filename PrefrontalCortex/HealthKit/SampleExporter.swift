@@ -1,11 +1,8 @@
 import Foundation
 import HealthKit
 
-/// Reads recent HealthKit samples and writes a JSON drop the laptop pipeline
-/// will pick up on its next refresh.sh run. One file per day.
+/// Reads recent HealthKit samples and POSTs them to the laptop's LAN sync server.
 struct SampleExporter {
-    private static let containerID = "iCloud.com.jlgao.PrefrontalCortex"
-
     /// Pull the latest reading for each sample type the laptop spine cares about.
     static func dailySamples() async -> [[String: Any]] {
         let store = HealthStore.shared
@@ -45,27 +42,20 @@ struct SampleExporter {
         return rows
     }
 
-    /// Write a samples_YYYY-MM-DD.json drop to iCloud Drive.
+    /// Returns a human-readable status string. nil means "transport not configured;
+    /// nothing happened" — caller should treat that distinctly from a real failure.
     @discardableResult
-    static func uploadDaily() async -> URL? {
+    static func uploadDaily() async -> String? {
         let rows = await dailySamples()
-        guard !rows.isEmpty else { return nil }
-        guard let dir = FileManager.default
-            .url(forUbiquityContainerIdentifier: containerID)?
-            .appendingPathComponent("Documents/ios_export") else {
+        guard !rows.isEmpty else { return "No samples to upload" }
+        guard await TransportSettings.shared.isConfigured else {
             return nil
         }
-        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        let url = dir.appendingPathComponent("samples_\(f.string(from: Date())).json")
         do {
-            let data = try JSONSerialization.data(withJSONObject: rows, options: .prettyPrinted)
-            try data.write(to: url)
-            return url
+            let resp = try await TransportClient.shared.uploadSamples(rows)
+            return "Uploaded \(resp.written) of \(rows.count) sample\(rows.count == 1 ? "" : "s")"
         } catch {
-            print("SampleExporter write failed: \(error)")
-            return nil
+            return "Upload failed: \(TransportClient.wrap(error).localizedDescription)"
         }
     }
 }

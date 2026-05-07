@@ -22,12 +22,19 @@
 	<string>1</string>
 	<key>INFOPLIST_KEY_UILaunchScreen_Generation</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>Surfaces your upcoming events on the Now tab and lets you create reminders from Goals + Reach Out.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Reads heart rate, sleep, weight, and other vitals to surface daily targets vs your genome and lab profile.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Optional — write session annotations back to your health record.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Connect to your laptop on the same Wi-Fi to sync the daily bundle.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
