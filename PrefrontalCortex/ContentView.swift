@@ -64,6 +64,10 @@ struct ContentView: View {
                     if let err = store.lastError { errorBanner(err) }
                     if let bundle = store.bundle {
                         TimelineView(bundle: bundle, calStore: calStore)
+                        if let supps = bundle.profile?.supplement_stack, !supps.isEmpty {
+                            StackView(items: supps)
+                        }
+                        MindfulEatingTodayView()
                         if let adapted = bundle.adapted_session {
                             let dayKey = adapted.program_day ?? ""
                             let prescribed = bundle.profile?.daily_protocol?[dayKey]

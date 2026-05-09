@@ -1,83 +1,150 @@
 import SwiftUI
 
+/// Two-block daily checklist: MORNING (everything that's not "evening" or
+/// "before bed") + EVENING. Tap rows to check; state lives in UserDefaults
+/// keyed by today's date so it resets at midnight.
 struct StackView: View {
     let items: [Supplement]
+    @State private var checks: [String: Bool] = [:]
 
-    private static let timingOrder = [
-        "morning", "30-60 min pre-workout", "with lunch",
-        "afternoon", "evening", "before bed"
-    ]
+    private var morningSupps: [Supplement] {
+        items.filter { !Self.isEvening($0.timing) }
+    }
+    private var eveningSupps: [Supplement] {
+        items.filter { Self.isEvening($0.timing) }
+    }
 
-    private var grouped: [(timing: String, supps: [Supplement])] {
-        var byTiming: [String: [Supplement]] = [:]
-        for s in items {
-            let t = s.timing ?? "unscheduled"
-            byTiming[t, default: []].append(s)
-        }
-        return byTiming.keys.sorted { a, b in
-            let ai = StackView.timingOrder.firstIndex(of: a) ?? 99
-            let bi = StackView.timingOrder.firstIndex(of: b) ?? 99
-            return ai < bi
-        }.map { ($0, byTiming[$0]!) }
+    private static func isEvening(_ timing: String?) -> Bool {
+        let t = (timing ?? "").lowercased()
+        return t.contains("evening") || t.contains("before bed") || t.contains("night")
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("STACK")
-                .font(.caption2.monospaced())
-                .foregroundStyle(.secondary)
-                .tracking(2)
-            VStack(spacing: 1) {
-                ForEach(grouped, id: \.timing) { group in
-                    StackGroupView(timing: group.timing, items: group.supps)
-                }
-            }
-        }
-    }
-}
-
-private struct StackGroupView: View {
-    let timing: String
-    let items: [Supplement]
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(timing.uppercased())
+                Text("STACK")
                     .font(.caption2.monospaced())
                     .foregroundStyle(.cyan)
                     .tracking(2)
                 Spacer()
-                Text(items.contains(where: { $0.with_food == true }) ? "with food" : "fasted")
+                Text(progressLabel)
                     .font(.caption2.monospaced())
                     .foregroundStyle(.secondary)
             }
-            ForEach(items) { item in
+
+            VStack(spacing: 8) {
+                if !morningSupps.isEmpty {
+                    StackChecklistGroup(label: "MORNING", supps: morningSupps,
+                                        checks: $checks, onToggle: toggle)
+                }
+                if !eveningSupps.isEmpty {
+                    StackChecklistGroup(label: "EVENING", supps: eveningSupps,
+                                        checks: $checks, onToggle: toggle)
+                }
+            }
+        }
+        .onAppear { loadChecks() }
+    }
+
+    private var progressLabel: String {
+        let done = items.filter { checks[$0.name] ?? false }.count
+        return "\(done) / \(items.count)"
+    }
+
+    // MARK: - Per-day persistence
+
+    private static func todayKey() -> String {
+        let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"
+        return "stack_check_\(f.string(from: Date()))"
+    }
+
+    private func loadChecks() {
+        if let data = UserDefaults.standard.data(forKey: Self.todayKey()),
+           let dict = try? JSONDecoder().decode([String: Bool].self, from: data) {
+            checks = dict
+        } else {
+            checks = [:]
+        }
+    }
+
+    private func toggle(_ name: String) {
+        checks[name, default: false].toggle()
+        if let data = try? JSONEncoder().encode(checks) {
+            UserDefaults.standard.set(data, forKey: Self.todayKey())
+        }
+    }
+}
+
+private struct StackChecklistGroup: View {
+    let label: String
+    let supps: [Supplement]
+    @Binding var checks: [String: Bool]
+    let onToggle: (String) -> Void
+
+    private var doneCount: Int {
+        supps.filter { checks[$0.name] ?? false }.count
+    }
+    private var withFood: Bool {
+        supps.contains(where: { $0.with_food == true })
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(label)
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.cyan)
+                    .tracking(2)
+                Spacer()
+                Text("\(doneCount)/\(supps.count) · \(withFood ? "with food" : "fasted")")
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.secondary)
+            }
+            ForEach(supps) { s in
+                StackChecklistRow(
+                    supp: s,
+                    checked: checks[s.name] ?? false,
+                    onTap: { onToggle(s.name) }
+                )
+            }
+        }
+        .padding(12)
+        .background(Color.white.opacity(0.04))
+        .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+}
+
+private struct StackChecklistRow: View {
+    let supp: Supplement
+    let checked: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                Image(systemName: checked ? "checkmark.circle.fill" : "circle")
+                    .font(.body)
+                    .foregroundStyle(checked ? .cyan : .secondary)
+                    .frame(width: 22)
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(alignment: .firstTextBaseline) {
-                        Text(item.name)
+                        Text(supp.name)
                             .font(.body.italic())
-                            .foregroundStyle(item.evidence == "strong" ? .white : .gray)
-                            .fontWeight(item.evidence == "strong" ? .medium : .regular)
+                            .foregroundStyle(checked ? .gray
+                                             : (supp.evidence == "strong" ? .white : .gray))
+                            .strikethrough(checked, color: .secondary)
                         Spacer()
-                        if let dose = item.dose {
+                        if let dose = supp.dose {
                             Text(dose)
                                 .font(.caption2.monospaced())
                                 .foregroundStyle(.cyan)
                         }
                     }
-                    if let r = item.rationale {
-                        Text(r)
-                            .font(.footnote.italic())
-                            .foregroundStyle(.secondary)
-                            .lineLimit(3)
-                    }
                 }
-                .padding(.vertical, 4)
-                Divider().background(Color.white.opacity(0.05))
             }
+            .padding(.vertical, 6)
+            .contentShape(Rectangle())
         }
-        .padding(12)
-        .background(Color.white.opacity(0.04))
+        .buttonStyle(.plain)
     }
 }

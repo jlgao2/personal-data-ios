@@ -18,6 +18,7 @@
 		4BC742CDBF46C79B53F5D51F /* CalendarStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8B527DA8380933E8F6CA9A /* CalendarStore.swift */; };
 		4E4E8B6F9B3C7C6851B59A34 /* WorkoutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDA89289885460CF309A52B /* WorkoutsView.swift */; };
 		4F285409BAB0591E3D6251C6 /* CorrelationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAED2897A33FF5197B09BB1 /* CorrelationsView.swift */; };
+		5306323CCA9DF60F878D9DCA /* MindfulEatingTodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C559BC519573C512391D4DE7 /* MindfulEatingTodayView.swift */; };
 		56CA6B8D4F88CB18F16FCCE5 /* HealthProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECEA1D8862C5E08A3460C10D /* HealthProfileView.swift */; };
 		59EAC5A452EFEAAB4697D94A /* AdaptedSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BE6EE78BCEA78C7FA8AA9F /* AdaptedSessionView.swift */; };
 		5AECEE170CC49677E2116618 /* TransportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620539A39D5D3A8FC3B28392 /* TransportSettingsView.swift */; };
@@ -32,6 +33,7 @@
 		AA62064FD9AD499336B8B2ED /* AbstinenceBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7C71856D8BB30EBFE6705A /* AbstinenceBarView.swift */; };
 		AC8AA5E8C50D97F870B45311 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C711E0E3A2EBFEA645C0E763 /* AppStore.swift */; };
 		AF749B480BCDCF24EBF180CA /* AnimatedAuraBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83295A3F857518282CCA3A31 /* AnimatedAuraBackground.swift */; };
+		AFDF8711798353000F29B7D4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60BABA74BF6E980433D44A99 /* Assets.xcassets */; };
 		B26CD4CAB7B67F498B57C0FF /* PrefrontalCortexWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7029F04609FE7711909E499F /* PrefrontalCortexWidgetBundle.swift */; };
 		BBAE93EDE0A633BEB7329896 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4B45A3F87E88F76B4C774B /* App.swift */; };
 		BE5AEEEDF724661BB1B75D5D /* DOWHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB03DDF028F9C4D8D12EB92 /* DOWHeatmapView.swift */; };
@@ -91,6 +93,7 @@
 		5D7C71856D8BB30EBFE6705A /* AbstinenceBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbstinenceBarView.swift; sourceTree = "<group>"; };
 		5E4963CF4D114C9F3EE61477 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		5F4B45A3F87E88F76B4C774B /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		60BABA74BF6E980433D44A99 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6136BB9719DE848FE949B115 /* PrefrontalCortexWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrefrontalCortexWidget.entitlements; sourceTree = "<group>"; };
 		620539A39D5D3A8FC3B28392 /* TransportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportSettingsView.swift; sourceTree = "<group>"; };
 		6B0A65C7B78D5885DE143AA0 /* WidgetSnapshotWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotWriter.swift; sourceTree = "<group>"; };
@@ -108,6 +111,7 @@
 		AD8B527DA8380933E8F6CA9A /* CalendarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStore.swift; sourceTree = "<group>"; };
 		AE1DBFF025F3858AADA1B0D0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		BBEA6452022D4422ED78891D /* TransportSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportSettings.swift; sourceTree = "<group>"; };
+		C559BC519573C512391D4DE7 /* MindfulEatingTodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MindfulEatingTodayView.swift; sourceTree = "<group>"; };
 		C711E0E3A2EBFEA645C0E763 /* AppStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStore.swift; sourceTree = "<group>"; };
 		D2F135FF57EF665F0E7E623A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D8F14F8C03DE8FED59DE62CC /* TransportStatusPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportStatusPill.swift; sourceTree = "<group>"; };
@@ -144,6 +148,7 @@
 				0DA6BE7054D5CF649868F94F /* GenomicsView.swift */,
 				ECEA1D8862C5E08A3460C10D /* HealthProfileView.swift */,
 				85B5ED653FA19D4E97A0FFDB /* MedAlertsView.swift */,
+				C559BC519573C512391D4DE7 /* MindfulEatingTodayView.swift */,
 				25B6CECAC5F23E6EDED54107 /* PlanTabView.swift */,
 				1A5923EEFFB65C137A165223 /* PrepChecklistView.swift */,
 				E1A76360A24D8213529C18D9 /* SocialView.swift */,
@@ -238,6 +243,7 @@
 		E48D21CD4EAC12F89A5258A2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				60BABA74BF6E980433D44A99 /* Assets.xcassets */,
 				13BEE568095D6B8EFE3A8A43 /* Info.plist */,
 				77E4E8E7120A9943314812A1 /* PrefrontalCortex.entitlements */,
 				7EF815A7496F1F0972A2D6ED /* sample_bundle.json */,
@@ -327,6 +333,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AFDF8711798353000F29B7D4 /* Assets.xcassets in Resources */,
 				CF0EB1ACB21035551D502F41 /* sample_bundle.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -367,6 +374,7 @@
 				43B296DDF029BA9C6975094D /* HealthStore.swift in Sources */,
 				DEB9C0366CA9C847FEA8178B /* Keychain.swift in Sources */,
 				EB9F700A0D535ABE7DC4322F /* MedAlertsView.swift in Sources */,
+				5306323CCA9DF60F878D9DCA /* MindfulEatingTodayView.swift in Sources */,
 				853D3DD8D11A848C33019AFC /* Notifications.swift in Sources */,
 				6C71BEF25BDB39325C68C8C0 /* PlanTabView.swift in Sources */,
 				25DC0CD155FC7C015FF7B7AC /* PrepChecklistView.swift in Sources */,

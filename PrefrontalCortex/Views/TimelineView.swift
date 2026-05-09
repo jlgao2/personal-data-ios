@@ -66,22 +66,9 @@ struct TimelineView: View {
                                stateKey: nil, stateId: nil, pill: nil, url: e.url))
         }
 
-        // Supplements — timing → hour
-        let timingHour: [String: Int] = [
-            "morning": 7, "30-60 min pre-workout": 10, "with lunch": 12,
-            "afternoon": 15, "evening": 19, "before bed": 22,
-        ]
-        for s in (bundle.profile?.supplement_stack ?? []) {
-            guard let h = timingHour[s.timing ?? ""] else { continue }
-            var comps = cal.dateComponents([.year, .month, .day], from: today)
-            comps.hour = h
-            guard let t = cal.date(from: comps) else { continue }
-            let detail = [s.dose, s.rationale].compactMap { $0 }.joined(separator: " · ")
-            items.append(.init(kind: .supplement, time: t,
-                               title: s.name,
-                               detail: detail,
-                               stateKey: "stack", stateId: s.name, pill: nil, url: nil))
-        }
+        // Supps used to render as one timeline row per supplement (7 rows for
+        // 7 supps). They've moved out to StackView's morning/evening checklist
+        // — the timeline stays for genuinely time-sensitive things.
 
         // Workout anchor at 11am for non-rest days
         let dayKey = todaysProgramKeyiOS()
