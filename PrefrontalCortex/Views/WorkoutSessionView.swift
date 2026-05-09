@@ -28,6 +28,9 @@ struct WorkoutSessionView: View {
     @State private var sets: [String: [SetEntry]] = [:]
     /// Currently focused (exercise, set index)
     @State private var focused: Focus? = nil
+    /// Set currently being edited via the custom-weight alert (nil = closed).
+    @State private var customWeightTarget: Focus? = nil
+    @State private var customWeightInput: String = ""
 
     struct SetEntry: Codable, Equatable {
         var weight: Double
@@ -88,6 +91,32 @@ struct WorkoutSessionView: View {
         }
         .preferredColorScheme(.dark)
         .onAppear { loadState() }
+        .alert("Custom weight (\(unit.label))",
+               isPresented: Binding(
+                    get: { customWeightTarget != nil },
+                    set: { if !$0 { customWeightTarget = nil } }
+               )) {
+            TextField("Weight", text: $customWeightInput)
+                .keyboardType(.decimalPad)
+            Button("Cancel", role: .cancel) { }
+            Button("Log set") { commitCustomWeight() }
+        } message: {
+            Text("Type the exact weight to log this set with — useful for off-grid dumbbells or plate combos the presets don't reach.")
+        }
+    }
+
+    private func commitCustomWeight() {
+        guard let target = customWeightTarget else { return }
+        let normalized = customWeightInput
+            .replacingOccurrences(of: ",", with: ".")
+            .trimmingCharacters(in: .whitespaces)
+        guard let weight = Double(normalized),
+              let arr = sets[target.exerciseKey],
+              target.setIndex < arr.count else { return }
+        let entry = arr[target.setIndex]
+        logSet(weight: max(0, weight), reps: entry.reps,
+               key: target.exerciseKey, index: target.setIndex)
+        customWeightTarget = nil
     }
 
     // MARK: - Header
@@ -268,7 +297,22 @@ struct WorkoutSessionView: View {
             weightPresetButton(.smallUp, key: key, index: index, entry: entry)
             weightPresetButton(.same,    key: key, index: index, entry: entry)
             weightPresetButton(.down,    key: key, index: index, entry: entry)
+            customWeightButton(key: key, index: index, entry: entry)
         }
+    }
+
+    /// 5th row under the weight presets — opens a number-pad alert so the
+    /// user can type any value (off-grid dumbbells, oddball plates, etc.).
+    private func customWeightButton(key: String, index: Int, entry: SetEntry) -> some View {
+        Button {
+            customWeightInput = unit.formatStep(entry.weight)
+            customWeightTarget = Focus(exerciseKey: key, setIndex: index)
+        } label: {
+            presetRow(label: "✎   custom…",
+                      preview: "type any value",
+                      color: .purple)
+        }
+        .buttonStyle(LivePressStyle())
     }
 
     private func repClusterSection(key: String, index: Int, entry: SetEntry, parsed: ParsedExercise) -> some View {
