@@ -46,6 +46,7 @@ If today is rest day OR you can't train:
 | Same-day cap | One credit per day even if multiple HK workouts |
 | Rest day (Day 7) | Auto-credits workout slot if any HK movement OR a one-tap "rest acknowledged" affordance |
 | Streak break | Quiet — no notification. Profile shows "starting over · N days was your last run" the next morning |
+| Lock-screen controls | **Two-stage sequential**: 3 weight buttons (`−5` / `=` / `+5`) → tap one → widget refreshes → 3 rep buttons (`−1` / `=` / `+1`) → tap one → set logged + advance to next |
 
 ## Data model
 
@@ -274,9 +275,151 @@ struct SkipWorkoutButton: View {
 
 (Implementation details refine in the plan; the gesture behavior may need tuning to feel right — the SwiftUI long-press + simultaneous drag pattern is the standard way to get a fillable hold.)
 
+## Lock-screen interactive controls
+
+WidgetKit (iOS 17+) only allows `Button` and `Toggle` interactivity on widgets — no swipe, no slider, no drag, no text input. Each tap fires an `AppIntent`. Lock-screen rectangle is ~150×60pt; comfortably fits 3 buttons in a row + a small status line above.
+
+**Design: two-stage sequential.** The widget shows different buttons depending on which "stage" of the next set you're in:
+
+```
+Stage 1 (pick weight delta):
+┌──────────────────────────────────────┐
+│ SET 3/5 · last 135 × 10              │
+│  WEIGHT       [−5]  [=]  [+5]        │
+└──────────────────────────────────────┘
+
+→ tap a weight button (stages the weight, advances to stage 2)
+
+Stage 2 (pick rep delta):
+┌──────────────────────────────────────┐
+│ SET 3/5 · staged 140 × ?             │
+│  REPS         [−1]  [=]  [+1]        │
+└──────────────────────────────────────┘
+
+→ tap a rep button (commits set + advances to next set's stage 1)
+```
+
+**Two taps per set on the lock screen, one set advance per cycle.** All state mutations happen via `AppIntent` calls; the widget's `Provider.getTimeline` re-reads App Group state on each refresh and renders the correct stage.
+
+### App Group state — `LockScreenWorkoutState`
+
+```swift
+struct LockScreenWorkoutState: Codable {
+    var inProgress: Bool             // false when no workout active → widget shows NextUp instead
+    var exerciseKey: String          // current exercise's stable key
+    var exerciseName: String         // user-facing label
+    var setIndex: Int                // 0-based; the set you're about to log
+    var totalSets: Int               // for the "SET N/M" readout
+    var lastWeight: Double           // baseline for `=` and the delta math
+    var lastReps: Int
+    var stage: Stage                 // .weight or .reps — which buttons to show
+    var stagedWeight: Double?        // set during stage transition; nil at stage 1
+    var mode: Mode                   // .free | .band | .time | .amrap
+    var bandColor: String?           // for band mode
+    var unit: String                 // "lb" | "kg"
+
+    enum Stage: String, Codable { case weight, reps }
+    enum Mode: String, Codable { case free, band, time, amrap }
+}
+```
+
+Persisted at `widget_workout_state.json` in the App Group container, written by `WorkoutSessionView` on every focus / preset-tap, written by the AppIntents on every lock-screen tap, read by the widget's TimelineProvider on every render.
+
+### AppIntents
+
+Two intents in a shared module visible to both the host app and the widget extension:
+
+```swift
+struct StageWeightDeltaIntent: AppIntent {
+    static var title: LocalizedStringResource = "Stage weight"
+    @Parameter(title: "Delta") var delta: Double      // -5, 0, +5
+
+    func perform() async throws -> some IntentResult {
+        var state = LockScreenWorkoutStore.load()
+        guard state.inProgress, state.stage == .weight else { return .result() }
+        state.stagedWeight = max(0, state.lastWeight + delta)
+        state.stage = .reps
+        LockScreenWorkoutStore.save(state)
+        WidgetCenter.shared.reloadTimelines(ofKind: WorkoutLockWidget.kind)
+        return .result()
+    }
+}
+
+struct CommitRepDeltaIntent: AppIntent {
+    static var title: LocalizedStringResource = "Commit set"
+    @Parameter(title: "Rep delta") var delta: Int     // -1, 0, +1
+
+    func perform() async throws -> some IntentResult {
+        var state = LockScreenWorkoutStore.load()
+        guard state.inProgress, state.stage == .reps,
+              let weight = state.stagedWeight else { return .result() }
+        let reps = max(0, state.lastReps + delta)
+
+        // Persist into the in-progress workout's per-set storage,
+        // mirroring what WorkoutSessionView.markComplete does.
+        WorkoutProgress.completeSet(exerciseKey: state.exerciseKey,
+                                    setIndex: state.setIndex,
+                                    weight: weight, reps: reps)
+
+        // Advance to next set (or next exercise) and reset to stage 1.
+        state.setIndex += 1
+        if state.setIndex >= state.totalSets {
+            // Exercise complete — advance to next exercise OR end workout.
+            advanceToNextExercise(&state)
+        }
+        state.stage = .weight
+        state.stagedWeight = nil
+        state.lastWeight = weight
+        state.lastReps = reps
+        LockScreenWorkoutStore.save(state)
+        WidgetCenter.shared.reloadTimelines(ofKind: WorkoutLockWidget.kind)
+        return .result()
+    }
+}
+```
+
+### Mode-specific button layouts
+
+| Mode | Stage 1 (weight) | Stage 2 (reps) |
+|---|---|---|
+| **Free weight** | `−5` `=` `+5` | `−1` `=` `+1` |
+| **Band** (color cycle, no numeric weight) | `← prev` `=` `next →` (cycles through 5 BandColor cases) | `−1` `=` `+1` |
+| **Time** (mobility holds — no rep concept) | (skipped — single-stage) | `−5s` `=` `+5s` |
+| **AMRAP** (bodyweight, fluid reps) | (skipped if `lastWeight == 0`) | `−1` `=` `+1` |
+
+For modes that skip stage 1, the widget jumps straight to stage 2 and a single tap commits.
+
+### Widget — `WorkoutLockWidget`
+
+New widget kind `PrefrontalCortexWorkoutLock`, registered alongside the existing `HeroWidget` / `SessionWidget` / `ReachOutWidget` / `NextUpWidget` in `PrefrontalCortexWidgetBundle`.
+
+Supported families:
+- `accessoryRectangular` — primary lock-screen surface
+- `systemSmall` — mirror on home screen for quick mid-set tapping at the rack
+
+`accessoryInline` and `accessoryCircular` are intentionally skipped — too small for any usable button cluster.
+
+### "No workout in progress" fallback
+
+When `LockScreenWorkoutState.inProgress == false`, the widget renders the same content as `NextUpWidget` (next chronological item). This way the user only needs ONE lock-screen widget; it morphs from "what's next today" into "log your set" when a workout starts and back when it ends.
+
+Implementation-wise, the WorkoutLockWidget's view branches on the in-progress flag.
+
+### Workout start / end transitions
+
+- **Start**: `WorkoutSessionView.onAppear` writes `inProgress = true` + initial state (set 0, exercise's first item, lastWeight from memory, etc.) and triggers `WidgetCenter.shared.reloadAllTimelines()`.
+- **Manual end**: `WorkoutSessionView.commitAndDismiss()` writes `inProgress = false`. Widget reverts to NextUp mode.
+- **Auto end**: when the last exercise's last set is committed via the lock-screen intent, the intent itself sets `inProgress = false`.
+
+### Why two-stage instead of single-button or 6-button-grid
+
+- **Single button** (option α' from brainstorm) is too rigid — you'd never adjust on the lock screen, just always log "same." That's fine 70% of the time but punishes deviation.
+- **6 buttons simultaneous** (option α) is feasible but the rectangle is small enough that 6 chip buttons + a status readout becomes hard to read and easy to mis-tap. Reasonable people would disagree here; we picked sequential to keep readability.
+- **Two-stage sequential** (chosen) doubles taps but keeps each stage decision atomic + the buttons big enough to reliably hit. The widget refresh between stages is fast (App Group state + WidgetCenter reload).
+
 ## File structure
 
-### NEW (iOS)
+### NEW (iOS — main app)
 
 | Path | Responsibility |
 |---|---|
@@ -290,6 +433,14 @@ struct SkipWorkoutButton: View {
 | `PrefrontalCortex/Views/AchievementGrid.swift` | 4×3 grid on Profile + per-achievement detail sheet. |
 | `PrefrontalCortex/Views/AchievementUnlockToast.swift` | Center overlay shown when a new achievement fires. |
 
+### NEW (shared / widget extension — lock-screen controls)
+
+| Path | Responsibility |
+|---|---|
+| `PrefrontalCortexShared/LockScreenWorkoutState.swift` | Codable struct + `LockScreenWorkoutStore` (load/save to App Group container). Visible to both the host app and the widget extension. |
+| `PrefrontalCortexShared/WorkoutAppIntents.swift` | `StageWeightDeltaIntent` and `CommitRepDeltaIntent` (+ `BandColorCycleIntent` for band-mode stage 1). `AppIntent` conformance lives in shared scope so the widget's `Button(intent:)` can fire them. |
+| `PrefrontalCortexWidget/WorkoutLockWidget.swift` | The new widget. TimelineProvider reads `LockScreenWorkoutState` from App Group; view branches on `inProgress` (active workout → stage-aware button cluster, idle → NextUp fallback). Registered in `PrefrontalCortexWidgetBundle`. |
+
 ### MODIFIED (iOS)
 
 | Path | Change |
@@ -301,8 +452,9 @@ struct SkipWorkoutButton: View {
 | `Views/AdaptedSessionView.swift` | Place `SkipWorkoutButton` below the Start pill row. |
 | `Views/StackView.swift` | After `toggle(period:)`, call `StreakState.refresh()` + `Achievements.refresh()`. |
 | `Views/MindfulEatingTodayView.swift` | After `toggle()`, same hooks. |
-| `Views/WorkoutSessionView.swift` | On `commitAndDismiss()`, call `DailyLock.setWorkoutDone(source: .manual)` so the workout slot fills. |
-| `WidgetSnapshotWriter.swift` | Add `streak_current` + `streak_longest` to the snapshot. (Widget surface deferred — see "out of scope".) |
+| `Views/WorkoutSessionView.swift` | On `commitAndDismiss()`, call `DailyLock.setWorkoutDone(source: .manual)` so the workout slot fills. **Plus**: `onAppear` writes initial `LockScreenWorkoutState`; `markComplete` mirrors the same state mutations the lock-screen AppIntents perform; `commitAndDismiss` flips `inProgress = false`. After every state write, calls `WidgetCenter.shared.reloadTimelines(ofKind: WorkoutLockWidget.kind)`. |
+| `WidgetSnapshotWriter.swift` | Add `streak_current` + `streak_longest` to the snapshot for the existing widgets to surface (HeroWidget can render the streak; deferred). |
+| `PrefrontalCortexWidget/PrefrontalCortexWidgetBundle.swift` | Register `WorkoutLockWidget()` alongside the existing four. |
 
 ### Pipeline (no changes)
 
@@ -322,7 +474,10 @@ No notification. No banner on Now. Quiet by design — mistakes shouldn't punish
 
 ## What's out of scope for v1
 
-- **Widget showing streak** — `WidgetSnapshotWriter` writes the data so the existing `HeroWidget` could surface it later, but adding a new widget face is deferred.
+- **Streak rendering inside `HeroWidget`** — the snapshot includes streak data so the existing widgets *could* show it, but the explicit addition is deferred. The new `WorkoutLockWidget` is the only added widget in v1.
+- **Lock-screen rest timer** — between-set countdown. Out — adds AppIntent + animation complexity that doesn't pay off until usage data shows people want it.
+- **Lock-screen end-workout button** — must end the workout via the in-app `Done`. Avoids fat-fingering an end during a set.
+- **Multi-exercise auto-advance on lock screen** — when an exercise's sets are all logged, the widget advances to the next exercise's stage 1 automatically; no UI for *jumping back* to a prior exercise from the lock screen (do that in-app).
 - **Sharing achievements** — no social.
 - **Custom/user-authored achievements** — the 12 are fixed in code.
 - **Progress bars on locked achievements** — binary unlocked/locked only. "Halfway to Tendril" affordance is a follow-up.
@@ -349,8 +504,8 @@ No notification. No banner on Now. Quiet by design — mistakes shouldn't punish
 
 ## Self-review checklist
 
-- **Spec coverage:** Each user-asked feature has a section: auto-log → "HealthKit auto-pull"; skip-with-friction → "Skip-with-friction flow" + button impl sketch; gameify → "Achievement catalog" + "UI surfaces" + "Streak state". ✓
-- **Placeholder scan:** No "TBD" / "implement later" remaining. Long-press duration, HK threshold, etc. all have concrete defaults. ✓
-- **Internal consistency:** DailyLock keys match between Data Model and File Structure. The 4 dots in DailyLockChip correspond to the 4 fields in `isComplete`. ✓
-- **Scope check:** Single sub-project. Bounded to iOS + a tiny WidgetSnapshotWriter touch. ✓
-- **Ambiguity check:** "Either credits" is concrete (HK ≥10 min OR manual log finish OR skip-with-reason OR rest ack); same-day cap is one-credit. The skip-with-friction is concretely 2.0s long-press + reason picker. ✓
+- **Spec coverage:** Each user-asked feature has a section: auto-log → "HealthKit auto-pull"; skip-with-friction → "Skip-with-friction flow" + button impl sketch; gameify → "Achievement catalog" + "UI surfaces" + "Streak state"; lock-screen interactivity → "Lock-screen interactive controls" with two-stage AppIntent design. ✓
+- **Placeholder scan:** No real placeholder text. All knobs (long-press 2s, HK 10 min, button counts, color list, achievement count) have concrete defaults. ✓
+- **Internal consistency:** DailyLock keys match between Data Model and File Structure. The 4 dots in DailyLockChip correspond to the 4 fields in `isComplete`. The `LockScreenWorkoutState` modes mirror the in-app `ParsedExercise` modes (free / band / time / amrap). The lock-screen Stage 1 / Stage 2 mirror the in-app weight cluster + rep cluster. The button counts (3 + 3) are explicit per mode. ✓
+- **Scope check:** Single sub-project (sub-project A of the four-way decomposition). Bounded to iOS + WidgetSnapshotWriter additions + a new widget extension entry. ✓
+- **Ambiguity check:** "Either credits" is concrete (HK ≥10 min OR manual log finish OR skip-with-reason OR rest ack); same-day cap is one-credit. Skip-with-friction is 2.0s long-press + reason picker. Lock-screen interaction is two-stage sequential, 3 buttons each, with explicit per-mode mapping. ✓
