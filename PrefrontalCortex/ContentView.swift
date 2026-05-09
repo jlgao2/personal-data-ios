@@ -50,6 +50,9 @@ struct ContentView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: store.lastUploadResult)
+        .overlay(alignment: .center) {
+            AchievementUnlockToast(pending: $store.pendingAchievements)
+        }
         .sheet(isPresented: $showTransportSettings) {
             TransportSettingsView()
         }
@@ -84,6 +87,7 @@ struct ContentView: View {
                     if let err = store.lastError { errorBanner(err) }
                     if let bundle = store.bundle {
                         TimelineView(bundle: bundle, calStore: calStore)
+                        DailyLockChip()
                         if let supps = bundle.profile?.supplement_stack, !supps.isEmpty {
                             StackView(items: supps)
                         }
@@ -214,6 +218,8 @@ struct ContentView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     if let bundle = store.bundle {
+                        StreakChip()
+                        AchievementGrid()
                         if let p = bundle.profile {
                             HealthProfileView(profile: p)
                         }

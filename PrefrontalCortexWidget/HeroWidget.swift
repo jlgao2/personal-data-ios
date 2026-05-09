@@ -31,7 +31,9 @@ struct HeroProvider: TimelineProvider {
             session_label: "Pull + Lower + core",
             stack_done: 0, stack_total: 7,
             reach_out_top_name: nil, reach_out_top_attn: nil, reach_out_top_days: nil,
-            next_up: nil
+            next_up: nil,
+            streak_current: nil,
+            streak_longest: nil
         )
     }
 }

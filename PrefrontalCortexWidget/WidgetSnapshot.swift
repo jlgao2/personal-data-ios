@@ -20,6 +20,8 @@ struct WidgetSnapshot: Codable {
     /// builds a multi-entry timeline from this so it auto-advances through
     /// each as time passes — no need for fresh snapshots.
     let next_up: [NextUpItem]?
+    let streak_current: Int?
+    let streak_longest: Int?
 }
 
 /// One thing on today's chronological list. `time_iso` is full ISO so the

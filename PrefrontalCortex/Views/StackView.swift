@@ -67,23 +67,31 @@ struct StackView: View {
         return "\(done)/\(items.count)"
     }
 
+    private static let appGroup = "group.com.jlgao.PrefrontalCortex"
+    private static var defaults: UserDefaults {
+        UserDefaults(suiteName: appGroup) ?? .standard
+    }
+
     private static func key(_ p: Period) -> String {
         let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"
+        f.locale = Locale(identifier: "en_US_POSIX")
         return "stack_period_\(f.string(from: Date()))_\(p.rawValue)"
     }
 
     private func toggle(period: Period) {
         switch period {
         case .morning: morningDone.toggle()
-                       UserDefaults.standard.set(morningDone, forKey: Self.key(.morning))
+                       Self.defaults.set(morningDone, forKey: Self.key(.morning))
         case .evening: eveningDone.toggle()
-                       UserDefaults.standard.set(eveningDone, forKey: Self.key(.evening))
+                       Self.defaults.set(eveningDone, forKey: Self.key(.evening))
         }
+        _ = StreakState.refresh()
+        _ = Achievements.refresh()
     }
 
     private func loadState() {
-        morningDone = UserDefaults.standard.bool(forKey: Self.key(.morning))
-        eveningDone = UserDefaults.standard.bool(forKey: Self.key(.evening))
+        morningDone = Self.defaults.bool(forKey: Self.key(.morning))
+        eveningDone = Self.defaults.bool(forKey: Self.key(.evening))
     }
 }
 

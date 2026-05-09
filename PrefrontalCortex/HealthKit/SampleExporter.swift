@@ -62,4 +62,60 @@ struct SampleExporter {
             return "Upload failed: \(TransportClient.wrap(error).localizedDescription)"
         }
     }
+
+    /// Pull today's HKWorkout entries (≥10 min) and return them as session
+    /// rows ready for /v1/sessions. Each row gets a deterministic
+    /// client_id so re-pulls dedupe at the laptop side.
+    static func fetchTodayWorkouts() async -> [[String: Any]] {
+        let store = HealthStore.shared.store
+        let cal = Calendar.current
+        let start = cal.startOfDay(for: Date())
+        let end = cal.date(byAdding: .day, value: 1, to: start) ?? Date()
+        let predicate = HKQuery.predicateForSamples(withStart: start, end: end)
+
+        let workouts: [HKWorkout] = await withCheckedContinuation { cont in
+            let q = HKSampleQuery(
+                sampleType: .workoutType(),
+                predicate: predicate,
+                limit: HKObjectQueryNoLimit,
+                sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)]
+            ) { _, samples, _ in
+                cont.resume(returning: (samples as? [HKWorkout]) ?? [])
+            }
+            store.execute(q)
+        }
+
+        let f = ISO8601DateFormatter()
+        let dateF = DateFormatter(); dateF.dateFormat = "yyyy-MM-dd"
+        dateF.locale = Locale(identifier: "en_US_POSIX")
+        let dateStr = dateF.string(from: start)
+
+        return workouts.compactMap { w -> [String: Any]? in
+            guard w.duration >= 600 else { return nil }
+            let sport = mapWorkoutType(w.workoutActivityType)
+            return [
+                "client_id":    "hk-\(dateStr)-\(sport)",
+                "ts":           f.string(from: w.startDate),
+                "sport":        sport,
+                "duration_min": Int((w.duration / 60).rounded()),
+                "rpe":          NSNull(),
+                "note":         "auto-logged from HealthKit",
+            ]
+        }
+    }
+
+    private static func mapWorkoutType(_ t: HKWorkoutActivityType) -> String {
+        switch t {
+        case .running, .crossCountrySkiing:   return "RUNNING"
+        case .cycling:                        return "CYCLING"
+        case .traditionalStrengthTraining,
+             .functionalStrengthTraining:     return "STRENGTH_TRAINING"
+        case .yoga:                           return "YOGA"
+        case .swimming:                       return "SWIMMING"
+        case .hiking:                         return "HIKING"
+        case .walking:                        return "WALKING"
+        case .downhillSkiing:                 return "ALPINE_SKIING"
+        default:                              return "OTHER"
+        }
+    }
 }

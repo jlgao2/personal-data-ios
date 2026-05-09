@@ -1,4 +1,5 @@
 import SwiftUI
+import WidgetKit
 
 /// Full-screen workout tracker — presented via .fullScreenCover from
 /// AdaptedSessionView's "Start →" button. Parses the prescribed exercises
@@ -28,11 +29,15 @@ struct WorkoutSessionView: View {
     @State private var sets: [String: [SetEntry]] = [:]
     /// Currently focused (exercise, set index)
     @State private var focused: Focus? = nil
+    /// Set currently being edited via the custom-weight alert (nil = closed).
+    @State private var customWeightTarget: Focus? = nil
+    @State private var customWeightInput: String = ""
 
     struct SetEntry: Codable, Equatable {
         var weight: Double
         var reps: Int
         var completed: Bool
+        var bandColor: String? = nil   // present iff parsed.isBand
     }
     struct Focus: Equatable {
         let exerciseKey: String
@@ -87,6 +92,32 @@ struct WorkoutSessionView: View {
         }
         .preferredColorScheme(.dark)
         .onAppear { loadState() }
+        .alert("Custom weight (\(unit.label))",
+               isPresented: Binding(
+                    get: { customWeightTarget != nil },
+                    set: { if !$0 { customWeightTarget = nil } }
+               )) {
+            TextField("Weight", text: $customWeightInput)
+                .keyboardType(.decimalPad)
+            Button("Cancel", role: .cancel) { }
+            Button("Log set") { commitCustomWeight() }
+        } message: {
+            Text("Type the exact weight to log this set with — useful for off-grid dumbbells or plate combos the presets don't reach.")
+        }
+    }
+
+    private func commitCustomWeight() {
+        guard let target = customWeightTarget else { return }
+        let normalized = customWeightInput
+            .replacingOccurrences(of: ",", with: ".")
+            .trimmingCharacters(in: .whitespaces)
+        guard let weight = Double(normalized),
+              let arr = sets[target.exerciseKey],
+              target.setIndex < arr.count else { return }
+        let entry = arr[target.setIndex]
+        logSet(weight: max(0, weight), reps: entry.reps,
+               key: target.exerciseKey, index: target.setIndex)
+        customWeightTarget = nil
     }
 
     // MARK: - Header
@@ -184,7 +215,11 @@ struct WorkoutSessionView: View {
                 .font(.caption2.monospaced())
                 .foregroundStyle(.secondary)
 
-            warmupHint(workingWeight: entries.first?.weight ?? 0)
+            // Warm-up hint only applies to free-weight / machine work.
+            // Mobility holds and band work skip it.
+            if !parsed.isTime && !parsed.isBand {
+                warmupHint(workingWeight: entries.first?.weight ?? 0)
+            }
 
             // Sets
             VStack(spacing: 6) {
@@ -192,9 +227,9 @@ struct WorkoutSessionView: View {
                     let entry = entries[i]
                     let isFocused = focused == Focus(exerciseKey: key, setIndex: i)
                     if isFocused {
-                        activeSetEditor(key: key, index: i, entry: entry, unitLabel: unitLabel)
+                        activeSetEditor(key: key, index: i, entry: entry, parsed: parsed)
                     } else {
-                        summaryRow(index: i, entry: entry, unitLabel: unitLabel) {
+                        summaryRow(index: i, entry: entry, parsed: parsed) {
                             withAnimation(.spring(response: 0.35, dampingFraction: 0.78)) {
                                 focused = Focus(exerciseKey: key, setIndex: i)
                             }
@@ -213,7 +248,7 @@ struct WorkoutSessionView: View {
 
     // MARK: - Active set editor
 
-    private func activeSetEditor(key: String, index: Int, entry: SetEntry, unitLabel: String) -> some View {
+    private func activeSetEditor(key: String, index: Int, entry: SetEntry, parsed: ParsedExercise) -> some View {
         VStack(spacing: 14) {
             HStack {
                 Text("SET \(index + 1)")
@@ -221,7 +256,7 @@ struct WorkoutSessionView: View {
                     .tracking(2)
                     .foregroundStyle(.cyan)
                 Spacer()
-                Text("base \(formattedWeight(entry.weight)) × \(entry.reps)")
+                Text("base \(setSummary(entry: entry, parsed: parsed))")
                     .font(.caption2.monospaced())
                     .foregroundStyle(.secondary)
                 Button {
@@ -235,33 +270,112 @@ struct WorkoutSessionView: View {
                 .buttonStyle(LivePressStyle())
             }
 
-            // WEIGHT presets — each tap logs the set with the new weight.
-            VStack(alignment: .leading, spacing: 6) {
-                Text("WEIGHT (\(unit.label.uppercased()))")
-                    .font(.caption2.monospaced())
-                    .foregroundStyle(.secondary)
-                    .tracking(2)
-                weightPresetButton(.bigUp,   key: key, index: index, entry: entry)
-                weightPresetButton(.smallUp, key: key, index: index, entry: entry)
-                weightPresetButton(.same,    key: key, index: index, entry: entry)
-                weightPresetButton(.down,    key: key, index: index, entry: entry)
-            }
-
-            // REPS presets — each tap logs the set with the new rep count.
-            VStack(alignment: .leading, spacing: 6) {
-                Text(unitLabel.uppercased())
-                    .font(.caption2.monospaced())
-                    .foregroundStyle(.secondary)
-                    .tracking(2)
-                repPresetButton(.bigUp,   key: key, index: index, entry: entry)
-                repPresetButton(.smallUp, key: key, index: index, entry: entry)
-                repPresetButton(.same,    key: key, index: index, entry: entry)
-                repPresetButton(.down,    key: key, index: index, entry: entry)
+            if parsed.isTime {
+                // Mobility / hold — only duration matters. No weight, no band.
+                durationPresetCluster(key: key, index: index, entry: entry)
+            } else if parsed.isBand {
+                // Resistance band — pick a color, then commit reps.
+                bandColorPicker(key: key, index: index, entry: entry)
+                repClusterSection(key: key, index: index, entry: entry, parsed: parsed)
+            } else {
+                // Free weight / machine — both weight + reps in play.
+                weightClusterSection(key: key, index: index, entry: entry)
+                repClusterSection(key: key, index: index, entry: entry, parsed: parsed)
             }
         }
         .padding(12)
         .background(Color.cyan.opacity(0.05), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(Color.cyan.opacity(0.25)))
+    }
+
+    private func weightClusterSection(key: String, index: Int, entry: SetEntry) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("WEIGHT (\(unit.label.uppercased()))")
+                .font(.caption2.monospaced())
+                .foregroundStyle(.secondary)
+                .tracking(2)
+            weightPresetButton(.bigUp,   key: key, index: index, entry: entry)
+            weightPresetButton(.smallUp, key: key, index: index, entry: entry)
+            weightPresetButton(.same,    key: key, index: index, entry: entry)
+            weightPresetButton(.down,    key: key, index: index, entry: entry)
+            customWeightButton(key: key, index: index, entry: entry)
+        }
+    }
+
+    /// 5th row under the weight presets — opens a number-pad alert so the
+    /// user can type any value (off-grid dumbbells, oddball plates, etc.).
+    private func customWeightButton(key: String, index: Int, entry: SetEntry) -> some View {
+        Button {
+            customWeightInput = unit.formatStep(entry.weight)
+            customWeightTarget = Focus(exerciseKey: key, setIndex: index)
+        } label: {
+            presetRow(label: "✎   custom…",
+                      preview: "type any value",
+                      color: .purple)
+        }
+        .buttonStyle(LivePressStyle())
+    }
+
+    private func repClusterSection(key: String, index: Int, entry: SetEntry, parsed: ParsedExercise) -> some View {
+        let label = parsed.isTime ? "DURATION (SEC)" : "REPS"
+        return VStack(alignment: .leading, spacing: 6) {
+            Text(label)
+                .font(.caption2.monospaced())
+                .foregroundStyle(.secondary)
+                .tracking(2)
+            repPresetButton(.bigUp,   key: key, index: index, entry: entry, parsed: parsed)
+            repPresetButton(.smallUp, key: key, index: index, entry: entry, parsed: parsed)
+            repPresetButton(.same,    key: key, index: index, entry: entry, parsed: parsed)
+            repPresetButton(.down,    key: key, index: index, entry: entry, parsed: parsed)
+        }
+    }
+
+    private func durationPresetCluster(key: String, index: Int, entry: SetEntry) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("DURATION (SEC)")
+                .font(.caption2.monospaced())
+                .foregroundStyle(.secondary)
+                .tracking(2)
+            // Bigger seconds-based deltas for time work
+            durationPresetButton(.bigUp,   key: key, index: index, entry: entry)
+            durationPresetButton(.smallUp, key: key, index: index, entry: entry)
+            durationPresetButton(.same,    key: key, index: index, entry: entry)
+            durationPresetButton(.down,    key: key, index: index, entry: entry)
+        }
+    }
+
+    private func bandColorPicker(key: String, index: Int, entry: SetEntry) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("BAND COLOR")
+                .font(.caption2.monospaced())
+                .foregroundStyle(.secondary)
+                .tracking(2)
+            HStack(spacing: 10) {
+                ForEach(BandColor.allCases, id: \.self) { c in
+                    let selected = entry.bandColor == c.rawValue
+                    Button {
+                        logBandSet(color: c, key: key, index: index, entry: entry)
+                    } label: {
+                        Circle()
+                            .fill(c.swiftUIColor)
+                            .frame(width: 44, height: 44)
+                            .overlay(
+                                Circle().strokeBorder(
+                                    selected ? Color.white : Color.white.opacity(0.15),
+                                    lineWidth: selected ? 2 : 1
+                                )
+                            )
+                            .shadow(color: selected ? c.swiftUIColor.opacity(0.5) : .clear,
+                                    radius: 6, x: 0, y: 0)
+                    }
+                    .buttonStyle(LivePressStyle())
+                    .sensoryFeedback(.selection, trigger: selected)
+                }
+            }
+            Text("Tap a color to log this set with that band + current reps.")
+                .font(.caption2.italic())
+                .foregroundStyle(.secondary)
+        }
     }
 
     private enum Preset { case bigUp, smallUp, same, down
@@ -302,6 +416,28 @@ struct WorkoutSessionView: View {
         }
     }
 
+    private func durationDelta(_ p: Preset) -> Int {
+        switch p {
+        case .bigUp:   return  15
+        case .smallUp: return  5
+        case .same:    return  0
+        case .down:    return -5
+        }
+    }
+
+    /// Per-mode summary: "60 sec" for time, "Green band × 12" for band,
+    /// "135 lb × 10" for normal weighted work.
+    private func setSummary(entry: SetEntry, parsed: ParsedExercise) -> String {
+        if parsed.isTime {
+            return "\(entry.reps) sec"
+        }
+        if parsed.isBand {
+            let colorName = entry.bandColor.flatMap(BandColor.init(rawValue:))?.displayName ?? "—"
+            return "\(colorName) band × \(entry.reps)"
+        }
+        return "\(formattedWeight(entry.weight)) × \(entry.reps)"
+    }
+
     private func weightPresetButton(_ p: Preset, key: String, index: Int, entry: SetEntry) -> some View {
         let delta = weightDelta(p)
         let newWeight = max(0, entry.weight + delta)
@@ -319,19 +455,69 @@ struct WorkoutSessionView: View {
         .buttonStyle(LivePressStyle())
     }
 
-    private func repPresetButton(_ p: Preset, key: String, index: Int, entry: SetEntry) -> some View {
+    private func repPresetButton(_ p: Preset, key: String, index: Int,
+                                 entry: SetEntry, parsed: ParsedExercise) -> some View {
         let delta = repDelta(p)
         let newReps = max(0, entry.reps + delta)
-        let preview = "\(formattedWeight(entry.weight)) × \(newReps)"
+        let previewBase: String
+        if parsed.isBand {
+            let colorName = entry.bandColor.flatMap(BandColor.init(rawValue:))?.displayName ?? "Band"
+            previewBase = "\(colorName) band"
+        } else {
+            previewBase = formattedWeight(entry.weight)
+        }
+        let preview = "\(previewBase) × \(newReps)"
         let label = p == .same ? "=   same"
             : "\(p.arrow)   \(delta >= 0 ? "+" : "−")\(abs(delta)) rep\(abs(delta) == 1 ? "" : "s")"
 
         return Button {
-            logSet(weight: entry.weight, reps: newReps, key: key, index: index)
+            logSetPreservingMode(reps: newReps, key: key, index: index, entry: entry, parsed: parsed)
         } label: {
             presetRow(label: label, preview: preview, color: p.color)
         }
         .buttonStyle(LivePressStyle())
+    }
+
+    private func durationPresetButton(_ p: Preset, key: String, index: Int, entry: SetEntry) -> some View {
+        let delta = durationDelta(p)
+        let newSec = max(0, entry.reps + delta)   // reps field doubles as seconds for isTime exercises
+        let preview = "\(newSec) sec"
+        let label = p == .same ? "=   same"
+            : "\(p.arrow)   \(delta >= 0 ? "+" : "−")\(abs(delta)) sec"
+
+        return Button {
+            logSet(weight: 0, reps: newSec, key: key, index: index)
+        } label: {
+            presetRow(label: label, preview: preview, color: p.color)
+        }
+        .buttonStyle(LivePressStyle())
+    }
+
+    /// Commit a set while preserving its mode (band color stays for band sets,
+    /// weight stays for weighted sets).
+    private func logSetPreservingMode(reps: Int, key: String, index: Int,
+                                      entry: SetEntry, parsed: ParsedExercise) {
+        guard var arr = sets[key], index < arr.count else { return }
+        arr[index].reps = max(0, reps)
+        if !parsed.isBand {
+            arr[index].weight = entry.weight
+            arr[index].bandColor = nil
+        }
+        sets[key] = arr
+        markComplete(key: key, index: index)
+    }
+
+    /// Log a band set: pick the color, default reps from current entry. Stores
+    /// the color name; weight is 0 (unused for band work).
+    private func logBandSet(color: BandColor, key: String, index: Int, entry: SetEntry) {
+        guard var arr = sets[key], index < arr.count else { return }
+        arr[index].bandColor = color.rawValue
+        arr[index].weight = 0
+        // reps stays as currently shown (default from prescription or last set)
+        sets[key] = arr
+        // Remember last band color for next session.
+        UserDefaults.standard.set(color.rawValue, forKey: "band_\(key)")
+        markComplete(key: key, index: index)
     }
 
     private func presetRow(label: String, preview: String, color: Color) -> some View {
@@ -398,7 +584,7 @@ struct WorkoutSessionView: View {
 
     // MARK: - Summary row (pending or completed)
 
-    private func summaryRow(index: Int, entry: SetEntry, unitLabel: String,
+    private func summaryRow(index: Int, entry: SetEntry, parsed: ParsedExercise,
                             onTap: @escaping () -> Void) -> some View {
         Button(action: onTap) {
             HStack(spacing: 10) {
@@ -410,7 +596,7 @@ struct WorkoutSessionView: View {
                     .foregroundStyle(.white.opacity(entry.completed ? 0.5 : 0.85))
                 Spacer()
                 if entry.completed {
-                    Text("\(formattedWeight(entry.weight)) × \(entry.reps)")
+                    Text(setSummary(entry: entry, parsed: parsed))
                         .font(.caption.monospaced())
                         .foregroundStyle(.secondary)
                 } else {
@@ -472,6 +658,48 @@ struct WorkoutSessionView: View {
         // Remember this exercise's working weight for next session.
         UserDefaults.standard.set(arr[index].weight, forKey: weightMemoryKey(for: key))
         saveState()
+        syncToLockScreen()
+    }
+
+    /// Mirror current workout state into the App-Group store the lock-screen
+    /// widget reads. Called on focus changes and after every set commit so
+    /// the widget always shows the next-set prompt that matches the in-app
+    /// active editor.
+    private func syncToLockScreen() {
+        guard let focused else {
+            LockScreenWorkoutStore.clear()
+            WidgetCenter.shared.reloadAllTimelines()
+            return
+        }
+        let entries = sets[focused.exerciseKey] ?? []
+        let raw = allPrescribedItems().first { exerciseKey($0) == focused.exerciseKey } ?? ""
+        let parsed = parseExercise(raw)
+
+        let mode: LockScreenWorkoutState.Mode = {
+            if parsed.isTime { return .time }
+            if parsed.isBand { return .band }
+            if parsed.isAMRAP { return .amrap }
+            return .free
+        }()
+
+        let entry = entries[safe: focused.setIndex] ?? .init(weight: 0, reps: 0, completed: false)
+
+        let state = LockScreenWorkoutState(
+            inProgress: true,
+            exerciseKey: focused.exerciseKey,
+            exerciseName: parsed.name,
+            setIndex: focused.setIndex,
+            totalSets: parsed.sets,
+            lastWeight: entry.weight,
+            lastReps: entry.reps,
+            stage: .weight,
+            stagedWeight: nil,
+            mode: mode,
+            bandColor: entry.bandColor,
+            unit: unit.label
+        )
+        LockScreenWorkoutStore.save(state)
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     private func formattedWeight(_ w: Double) -> String {
@@ -506,16 +734,28 @@ struct WorkoutSessionView: View {
         for raw in allPrescribedItems() {
             let parsed = parseExercise(raw)
             let key = exerciseKey(raw)
-            // Memory wins; if never logged, fall back to a sensible default
-            // for the exercise type, converted into the user's unit.
-            let memory: Double
-            if let stored = UserDefaults.standard.object(forKey: weightMemoryKey(for: key)) as? Double {
-                memory = stored
+
+            // Mode-specific defaults:
+            //   - band : color from memory (default green = medium); weight = 0
+            //   - time : reps field carries seconds, weight = 0
+            //   - free : weight from memory or sensible default (in user's unit)
+            var weight: Double = 0
+            var bandColor: String? = nil
+
+            if parsed.isBand {
+                bandColor = UserDefaults.standard.string(forKey: "band_\(key)") ?? BandColor.green.rawValue
+            } else if parsed.isTime {
+                weight = 0
             } else {
-                memory = unit.displayValue(fromPounds: defaultWeight(for: parsed.name))
+                if let stored = UserDefaults.standard.object(forKey: weightMemoryKey(for: key)) as? Double {
+                    weight = stored
+                } else {
+                    weight = unit.displayValue(fromPounds: defaultWeight(for: parsed.name))
+                }
             }
+
             fresh[key] = (0..<parsed.sets).map { _ in
-                SetEntry(weight: memory, reps: parsed.reps, completed: false)
+                SetEntry(weight: weight, reps: parsed.reps, completed: false, bandColor: bandColor)
             }
         }
         if let data = UserDefaults.standard.data(forKey: Self.stateKey),
@@ -529,9 +769,11 @@ struct WorkoutSessionView: View {
         for (k, arr) in sortedSetsKeys() {
             if let firstPending = arr.firstIndex(where: { !$0.completed }) {
                 focused = Focus(exerciseKey: k, setIndex: firstPending)
+                syncToLockScreen()
                 return
             }
         }
+        syncToLockScreen()
     }
 
     private func sortedSetsKeys() -> [(String, [SetEntry])] {
@@ -584,7 +826,18 @@ struct WorkoutSessionView: View {
         } catch {
             store.lastUploadResult = "Logged locally (laptop unreachable)"
         }
+        DailyLock.setWorkoutDone(source: .manual)
+        _ = StreakState.refresh()
+        _ = Achievements.refresh()
+        LockScreenWorkoutStore.clear()
+        WidgetCenter.shared.reloadAllTimelines()
         dismiss()
+    }
+}
+
+private extension Array {
+    subscript(safe i: Int) -> Element? {
+        indices.contains(i) ? self[i] : nil
     }
 }
 
@@ -596,6 +849,25 @@ struct ParsedExercise {
     let reps: Int
     let isTime: Bool
     let isAMRAP: Bool       // "as many reps as possible" — fluid target
+    let isBand: Bool        // resistance-band exercise → color picker, no weight
+}
+
+/// Resistance-band tension by color (Theraband-ish convention,
+/// light → heavy). Stored as the rawValue string in SetEntry.bandColor.
+enum BandColor: String, CaseIterable, Codable {
+    case yellow, red, green, blue, black
+
+    var displayName: String { rawValue.capitalized }
+
+    var swiftUIColor: Color {
+        switch self {
+        case .yellow: return .yellow
+        case .red:    return .red
+        case .green:  return .green
+        case .blue:   return .blue
+        case .black:  return Color(white: 0.35)  // dark grey — pure black is invisible on dark theme
+        }
+    }
 }
 
 private let exerciseRegex: NSRegularExpression = {
@@ -626,27 +898,81 @@ func parseExercise(_ s: String) -> ParsedExercise {
             sets: Int(setsStr) ?? 1,
             reps: Int(repsStr) ?? 1,
             isTime: isTime,
-            isAMRAP: false
+            isAMRAP: false,
+            isBand: looksLikeBand(s)
         )
     }
 
-    // AMRAP / MAX — "Pushups — 3×AMRAP". Sets is the explicit number, reps
-    // is open-ended — we seed at 10 to give the user something to nudge from.
+    // AMRAP / MAX — "Pushups — 3×AMRAP". Sets is explicit, reps is open;
+    // we seed with a sensible per-exercise default so the user starts near
+    // the right ballpark rather than nudging from 10 every time.
     if let match = amrapRegex.firstMatch(in: s, range: range) {
         let setsStr = ns.substring(with: match.range(at: 1))
         let nameEnd = match.range.location
         let name = ns.substring(to: nameEnd)
             .trimmingCharacters(in: CharacterSet(charactersIn: " —–-:"))
+        let resolvedName = name.isEmpty ? s : name
         return ParsedExercise(
-            name: name.isEmpty ? s : name,
+            name: resolvedName,
             sets: Int(setsStr) ?? 1,
-            reps: 10,
+            reps: defaultAMRAPReps(for: resolvedName),
             isTime: false,
-            isAMRAP: true
+            isAMRAP: true,
+            isBand: looksLikeBand(s)
         )
     }
 
-    return ParsedExercise(name: s, sets: 1, reps: 1, isTime: false, isAMRAP: false)
+    return ParsedExercise(
+        name: s, sets: 1, reps: 1, isTime: false, isAMRAP: false, isBand: looksLikeBand(s)
+    )
+}
+
+/// True if the exercise mentions a resistance band — covers "band pull-apart",
+/// "banded squat", "loop band glute bridge", etc.
+func looksLikeBand(_ s: String) -> Bool {
+    let n = s.lowercased()
+    return n.contains("band") || n.contains("banded") || n.contains("theraband")
+}
+
+/// Sensible starting rep count for an AMRAP exercise based on the name.
+/// User overrides via the rep ↑/↓ presets — this is just a smarter starting
+/// point than a flat 10 for everything.
+func defaultAMRAPReps(for name: String) -> Int {
+    let n = name.lowercased()
+
+    // Pull patterns are the hardest — fewer reps
+    if n.contains("muscle-up") || n.contains("muscle up") { return 3 }
+    if n.contains("pull-up") || n.contains("pullup") || n.contains("chin") { return 8 }
+    if n.contains("ring row") || n.contains("inverted row") { return 10 }
+
+    // Push patterns
+    if n.contains("hspu") || n.contains("handstand") { return 5 }
+    if n.contains("dip") { return 10 }
+    if n.contains("ring push") || n.contains("decline push") { return 12 }
+    if n.contains("push") { return 20 }       // standard pushups
+
+    // Lower body bodyweight
+    if n.contains("pistol") || n.contains("shrimp") { return 5 }
+    if n.contains("split squat") || n.contains("bulgarian") { return 12 }
+    if n.contains("squat") { return 25 }      // bodyweight squat / air squat
+    if n.contains("lunge") { return 16 }      // 8 per side
+    if n.contains("bridge") || n.contains("hip thrust") { return 15 }
+    if n.contains("calf raise") { return 20 }
+
+    // Conditioning
+    if n.contains("burpee") { return 12 }
+    if n.contains("mountain climb") { return 30 }
+    if n.contains("jumping jack") { return 40 }
+    if n.contains("kettlebell swing") || n.contains("kb swing") { return 20 }
+    if n.contains("box jump") || n.contains("step up") { return 12 }
+
+    // Core
+    if n.contains("crunch") || n.contains("sit-up") || n.contains("situp") { return 20 }
+    if n.contains("leg raise") || n.contains("toes to bar") || n.contains("knee raise") { return 12 }
+    if n.contains("v-up") || n.contains("v up") { return 12 }
+
+    // Generic AMRAP fallback
+    return 10
 }
 
 /// Warm-up weights as a function of the working weight, in the user's unit.

@@ -1,0 +1,2 @@
+This directory is shared between the host app and the widget extension via
+project.yml's sources includes. See WorkoutAppIntents.swift, etc.
