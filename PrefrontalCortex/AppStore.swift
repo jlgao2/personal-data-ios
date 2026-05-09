@@ -9,6 +9,18 @@ final class AppStore: ObservableObject {
     @Published var lastError: String?
     @Published var lastUploadResult: String?
     @Published var lastTransportError: TransportError?
+    @Published var pendingAchievements: [Achievement] = []
+
+    private func evaluateGameState() {
+        let newlyUnlocked = Achievements.refresh()
+        if !newlyUnlocked.isEmpty {
+            let achs = newlyUnlocked.compactMap { id in
+                Achievements.all.first(where: { $0.id == id })
+            }
+            pendingAchievements.append(contentsOf: achs)
+        }
+        _ = StreakState.refresh()
+    }
 
     func uploadTodaySamples() async {
         if let msg = await SampleExporter.uploadDaily() {
@@ -35,6 +47,7 @@ final class AppStore: ObservableObject {
         if let b = bundle {
             WidgetSnapshotWriter.update(from: b)
         }
+        evaluateGameState()
     }
 
     func bootstrap() async {
@@ -68,6 +81,7 @@ final class AppStore: ObservableObject {
                 lastUploadResult = "Notified: \(fired.count) card\(fired.count == 1 ? "" : "s") changed state"
             }
         }
+        evaluateGameState()
         loading = false
     }
 
