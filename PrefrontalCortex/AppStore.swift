@@ -11,6 +11,22 @@ final class AppStore: ObservableObject {
     @Published var lastTransportError: TransportError?
     @Published var pendingAchievements: [Achievement] = []
 
+    /// Fetch today's HKWorkout entries, POST any new ones to /v1/sessions,
+    /// and mark the daily-lock workout slot done if at least one ≥10 min
+    /// workout exists today.
+    private func pullHealthKitWorkouts() async {
+        let rows = await SampleExporter.fetchTodayWorkouts()
+        guard !rows.isEmpty else { return }
+
+        if await TransportSettings.shared.isConfigured {
+            _ = try? await TransportClient.shared.uploadSessions(rows)
+        }
+
+        if !DailyLock.isWorkoutDone() {
+            DailyLock.setWorkoutDone(source: .hk)
+        }
+    }
+
     private func evaluateGameState() {
         let newlyUnlocked = Achievements.refresh()
         if !newlyUnlocked.isEmpty {
@@ -47,6 +63,7 @@ final class AppStore: ObservableObject {
         if let b = bundle {
             WidgetSnapshotWriter.update(from: b)
         }
+        await pullHealthKitWorkouts()
         evaluateGameState()
     }
 
@@ -81,6 +98,7 @@ final class AppStore: ObservableObject {
                 lastUploadResult = "Notified: \(fired.count) card\(fired.count == 1 ? "" : "s") changed state"
             }
         }
+        await pullHealthKitWorkouts()
         evaluateGameState()
         loading = false
     }

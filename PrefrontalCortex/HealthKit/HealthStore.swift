@@ -16,6 +16,7 @@ final class HealthStore {
         ]
         for id in q { if let t = HKQuantityType.quantityType(forIdentifier: id) { s.insert(t) } }
         if let sleep = HKCategoryType.categoryType(forIdentifier: .sleepAnalysis) { s.insert(sleep) }
+        s.insert(HKObjectType.workoutType())
         return s
     }()
 
