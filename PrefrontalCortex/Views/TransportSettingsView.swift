@@ -8,6 +8,7 @@ struct TransportSettingsView: View {
     @State private var tokenInput: String = ""
     @State private var testStatus: TestStatus = .idle
     @State private var saveError: String?
+    @AppStorage("workout_unit") private var unitRaw: String = WorkoutUnit.pounds.rawValue
 
     enum TestStatus {
         case idle
@@ -38,6 +39,17 @@ struct TransportSettingsView: View {
                     Button("Test connection") { Task { await runTest() } }
                         .disabled(URL(string: urlInput) == nil)
                     statusRow
+                }
+                Section("Workout units") {
+                    Picker("Unit", selection: $unitRaw) {
+                        ForEach(WorkoutUnit.allCases) { u in
+                            Text(u.label).tag(u.rawValue)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    Text("Affects all weights, defaults, warm-up suggestions, and increments in the workout tracker.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
                 }
                 if let saveError {
                     Section { Text(saveError).foregroundStyle(.red) }

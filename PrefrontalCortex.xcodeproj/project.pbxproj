@@ -27,6 +27,7 @@
 		7319F7561F8A5DB47F9D99BD /* VitalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCE7ED06BC81271F0ABADB1 /* VitalsView.swift */; };
 		7343D34926F03AE8AF097838 /* WidgetSnapshotWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0A65C7B78D5885DE143AA0 /* WidgetSnapshotWriter.swift */; };
 		745766DC65277A58544E36C8 /* SampleExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E1E8B4C8CEBF4F91E20DC7 /* SampleExporter.swift */; };
+		74FF728E96F1EB6620090A28 /* WorkoutUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3BFED9D38B1C9E08BF83F2 /* WorkoutUnit.swift */; };
 		7A4C635333E2854D71DA3FB7 /* TransportStatusPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F14F8C03DE8FED59DE62CC /* TransportStatusPill.swift */; };
 		853D3DD8D11A848C33019AFC /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7C3271B3F0795A38C496A8 /* Notifications.swift */; };
 		9C9BEC0E6DB6B55B12B7FCEA /* UpcomingEventsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */; };
@@ -88,7 +89,7 @@
 		1A5923EEFFB65C137A165223 /* PrepChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepChecklistView.swift; sourceTree = "<group>"; };
 		25B6CECAC5F23E6EDED54107 /* PlanTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanTabView.swift; sourceTree = "<group>"; };
 		2CAED2897A33FF5197B09BB1 /* CorrelationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorrelationsView.swift; sourceTree = "<group>"; };
-		318E4861F4BDDB8438347982 /* PrefrontalCortex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrefrontalCortex.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		318E4861F4BDDB8438347982 /* PrefrontalCortex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PrefrontalCortex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		395D10B3699FF24CB00CDF30 /* WorkoutSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSessionView.swift; sourceTree = "<group>"; };
 		3BDA89289885460CF309A52B /* WorkoutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutsView.swift; sourceTree = "<group>"; };
 		43041A3F451E0F87B0314EB3 /* NextUpWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextUpWidget.swift; sourceTree = "<group>"; };
@@ -98,6 +99,7 @@
 		55BE6EE78BCEA78C7FA8AA9F /* AdaptedSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptedSessionView.swift; sourceTree = "<group>"; };
 		5D7C71856D8BB30EBFE6705A /* AbstinenceBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbstinenceBarView.swift; sourceTree = "<group>"; };
 		5E4963CF4D114C9F3EE61477 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
+		5F3BFED9D38B1C9E08BF83F2 /* WorkoutUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutUnit.swift; sourceTree = "<group>"; };
 		5F4B45A3F87E88F76B4C774B /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		60BABA74BF6E980433D44A99 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6136BB9719DE848FE949B115 /* PrefrontalCortexWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrefrontalCortexWidget.entitlements; sourceTree = "<group>"; };
@@ -114,7 +116,7 @@
 		85B5ED653FA19D4E97A0FFDB /* MedAlertsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedAlertsView.swift; sourceTree = "<group>"; };
 		9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingEventsView.swift; sourceTree = "<group>"; };
 		94DF600C39513829392C28AA /* ActionLoopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionLoopView.swift; sourceTree = "<group>"; };
-		A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PrefrontalCortexWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = PrefrontalCortexWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8D2C3F808A75C620760CD12 /* LogSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogSessionView.swift; sourceTree = "<group>"; };
 		AD8B527DA8380933E8F6CA9A /* CalendarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStore.swift; sourceTree = "<group>"; };
 		AE1DBFF025F3858AADA1B0D0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 				E684221FB8C4DDAB93886C3A /* Keychain.swift */,
 				086AC9497BBB1C47E305924B /* TransportClient.swift */,
 				BBEA6452022D4422ED78891D /* TransportSettings.swift */,
+				5F3BFED9D38B1C9E08BF83F2 /* WorkoutUnit.swift */,
 			);
 			path = Transport;
 			sourceTree = "<group>";
@@ -311,6 +314,14 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					66B373569183C7125334D491 = {
+						DevelopmentTeam = "";
+					};
+					C740D41B96D2FD25F411AD73 = {
+						DevelopmentTeam = "";
+					};
+				};
 			};
 			buildConfigurationList = F095B75AA37754CF61D568B4 /* Build configuration list for PBXProject "PrefrontalCortex" */;
 			developmentRegion = en;
@@ -398,6 +409,7 @@
 				0E1038C8C4C2E62EB41B979F /* WeeklyRecapView.swift in Sources */,
 				7343D34926F03AE8AF097838 /* WidgetSnapshotWriter.swift in Sources */,
 				B66BA02EFC3537C4E19767E5 /* WorkoutSessionView.swift in Sources */,
+				74FF728E96F1EB6620090A28 /* WorkoutUnit.swift in Sources */,
 				4E4E8B6F9B3C7C6851B59A34 /* WorkoutsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -542,7 +554,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = PrefrontalCortexWidget/PrefrontalCortexWidget.entitlements;
-				DEVELOPMENT_TEAM = 7SK8MG8FY6;
 				INFOPLIST_FILE = PrefrontalCortexWidget/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -562,7 +573,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = PrefrontalCortex/Resources/PrefrontalCortex.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = 7SK8MG8FY6;
 				INFOPLIST_FILE = PrefrontalCortex/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -578,7 +588,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = PrefrontalCortexWidget/PrefrontalCortexWidget.entitlements;
-				DEVELOPMENT_TEAM = 7SK8MG8FY6;
 				INFOPLIST_FILE = PrefrontalCortexWidget/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -598,7 +607,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = PrefrontalCortex/Resources/PrefrontalCortex.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = 7SK8MG8FY6;
 				INFOPLIST_FILE = PrefrontalCortex/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

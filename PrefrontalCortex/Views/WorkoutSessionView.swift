@@ -20,6 +20,9 @@ struct WorkoutSessionView: View {
 
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var store: AppStore
+    @AppStorage("workout_unit") private var unitRaw: String = WorkoutUnit.pounds.rawValue
+
+    private var unit: WorkoutUnit { WorkoutUnit(rawValue: unitRaw) ?? .pounds }
 
     /// exerciseKey → array of SetEntry, one per prescribed set
     @State private var sets: [String: [SetEntry]] = [:]
@@ -143,12 +146,13 @@ struct WorkoutSessionView: View {
     /// warm up with?" instead of leaving the user to guess.
     @ViewBuilder
     private func warmupHint(workingWeight: Double) -> some View {
-        let warmups = warmupSuggestions(workingWeight: workingWeight)
+        let warmups = warmupSuggestions(workingWeight: workingWeight, unit: unit)
         if !warmups.isEmpty {
             HStack(spacing: 6) {
                 Image(systemName: "flame")
                     .font(.caption2)
-                Text("warm up: " + warmups.map { "\(Int($0)) × 5" }.joined(separator: ", "))
+                Text("warm up: " + warmups.map { "\(unit.formatStep($0)) \(unit.label) × 5" }
+                                          .joined(separator: ", "))
                     .font(.caption2.italic())
             }
             .foregroundStyle(.orange.opacity(0.85))
@@ -210,7 +214,7 @@ struct WorkoutSessionView: View {
     // MARK: - Active set editor
 
     private func activeSetEditor(key: String, index: Int, entry: SetEntry, unitLabel: String) -> some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 14) {
             HStack {
                 Text("SET \(index + 1)")
                     .font(.caption2.monospaced().bold())
@@ -231,35 +235,28 @@ struct WorkoutSessionView: View {
                 .buttonStyle(LivePressStyle())
             }
 
-            // Reps nudge — small inline ± so user can shape the rep count
-            // before tapping a weight preset.
-            HStack(spacing: 14) {
+            // WEIGHT presets — each tap logs the set with the new weight.
+            VStack(alignment: .leading, spacing: 6) {
+                Text("WEIGHT (\(unit.label.uppercased()))")
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.secondary)
+                    .tracking(2)
+                weightPresetButton(.bigUp,   key: key, index: index, entry: entry)
+                weightPresetButton(.smallUp, key: key, index: index, entry: entry)
+                weightPresetButton(.same,    key: key, index: index, entry: entry)
+                weightPresetButton(.down,    key: key, index: index, entry: entry)
+            }
+
+            // REPS presets — each tap logs the set with the new rep count.
+            VStack(alignment: .leading, spacing: 6) {
                 Text(unitLabel.uppercased())
                     .font(.caption2.monospaced())
                     .foregroundStyle(.secondary)
                     .tracking(2)
-                Spacer()
-                repNudgeButton(symbol: "minus") {
-                    adjustReps(key: key, index: index, by: -1)
-                }
-                Text("\(entry.reps)")
-                    .font(.title3.monospaced().weight(.semibold))
-                    .foregroundStyle(.white)
-                    .frame(minWidth: 36)
-                    .contentTransition(.numericText(value: Double(entry.reps)))
-                repNudgeButton(symbol: "plus") {
-                    adjustReps(key: key, index: index, by: 1)
-                }
-            }
-            .animation(.spring(response: 0.3, dampingFraction: 0.75), value: entry.reps)
-
-            // 4 weight-preset buttons. Each tap = log this set with that weight
-            // and advance to the next. One-tap-per-set is the killer move.
-            VStack(spacing: 8) {
-                presetButton(.bigUp,    key: key, index: index, entry: entry)
-                presetButton(.smallUp,  key: key, index: index, entry: entry)
-                presetButton(.same,     key: key, index: index, entry: entry)
-                presetButton(.down,     key: key, index: index, entry: entry)
+                repPresetButton(.bigUp,   key: key, index: index, entry: entry)
+                repPresetButton(.smallUp, key: key, index: index, entry: entry)
+                repPresetButton(.same,    key: key, index: index, entry: entry)
+                repPresetButton(.down,    key: key, index: index, entry: entry)
             }
         }
         .padding(12)
@@ -267,24 +264,8 @@ struct WorkoutSessionView: View {
         .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(Color.cyan.opacity(0.25)))
     }
 
-    private enum Preset {
-        case bigUp, smallUp, same, down
-        var delta: Double {
-            switch self {
-            case .bigUp:   return 10
-            case .smallUp: return 5
-            case .same:    return 0
-            case .down:    return -5
-            }
-        }
-        var label: String {
-            switch self {
-            case .bigUp:   return "↑↑  +10"
-            case .smallUp: return "↑   +5"
-            case .same:    return "=   same"
-            case .down:    return "↓   −5"
-            }
-        }
+    private enum Preset { case bigUp, smallUp, same, down
+
         var color: Color {
             switch self {
             case .bigUp:   return .green
@@ -293,47 +274,82 @@ struct WorkoutSessionView: View {
             case .down:    return .orange
             }
         }
+        var arrow: String {
+            switch self {
+            case .bigUp:   return "↑↑"
+            case .smallUp: return "↑"
+            case .same:    return "="
+            case .down:    return "↓"
+            }
+        }
     }
 
-    private func presetButton(_ p: Preset, key: String, index: Int, entry: SetEntry) -> some View {
-        let newWeight = max(0, entry.weight + p.delta)
-        let isBW = newWeight == 0
-        let preview = isBW ? "BW × \(entry.reps)"
-                           : "\(formattedWeight(newWeight)) × \(entry.reps)"
+    private func weightDelta(_ p: Preset) -> Double {
+        switch p {
+        case .bigUp:   return  unit.largeStep
+        case .smallUp: return  unit.smallStep
+        case .same:    return  0
+        case .down:    return -unit.smallStep
+        }
+    }
+
+    private func repDelta(_ p: Preset) -> Int {
+        switch p {
+        case .bigUp:   return  2
+        case .smallUp: return  1
+        case .same:    return  0
+        case .down:    return -1
+        }
+    }
+
+    private func weightPresetButton(_ p: Preset, key: String, index: Int, entry: SetEntry) -> some View {
+        let delta = weightDelta(p)
+        let newWeight = max(0, entry.weight + delta)
+        let preview = newWeight == 0
+            ? "BW × \(entry.reps)"
+            : "\(formattedWeight(newWeight)) × \(entry.reps)"
+        let label = p == .same ? "=   same"
+            : "\(p.arrow)   \(delta >= 0 ? "+" : "−")\(unit.formatStep(abs(delta)))"
 
         return Button {
-            logSetWith(weight: newWeight, key: key, index: index)
+            logSet(weight: newWeight, reps: entry.reps, key: key, index: index)
         } label: {
-            HStack {
-                Text(p.label)
-                    .font(.body.monospaced().weight(.semibold))
-                Spacer()
-                Text(preview)
-                    .font(.caption.monospaced())
-                    .foregroundStyle(.white.opacity(0.7))
-            }
-            .padding(.vertical, 12).padding(.horizontal, 16)
-            .frame(maxWidth: .infinity)
-            .foregroundStyle(p.color)
-            .background(p.color.opacity(0.13),
-                        in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .strokeBorder(p.color.opacity(0.35)))
+            presetRow(label: label, preview: preview, color: p.color)
         }
         .buttonStyle(LivePressStyle())
-        .sensoryFeedback(.success, trigger: entry.completed)
     }
 
-    private func repNudgeButton(symbol: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: symbol)
-                .font(.body.weight(.semibold))
-                .foregroundStyle(.cyan)
-                .frame(width: 38, height: 38)
-                .background(Color.cyan.opacity(0.12), in: Circle())
-                .overlay(Circle().strokeBorder(Color.cyan.opacity(0.3)))
+    private func repPresetButton(_ p: Preset, key: String, index: Int, entry: SetEntry) -> some View {
+        let delta = repDelta(p)
+        let newReps = max(0, entry.reps + delta)
+        let preview = "\(formattedWeight(entry.weight)) × \(newReps)"
+        let label = p == .same ? "=   same"
+            : "\(p.arrow)   \(delta >= 0 ? "+" : "−")\(abs(delta)) rep\(abs(delta) == 1 ? "" : "s")"
+
+        return Button {
+            logSet(weight: entry.weight, reps: newReps, key: key, index: index)
+        } label: {
+            presetRow(label: label, preview: preview, color: p.color)
         }
         .buttonStyle(LivePressStyle())
+    }
+
+    private func presetRow(label: String, preview: String, color: Color) -> some View {
+        HStack {
+            Text(label)
+                .font(.body.monospaced().weight(.semibold))
+            Spacer()
+            Text(preview)
+                .font(.caption.monospaced())
+                .foregroundStyle(.white.opacity(0.7))
+        }
+        .padding(.vertical, 10).padding(.horizontal, 14)
+        .frame(maxWidth: .infinity)
+        .foregroundStyle(color)
+        .background(color.opacity(0.13),
+                    in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(color.opacity(0.35)))
     }
 
     private func paddleControl(label: String,
@@ -420,12 +436,12 @@ struct WorkoutSessionView: View {
         saveState()
     }
 
-    /// Set the weight on this set, then mark it complete (which inherits
-    /// values into the next set + advances focus). Used by the 4 weight
-    /// preset buttons in the active editor.
-    private func logSetWith(weight: Double, key: String, index: Int) {
+    /// Set this set's weight + reps, then mark complete (inherits into next
+    /// set + advances focus). Called by every preset-button tap.
+    private func logSet(weight: Double, reps: Int, key: String, index: Int) {
         guard var arr = sets[key], index < arr.count else { return }
         arr[index].weight = max(0, weight)
+        arr[index].reps   = max(0, reps)
         sets[key] = arr
         markComplete(key: key, index: index)
     }
@@ -460,7 +476,7 @@ struct WorkoutSessionView: View {
 
     private func formattedWeight(_ w: Double) -> String {
         if w == 0 { return "BW" }
-        return String(format: "%g lb", w)
+        return "\(unit.formatStep(w)) \(unit.label)"
     }
 
     // MARK: - State persistence (per-day workout)
@@ -491,12 +507,12 @@ struct WorkoutSessionView: View {
             let parsed = parseExercise(raw)
             let key = exerciseKey(raw)
             // Memory wins; if never logged, fall back to a sensible default
-            // for the exercise type (bodyweight = 0, deadlift = 135, etc.).
+            // for the exercise type, converted into the user's unit.
             let memory: Double
             if let stored = UserDefaults.standard.object(forKey: weightMemoryKey(for: key)) as? Double {
                 memory = stored
             } else {
-                memory = defaultWeight(for: parsed.name)
+                memory = unit.displayValue(fromPounds: defaultWeight(for: parsed.name))
             }
             fresh[key] = (0..<parsed.sets).map { _ in
                 SetEntry(weight: memory, reps: parsed.reps, completed: false)
@@ -633,14 +649,17 @@ func parseExercise(_ s: String) -> ParsedExercise {
     return ParsedExercise(name: s, sets: 1, reps: 1, isTime: false, isAMRAP: false)
 }
 
-/// Warm-up weights as a function of the working weight. Single warm-up at
-/// 50% for moderate loads; two warm-ups (50% + 75%) for heavier compounds.
-/// Rounded to 5 lb to keep the math plate-friendly.
-func warmupSuggestions(workingWeight: Double) -> [Double] {
-    if workingWeight < 50 { return [] }
-    let half = (workingWeight * 0.5 / 5).rounded() * 5
-    if workingWeight < 95 { return [half] }
-    let threeQuarter = (workingWeight * 0.75 / 5).rounded() * 5
+/// Warm-up weights as a function of the working weight, in the user's unit.
+/// Single warm-up at 50% for moderate loads; two warm-ups (50% + 75%) for
+/// heavier compounds. Rounded to the unit's small-step grid.
+func warmupSuggestions(workingWeight: Double, unit: WorkoutUnit) -> [Double] {
+    let lightThreshold: Double = unit == .pounds ? 50 : 25
+    let heavyThreshold: Double = unit == .pounds ? 95 : 45
+    if workingWeight < lightThreshold { return [] }
+    let step = unit.smallStep
+    let half = (workingWeight * 0.5 / step).rounded() * step
+    if workingWeight < heavyThreshold { return [half] }
+    let threeQuarter = (workingWeight * 0.75 / step).rounded() * step
     return [half, threeQuarter]
 }
 
