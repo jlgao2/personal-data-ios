@@ -781,6 +781,9 @@ struct WorkoutSessionView: View {
         } catch {
             store.lastUploadResult = "Logged locally (laptop unreachable)"
         }
+        DailyLock.setWorkoutDone(source: .manual)
+        _ = StreakState.refresh()
+        _ = Achievements.refresh()
         dismiss()
     }
 }

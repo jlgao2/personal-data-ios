@@ -8,8 +8,14 @@ struct MindfulEatingTodayView: View {
     @State private var todayChecked: Bool = false
     @State private var streakDays: Int = 0
 
+    private static let appGroup = "group.com.jlgao.PrefrontalCortex"
+    private static var defaults: UserDefaults {
+        UserDefaults(suiteName: appGroup) ?? .standard
+    }
+
     private static func keyFor(_ date: Date) -> String {
         let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"
+        f.locale = Locale(identifier: "en_US_POSIX")
         return "mindful_eat_\(f.string(from: date))"
     }
     private static var todayKey: String { keyFor(Date()) }
@@ -62,13 +68,15 @@ struct MindfulEatingTodayView: View {
 
     private func toggle() {
         todayChecked.toggle()
-        UserDefaults.standard.set(todayChecked, forKey: Self.todayKey)
+        Self.defaults.set(todayChecked, forKey: Self.todayKey)
         recomputeStreak()
+        _ = StreakState.refresh()
+        _ = Achievements.refresh()
         Task { await syncToLaptop() }
     }
 
     private func loadState() {
-        todayChecked = UserDefaults.standard.bool(forKey: Self.todayKey)
+        todayChecked = Self.defaults.bool(forKey: Self.todayKey)
         recomputeStreak()
     }
 
@@ -77,7 +85,7 @@ struct MindfulEatingTodayView: View {
         var count = 0
         for offset in 0..<7 {
             guard let d = cal.date(byAdding: .day, value: -offset, to: Date()) else { continue }
-            if UserDefaults.standard.bool(forKey: Self.keyFor(d)) {
+            if Self.defaults.bool(forKey: Self.keyFor(d)) {
                 count += 1
             }
         }

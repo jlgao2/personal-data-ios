@@ -14,6 +14,7 @@
 		25DC0CD155FC7C015FF7B7AC /* PrepChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5923EEFFB65C137A165223 /* PrepChecklistView.swift */; };
 		29C78052C4A214F6F51FA299 /* ReachOutWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A95A0809E4577DA3EC2AAF /* ReachOutWidget.swift */; };
 		2B4D12FCD105FF1B61E5288E /* NextUpWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43041A3F451E0F87B0314EB3 /* NextUpWidget.swift */; };
+		3E5EB1BD37E297641D02F70D /* Achievements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775D0C30FD995189DCCE5936 /* Achievements.swift */; };
 		43B296DDF029BA9C6975094D /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B603FEC1FEE012D1E97610 /* HealthStore.swift */; };
 		446309996D2BF7FA01BFE74A /* StackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557DB433C84126FC75B2AF52 /* StackView.swift */; };
 		4BC742CDBF46C79B53F5D51F /* CalendarStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8B527DA8380933E8F6CA9A /* CalendarStore.swift */; };
@@ -33,6 +34,7 @@
 		8609FE4D600799951626E833 /* DailyLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BFDAE622A44DF5B46A68467 /* DailyLock.swift */; };
 		9C9BEC0E6DB6B55B12B7FCEA /* UpcomingEventsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */; };
 		A0D3AFB4B192999F0B5BF5BF /* SessionWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6AA2869E1C0DBFEBBF5F912 /* SessionWidget.swift */; };
+		A0E9DD4BD6CDBFA39E28B379 /* StreakState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD7BB2CAFD1A54852624CF9 /* StreakState.swift */; };
 		AA62064FD9AD499336B8B2ED /* AbstinenceBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7C71856D8BB30EBFE6705A /* AbstinenceBarView.swift */; };
 		AC8AA5E8C50D97F870B45311 /* AppStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C711E0E3A2EBFEA645C0E763 /* AppStore.swift */; };
 		AF749B480BCDCF24EBF180CA /* AnimatedAuraBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83295A3F857518282CCA3A31 /* AnimatedAuraBackground.swift */; };
@@ -111,6 +113,7 @@
 		7029F04609FE7711909E499F /* PrefrontalCortexWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefrontalCortexWidgetBundle.swift; sourceTree = "<group>"; };
 		7385963EC643DCC8A9E08A28 /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
 		744D3B8F91BCD3408F6AE99E /* WidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshot.swift; sourceTree = "<group>"; };
+		775D0C30FD995189DCCE5936 /* Achievements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievements.swift; sourceTree = "<group>"; };
 		77E4E8E7120A9943314812A1 /* PrefrontalCortex.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrefrontalCortex.entitlements; sourceTree = "<group>"; };
 		7CCE7ED06BC81271F0ABADB1 /* VitalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VitalsView.swift; sourceTree = "<group>"; };
 		7EF815A7496F1F0972A2D6ED /* sample_bundle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = sample_bundle.json; sourceTree = "<group>"; };
@@ -120,6 +123,7 @@
 		94DF600C39513829392C28AA /* ActionLoopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionLoopView.swift; sourceTree = "<group>"; };
 		A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = PrefrontalCortexWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8D2C3F808A75C620760CD12 /* LogSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogSessionView.swift; sourceTree = "<group>"; };
+		AAD7BB2CAFD1A54852624CF9 /* StreakState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakState.swift; sourceTree = "<group>"; };
 		AD8B527DA8380933E8F6CA9A /* CalendarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStore.swift; sourceTree = "<group>"; };
 		AE1DBFF025F3858AADA1B0D0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		BBEA6452022D4422ED78891D /* TransportSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportSettings.swift; sourceTree = "<group>"; };
@@ -261,7 +265,9 @@
 		D575155092A8BF6D78EBDAEA /* Game */ = {
 			isa = PBXGroup;
 			children = (
+				775D0C30FD995189DCCE5936 /* Achievements.swift */,
 				4BFDAE622A44DF5B46A68467 /* DailyLock.swift */,
+				AAD7BB2CAFD1A54852624CF9 /* StreakState.swift */,
 			);
 			path = Game;
 			sourceTree = "<group>";
@@ -385,6 +391,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA62064FD9AD499336B8B2ED /* AbstinenceBarView.swift in Sources */,
+				3E5EB1BD37E297641D02F70D /* Achievements.swift in Sources */,
 				E1EA7C66BD1B1A4417719864 /* ActionLoopView.swift in Sources */,
 				59EAC5A452EFEAAB4697D94A /* AdaptedSessionView.swift in Sources */,
 				AF749B480BCDCF24EBF180CA /* AnimatedAuraBackground.swift in Sources */,
@@ -411,6 +418,7 @@
 				745766DC65277A58544E36C8 /* SampleExporter.swift in Sources */,
 				E42927CA28EAA0B4A475781C /* SocialView.swift in Sources */,
 				446309996D2BF7FA01BFE74A /* StackView.swift in Sources */,
+				A0E9DD4BD6CDBFA39E28B379 /* StreakState.swift in Sources */,
 				CC44B2755427C5F66DF61A6F /* TimelineView.swift in Sources */,
 				1FFDE9EACD9CA92CF2D15D5A /* TransportClient.swift in Sources */,
 				E62D90EA2080592A48B57E34 /* TransportSettings.swift in Sources */,
