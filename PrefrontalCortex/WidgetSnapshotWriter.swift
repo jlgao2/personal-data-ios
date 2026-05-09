@@ -62,8 +62,84 @@ struct WidgetSnapshotWriter {
             stack_total: stackTotal,
             reach_out_top_name: firstReach?.name,
             reach_out_top_attn: firstReach?.attention_score,
-            reach_out_top_days: firstReach?.days_since_last
+            reach_out_top_days: firstReach?.days_since_last,
+            next_up: computeNextUp(bundle: bundle)
         )
+    }
+
+    /// Build today's upcoming list — calendar events + morning/evening supps
+    /// + workout anchor + reach-out — sorted ascending by time. The widget's
+    /// timeline provider builds a multi-entry timeline so it auto-advances
+    /// through these as time passes (no need for new snapshots).
+    static func computeNextUp(bundle: IOSBundle) -> [WidgetNextUpItem] {
+        var items: [WidgetNextUpItem] = []
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: Date())
+        guard let todayEnd = cal.date(byAdding: .day, value: 1, to: today) else { return [] }
+        let isoIn  = ISO8601DateFormatter()
+        isoIn.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let isoAlt = ISO8601DateFormatter()
+        let isoOut = ISO8601DateFormatter()
+
+        // Calendar
+        for e in bundle.calendar ?? [] {
+            guard let s = e.start,
+                  let date = isoIn.date(from: s) ?? isoAlt.date(from: s) else { continue }
+            if date < today || date >= todayEnd { continue }
+            items.append(.init(
+                time_iso: isoOut.string(from: date),
+                title: e.summary ?? "(event)",
+                kind: "calendar"
+            ))
+        }
+
+        let supps = bundle.profile?.supplement_stack ?? []
+        let hasMorning = supps.contains { s in
+            let t = (s.timing ?? "").lowercased()
+            return !t.contains("evening") && !t.contains("before bed") && !t.contains("night")
+        }
+        let hasEvening = supps.contains { s in
+            let t = (s.timing ?? "").lowercased()
+            return t.contains("evening") || t.contains("before bed") || t.contains("night")
+        }
+        if hasMorning, let t = anchorTime(at: 8, in: today, cal: cal) {
+            items.append(.init(time_iso: isoOut.string(from: t),
+                               title: "Morning supps", kind: "supps_morning"))
+        }
+        if hasEvening, let t = anchorTime(at: 19, in: today, cal: cal) {
+            items.append(.init(time_iso: isoOut.string(from: t),
+                               title: "Evening supps", kind: "supps_evening"))
+        }
+
+        // Workout anchor (11am for non-rest days)
+        let dayKey = todaysProgramKey()
+        if dayKey != "Day 7", let day = bundle.profile?.daily_protocol?[dayKey],
+           let t = anchorTime(at: 11, in: today, cal: cal) {
+            items.append(.init(time_iso: isoOut.string(from: t),
+                               title: day.session, kind: "workout"))
+        }
+
+        // Reach out (8pm)
+        if let top = bundle.social?.reach_out?.first,
+           let t = anchorTime(at: 20, in: today, cal: cal) {
+            items.append(.init(time_iso: isoOut.string(from: t),
+                               title: "Reach out: \(top.name ?? "Friend")",
+                               kind: "reach_out"))
+        }
+
+        return items.sorted { $0.time_iso < $1.time_iso }
+    }
+
+    private static func anchorTime(at hour: Int, in dayStart: Date, cal: Calendar) -> Date? {
+        var c = cal.dateComponents([.year, .month, .day], from: dayStart)
+        c.hour = hour
+        return cal.date(from: c)
+    }
+
+    private static func todaysProgramKey() -> String {
+        let dow = Calendar.current.component(.weekday, from: Date())
+        let mondayBased = ((dow + 5) % 7) + 1
+        return "Day \(mondayBased)"
     }
 
     static func write(_ snap: WidgetSnapshotShape) {
@@ -110,4 +186,12 @@ struct WidgetSnapshotShape: Codable {
     let reach_out_top_name: String?
     let reach_out_top_attn: Int?
     let reach_out_top_days: Int?
+    let next_up: [WidgetNextUpItem]?
+}
+
+/// Mirror of NextUpItem — duplicated across the target boundary.
+struct WidgetNextUpItem: Codable {
+    let time_iso: String
+    let title: String
+    let kind: String
 }

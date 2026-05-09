@@ -16,6 +16,31 @@ struct WidgetSnapshot: Codable {
     let reach_out_top_name: String?
     let reach_out_top_attn: Int?
     let reach_out_top_days: Int?
+    /// Upcoming items today, sorted ascending by time. The NextUpWidget
+    /// builds a multi-entry timeline from this so it auto-advances through
+    /// each as time passes — no need for fresh snapshots.
+    let next_up: [NextUpItem]?
+}
+
+/// One thing on today's chronological list. `time_iso` is full ISO so the
+/// widget can construct a Date and decide whether it's still in the future.
+struct NextUpItem: Codable, Identifiable {
+    let time_iso: String
+    let title: String
+    let kind: String   // "calendar" | "supps_morning" | "supps_evening" | "workout" | "reach_out"
+
+    var id: String { time_iso + title }
+
+    var symbol: String {
+        switch kind {
+        case "calendar":       return "calendar"
+        case "supps_morning":  return "sunrise"
+        case "supps_evening":  return "moon.stars"
+        case "workout":        return "figure.run"
+        case "reach_out":      return "person.wave.2"
+        default:               return "circle"
+        }
+    }
 }
 
 enum WidgetSnapshotIO {
