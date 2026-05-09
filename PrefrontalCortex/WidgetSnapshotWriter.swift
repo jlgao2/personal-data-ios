@@ -49,6 +49,7 @@ struct WidgetSnapshotWriter {
 
         let firstReach = bundle.social?.reach_out?.first
         let stackTotal = bundle.profile?.supplement_stack?.count ?? 0
+        let streak = StreakState.load()
 
         return WidgetSnapshotShape(
             updated_at: bundle.exported_at,
@@ -63,7 +64,9 @@ struct WidgetSnapshotWriter {
             reach_out_top_name: firstReach?.name,
             reach_out_top_attn: firstReach?.attention_score,
             reach_out_top_days: firstReach?.days_since_last,
-            next_up: computeNextUp(bundle: bundle)
+            next_up: computeNextUp(bundle: bundle),
+            streak_current: streak.current,
+            streak_longest: streak.longest
         )
     }
 
@@ -187,6 +190,8 @@ struct WidgetSnapshotShape: Codable {
     let reach_out_top_attn: Int?
     let reach_out_top_days: Int?
     let next_up: [WidgetNextUpItem]?
+    let streak_current: Int?
+    let streak_longest: Int?
 }
 
 /// Mirror of NextUpItem — duplicated across the target boundary.
