@@ -5,6 +5,7 @@ struct ContentView: View {
     @StateObject private var calStore = CalendarStore.shared
     @State private var selectedTab: Tab = .interventions
     @State private var showTransportSettings = false
+    @State private var showLogSession = false
 
     enum Tab: String, Hashable {
         case interventions, plan, profile, social
@@ -51,6 +52,10 @@ struct ContentView: View {
         .sheet(isPresented: $showTransportSettings) {
             TransportSettingsView()
         }
+        .sheet(isPresented: $showLogSession) {
+            LogSessionView()
+                .environmentObject(store)
+        }
     }
 
     // MARK: - Interventions (today)
@@ -73,6 +78,21 @@ struct ContentView: View {
                             let prescribed = bundle.profile?.daily_protocol?[dayKey]
                             AdaptedSessionView(adapted: adapted, prescribedSession: prescribed)
                         }
+                        Button { showLogSession = true } label: {
+                            HStack {
+                                Image(systemName: "square.and.pencil")
+                                Text("Log what I actually did")
+                                Spacer()
+                                Image(systemName: "chevron.right").foregroundStyle(.secondary)
+                            }
+                            .font(.callout.italic())
+                            .foregroundStyle(.cyan)
+                            .padding(12)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.white.opacity(0.04))
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                        }
+                        .buttonStyle(.plain)
                         if let abst = bundle.profile?.abstinences, !abst.isEmpty {
                             AbstinenceBarView(abstinences: abst)
                         }

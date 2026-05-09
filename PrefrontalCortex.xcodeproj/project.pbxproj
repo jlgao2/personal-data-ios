@@ -47,6 +47,7 @@
 		E42927CA28EAA0B4A475781C /* SocialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A76360A24D8213529C18D9 /* SocialView.swift */; };
 		E6198CDE48405800A2634F16 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE1DBFF025F3858AADA1B0D0 /* ContentView.swift */; };
 		E62D90EA2080592A48B57E34 /* TransportSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA6452022D4422ED78891D /* TransportSettings.swift */; };
+		EB4A08C8C796334D1FF917F8 /* LogSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8D2C3F808A75C620760CD12 /* LogSessionView.swift */; };
 		EB9F700A0D535ABE7DC4322F /* MedAlertsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B5ED653FA19D4E97A0FFDB /* MedAlertsView.swift */; };
 		F87336E98889727B383EB7A0 /* HeroWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F866D5118D26371A1E50CA4C /* HeroWidget.swift */; };
 /* End PBXBuildFile section */
@@ -108,6 +109,7 @@
 		9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingEventsView.swift; sourceTree = "<group>"; };
 		94DF600C39513829392C28AA /* ActionLoopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionLoopView.swift; sourceTree = "<group>"; };
 		A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = PrefrontalCortexWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A8D2C3F808A75C620760CD12 /* LogSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogSessionView.swift; sourceTree = "<group>"; };
 		AD8B527DA8380933E8F6CA9A /* CalendarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStore.swift; sourceTree = "<group>"; };
 		AE1DBFF025F3858AADA1B0D0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		BBEA6452022D4422ED78891D /* TransportSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportSettings.swift; sourceTree = "<group>"; };
@@ -147,6 +149,7 @@
 				FAB03DDF028F9C4D8D12EB92 /* DOWHeatmapView.swift */,
 				0DA6BE7054D5CF649868F94F /* GenomicsView.swift */,
 				ECEA1D8862C5E08A3460C10D /* HealthProfileView.swift */,
+				A8D2C3F808A75C620760CD12 /* LogSessionView.swift */,
 				85B5ED653FA19D4E97A0FFDB /* MedAlertsView.swift */,
 				C559BC519573C512391D4DE7 /* MindfulEatingTodayView.swift */,
 				25B6CECAC5F23E6EDED54107 /* PlanTabView.swift */,
@@ -373,6 +376,7 @@
 				56CA6B8D4F88CB18F16FCCE5 /* HealthProfileView.swift in Sources */,
 				43B296DDF029BA9C6975094D /* HealthStore.swift in Sources */,
 				DEB9C0366CA9C847FEA8178B /* Keychain.swift in Sources */,
+				EB4A08C8C796334D1FF917F8 /* LogSessionView.swift in Sources */,
 				EB9F700A0D535ABE7DC4322F /* MedAlertsView.swift in Sources */,
 				5306323CCA9DF60F878D9DCA /* MindfulEatingTodayView.swift in Sources */,
 				853D3DD8D11A848C33019AFC /* Notifications.swift in Sources */,

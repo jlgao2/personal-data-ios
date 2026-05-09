@@ -57,6 +57,15 @@ final class TransportClient {
         return try Self.decode(SamplesUploadResponse.self, from: data)
     }
 
+    /// POST self-logged session(s) to /v1/sessions. Same response shape as samples.
+    func uploadSessions(_ rows: [[String: Any]]) async throws -> SamplesUploadResponse {
+        let body = try JSONSerialization.data(withJSONObject: rows, options: [])
+        let req = try await makeAuthedRequest(path: "v1/sessions", method: "POST", body: body)
+        let (data, resp) = try await session.data(for: req)
+        try Self.assertOK(resp)
+        return try Self.decode(SamplesUploadResponse.self, from: data)
+    }
+
     // ── Helpers ────────────────────────────────────────────────────────────
     private func resolveURL(path: String) async throws -> URL {
         guard let base = await TransportSettings.shared.serverURL else {
