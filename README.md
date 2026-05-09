@@ -1,8 +1,13 @@
 # Prefrontal Cortex — iOS Companion
 
-SwiftUI app that mirrors the [`personal-genome-pipeline`](https://github.com/jlgao2/personal-genome-pipeline)
+SwiftUI app that mirrors the [`prefrontal-cortex`](https://github.com/jlgao2/prefrontal-cortex)
 desktop dashboard's daily executive-function surface on iPhone, with **live HealthKit reads**
-overriding cached values from the laptop bundle.
+overriding cached values from the laptop bundle. The companion pipeline repo
+(`prefrontal-cortex`) split off from
+[`personal-genome-pipeline`](https://github.com/jlgao2/personal-genome-pipeline)
+on 2026-05-08; it ingests the genome side's findings JSON via a symlink and
+owns everything else (HealthKit, Garmin, MyChart, adaptive engine, dashboard,
+LAN HTTP iOS sync).
 
 ## Status
 
@@ -31,7 +36,7 @@ Pair the phone with the laptop in **Profile → ⚙ → Laptop sync**:
 enter `http://<laptop-LAN-IP>:8787` and the bearer token printed by
 `pipeline/ios_serve.sh` on the laptop. Tap **Test connection** then **Save**.
 
-The pipeline repo's [README "iOS sync" section](https://github.com/jlgao2/personal-genome-pipeline#ios-sync-prefrontal-cortex-companion-app)
+The pipeline repo's [README](https://github.com/jlgao2/prefrontal-cortex#ios-sync)
 covers the laptop side.
 
 ## Build
