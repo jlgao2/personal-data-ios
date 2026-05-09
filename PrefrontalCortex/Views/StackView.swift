@@ -1,11 +1,13 @@
 import SwiftUI
 
-/// Two-block daily checklist: MORNING (everything that's not "evening" or
-/// "before bed") + EVENING. Tap rows to check; state lives in UserDefaults
-/// keyed by today's date so it resets at midnight.
+/// Now-tab stack: two big organic buttons — "Took morning" and "Took evening".
+/// Each toggles in one tap; per-day state in UserDefaults so it resets at
+/// midnight. The detailed per-supplement breakdown lives in StackDetailView
+/// on the Plan tab.
 struct StackView: View {
     let items: [Supplement]
-    @State private var checks: [String: Bool] = [:]
+    @State private var morningDone: Bool = false
+    @State private var eveningDone: Bool = false
 
     private var morningSupps: [Supplement] {
         items.filter { !Self.isEvening($0.timing) }
@@ -14,7 +16,7 @@ struct StackView: View {
         items.filter { Self.isEvening($0.timing) }
     }
 
-    private static func isEvening(_ timing: String?) -> Bool {
+    static func isEvening(_ timing: String?) -> Bool {
         let t = (timing ?? "").lowercased()
         return t.contains("evening") || t.contains("before bed") || t.contains("night")
     }
@@ -31,122 +33,177 @@ struct StackView: View {
                     .font(.caption2.monospaced())
                     .foregroundStyle(.secondary)
             }
-
-            VStack(spacing: 8) {
+            HStack(spacing: 10) {
                 if !morningSupps.isEmpty {
-                    StackChecklistGroup(label: "MORNING", supps: morningSupps,
-                                        checks: $checks, onToggle: toggle)
+                    PeriodButton(
+                        label: "MORNING",
+                        count: morningSupps.count,
+                        checked: morningDone,
+                        glowColor: .yellow,
+                        onTap: { toggle(period: .morning) }
+                    )
                 }
                 if !eveningSupps.isEmpty {
-                    StackChecklistGroup(label: "EVENING", supps: eveningSupps,
-                                        checks: $checks, onToggle: toggle)
+                    PeriodButton(
+                        label: "EVENING",
+                        count: eveningSupps.count,
+                        checked: eveningDone,
+                        glowColor: .indigo,
+                        onTap: { toggle(period: .evening) }
+                    )
                 }
             }
         }
-        .onAppear { loadChecks() }
+        .onAppear { loadState() }
     }
+
+    // MARK: - State
+
+    private enum Period: String { case morning, evening }
 
     private var progressLabel: String {
-        let done = items.filter { checks[$0.name] ?? false }.count
-        return "\(done) / \(items.count)"
+        let done = (morningDone ? morningSupps.count : 0) +
+                   (eveningDone ? eveningSupps.count : 0)
+        return "\(done)/\(items.count)"
     }
 
-    // MARK: - Per-day persistence
-
-    private static func todayKey() -> String {
+    private static func key(_ p: Period) -> String {
         let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"
-        return "stack_check_\(f.string(from: Date()))"
+        return "stack_period_\(f.string(from: Date()))_\(p.rawValue)"
     }
 
-    private func loadChecks() {
-        if let data = UserDefaults.standard.data(forKey: Self.todayKey()),
-           let dict = try? JSONDecoder().decode([String: Bool].self, from: data) {
-            checks = dict
-        } else {
-            checks = [:]
+    private func toggle(period: Period) {
+        switch period {
+        case .morning: morningDone.toggle()
+                       UserDefaults.standard.set(morningDone, forKey: Self.key(.morning))
+        case .evening: eveningDone.toggle()
+                       UserDefaults.standard.set(eveningDone, forKey: Self.key(.evening))
         }
     }
 
-    private func toggle(_ name: String) {
-        checks[name, default: false].toggle()
-        if let data = try? JSONEncoder().encode(checks) {
-            UserDefaults.standard.set(data, forKey: Self.todayKey())
-        }
+    private func loadState() {
+        morningDone = UserDefaults.standard.bool(forKey: Self.key(.morning))
+        eveningDone = UserDefaults.standard.bool(forKey: Self.key(.evening))
     }
 }
 
-private struct StackChecklistGroup: View {
+// MARK: - Period button (the actual touch target)
+
+private struct PeriodButton: View {
     let label: String
-    let supps: [Supplement]
-    @Binding var checks: [String: Bool]
-    let onToggle: (String) -> Void
-
-    private var doneCount: Int {
-        supps.filter { checks[$0.name] ?? false }.count
-    }
-    private var withFood: Bool {
-        supps.contains(where: { $0.with_food == true })
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                Text(label)
-                    .font(.caption2.monospaced())
-                    .foregroundStyle(.cyan)
-                    .tracking(2)
-                Spacer()
-                Text("\(doneCount)/\(supps.count) · \(withFood ? "with food" : "fasted")")
-                    .font(.caption2.monospaced())
-                    .foregroundStyle(.secondary)
-            }
-            ForEach(supps) { s in
-                StackChecklistRow(
-                    supp: s,
-                    checked: checks[s.name] ?? false,
-                    onTap: { onToggle(s.name) }
-                )
-            }
-        }
-        .padding(12)
-        .background(Color.white.opacity(0.04))
-        .clipShape(RoundedRectangle(cornerRadius: 6))
-    }
-}
-
-private struct StackChecklistRow: View {
-    let supp: Supplement
+    let count: Int
     let checked: Bool
+    let glowColor: Color
     let onTap: () -> Void
 
     var body: some View {
         Button(action: onTap) {
-            HStack(alignment: .firstTextBaseline, spacing: 10) {
+            VStack(spacing: 6) {
                 Image(systemName: checked ? "checkmark.circle.fill" : "circle")
-                    .font(.body)
-                    .foregroundStyle(checked ? .cyan : .secondary)
+                    .font(.system(size: 28))
+                    .foregroundStyle(checked ? glowColor : .secondary)
                     .symbolEffect(.bounce.up, value: checked)
-                    .frame(width: 22)
+                Text(label)
+                    .font(.caption2.monospaced().bold())
+                    .tracking(2)
+                    .foregroundStyle(checked ? glowColor : .white.opacity(0.65))
+                Text("\(count) supp\(count == 1 ? "" : "s")")
+                    .font(.caption2.italic())
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 18)
+            .background {
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(checked ? glowColor.opacity(0.10) : Color.white.opacity(0.04))
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .strokeBorder(checked ? glowColor.opacity(0.45)
+                                          : Color.white.opacity(0.06), lineWidth: 1)
+            }
+            .shadow(color: checked ? glowColor.opacity(0.25) : .clear,
+                    radius: 12, x: 0, y: 0)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(LivePressStyle())
+        .sensoryFeedback(.selection, trigger: checked)
+    }
+}
+
+// MARK: - Detailed list (Plan tab)
+
+/// Full breakdown of the supplement stack — what's in it, dose, rationale.
+/// Lives on the Plan tab; informational, no checkboxes (those are on Now).
+struct StackDetailView: View {
+    let items: [Supplement]
+
+    private var morning: [Supplement] {
+        items.filter { !StackView.isEvening($0.timing) }
+    }
+    private var evening: [Supplement] {
+        items.filter { StackView.isEvening($0.timing) }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("STACK DETAIL")
+                .font(.caption2.monospaced())
+                .foregroundStyle(.cyan)
+                .tracking(2)
+            if !morning.isEmpty {
+                section("MORNING", supps: morning, glow: .yellow)
+            }
+            if !evening.isEmpty {
+                section("EVENING", supps: evening, glow: .indigo)
+            }
+        }
+    }
+
+    private func section(_ title: String, supps: [Supplement], glow: Color) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(title)
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(glow)
+                    .tracking(2)
+                Spacer()
+                Text(supps.contains(where: { $0.with_food == true }) ? "with food" : "fasted")
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.secondary)
+            }
+            ForEach(supps) { s in
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(alignment: .firstTextBaseline) {
-                        Text(supp.name)
+                        Text(s.name)
                             .font(.body.italic())
-                            .foregroundStyle(checked ? .gray
-                                             : (supp.evidence == "strong" ? .white : .gray))
-                            .strikethrough(checked, color: .secondary)
+                            .foregroundStyle(s.evidence == "strong" ? .white : .gray)
                         Spacer()
-                        if let dose = supp.dose {
+                        if let dose = s.dose {
                             Text(dose)
                                 .font(.caption2.monospaced())
                                 .foregroundStyle(.cyan)
                         }
                     }
+                    if let r = s.rationale {
+                        Text(r)
+                            .font(.footnote.italic())
+                            .foregroundStyle(.secondary)
+                            .lineLimit(3)
+                    }
                 }
+                .padding(.vertical, 4)
+                Divider().background(Color.white.opacity(0.05))
             }
-            .padding(.vertical, 6)
-            .contentShape(Rectangle())
         }
-        .buttonStyle(LivePressStyle())
-        .sensoryFeedback(.selection, trigger: checked)
+        .padding(12)
+        .background {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(Color.white.opacity(0.03))
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(glow.opacity(0.18))
+        }
     }
 }

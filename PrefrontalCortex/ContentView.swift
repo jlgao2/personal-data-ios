@@ -6,6 +6,7 @@ struct ContentView: View {
     @State private var selectedTab: Tab = .interventions
     @State private var showTransportSettings = false
     @State private var showLogSession = false
+    @State private var showWorkoutSession = false
 
     enum Tab: String, Hashable {
         case interventions, plan, profile, social
@@ -56,6 +57,18 @@ struct ContentView: View {
             LogSessionView()
                 .environmentObject(store)
         }
+        .fullScreenCover(isPresented: $showWorkoutSession) {
+            if let bundle = store.bundle, let adapted = bundle.adapted_session {
+                let dayKey = adapted.program_day ?? ""
+                WorkoutSessionView(
+                    dayKey: dayKey,
+                    prescribed: bundle.profile?.daily_protocol?[dayKey],
+                    trafficLight: adapted.traffic_light,
+                    intensityPct: Int(((adapted.intensity_modifier ?? 1.0) * 100).rounded())
+                )
+                .environmentObject(store)
+            }
+        }
     }
 
     // MARK: - Interventions (today)
@@ -78,9 +91,12 @@ struct ContentView: View {
                         if let adapted = bundle.adapted_session {
                             let dayKey = adapted.program_day ?? ""
                             let prescribed = bundle.profile?.daily_protocol?[dayKey]
-                            AdaptedSessionView(adapted: adapted, prescribedSession: prescribed)
+                            AdaptedSessionView(
+                                adapted: adapted,
+                                prescribedSession: prescribed,
+                                onStart: { showWorkoutSession = true }
+                            )
                         }
-                        logActualGhostLink
                         if let abst = bundle.profile?.abstinences, !abst.isEmpty {
                             AbstinenceBarView(abstinences: abst)
                         }
@@ -137,6 +153,9 @@ struct ContentView: View {
                             )
                         }
                         WeeklyRecapView(vitals: bundle.vitals, workouts: bundle.workouts)
+                        if let supps = bundle.profile?.supplement_stack, !supps.isEmpty {
+                            StackDetailView(items: supps)
+                        }
                         if let corr = bundle.correlations {
                             if let findings = corr.correlations, !findings.isEmpty {
                                 CorrelationsView(findings: findings)
@@ -231,24 +250,6 @@ struct ContentView: View {
     }
 
     // MARK: - Shared
-
-    /// Subtle ghost link — replaces the old full-width "Log what I actually did"
-    /// card. Sits as a quiet italic line, doesn't compete with the actual content.
-    private var logActualGhostLink: some View {
-        Button { showLogSession = true } label: {
-            HStack(spacing: 6) {
-                Image(systemName: "square.and.pencil")
-                Text("log what i actually did")
-                Spacer()
-            }
-            .font(.caption2.italic())
-            .foregroundStyle(.white.opacity(0.4))
-            .padding(.horizontal, 4)
-            .padding(.vertical, 6)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(LivePressStyle())
-    }
 
     private func errorBanner(_ msg: String) -> some View {
         Text(msg)

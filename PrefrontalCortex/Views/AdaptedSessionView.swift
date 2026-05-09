@@ -5,6 +5,7 @@ import SwiftUI
 struct AdaptedSessionView: View {
     let adapted: AdaptedSession
     let prescribedSession: DayProtocol?
+    var onStart: (() -> Void)? = nil
 
     private var lightColor: Color {
         switch adapted.traffic_light {
@@ -31,6 +32,22 @@ struct AdaptedSessionView: View {
                     Text(day.uppercased())
                         .font(.caption2.monospaced())
                         .foregroundStyle(.cyan)
+                }
+                if let onStart {
+                    Button(action: onStart) {
+                        HStack(spacing: 4) {
+                            Text("START")
+                            Image(systemName: "arrow.right")
+                        }
+                        .font(.caption2.monospaced().bold())
+                        .tracking(1.5)
+                        .foregroundStyle(.cyan)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .overlay(Capsule().strokeBorder(Color.cyan.opacity(0.5), lineWidth: 1))
+                        .clipShape(Capsule())
+                    }
+                    .buttonStyle(LivePressStyle())
                 }
             }
 

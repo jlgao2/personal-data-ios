@@ -70,22 +70,10 @@ struct TimelineView: View {
         // 7 supps). They've moved out to StackView's morning/evening checklist
         // — the timeline stays for genuinely time-sensitive things.
 
-        // Workout anchor at 11am for non-rest days
-        let dayKey = todaysProgramKeyiOS()
-        if dayKey != "Day 7", let day = bundle.profile?.daily_protocol?[dayKey] {
-            var comps = cal.dateComponents([.year, .month, .day], from: today)
-            comps.hour = 11
-            if let t = cal.date(from: comps) {
-                let adapted = bundle.adapted_session
-                let intensity = Int(((adapted?.intensity_modifier ?? 1.0) * 100).rounded())
-                let tl = adapted?.traffic_light ?? "green"
-                let detail = "\(tl.uppercased()) · \(intensity)% intensity"
-                items.append(.init(kind: .workout, time: t,
-                                   title: "\(dayKey) · \(day.session)",
-                                   detail: detail,
-                                   stateKey: nil, stateId: nil, pill: tl, url: nil))
-            }
-        }
+        // Workout used to render here at 11am for non-rest days. Moved out:
+        // AdaptedSessionView handles today's session below the timeline, and
+        // the new WorkoutSessionView (full-screen tracker) is the place to
+        // actually do the work.
 
         // Reach out — top unmarked person at 8pm
         let reachList: [SocialPerson] = bundle.social?.reach_out ?? []

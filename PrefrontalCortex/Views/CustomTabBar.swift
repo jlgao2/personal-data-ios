@@ -1,9 +1,9 @@
 import SwiftUI
 
-/// Floating glass tab bar with a sliding cyan pill that morphs between tabs
-/// via matchedGeometryEffect. Active tab gets an inline label that animates
-/// in; inactive tabs are icon-only. Replaces the system tab bar (hidden via
-/// `.toolbar(.hidden, for: .tabBar)` on each tab).
+/// Floating glass tab bar. Active tab inline-expands to show its label;
+/// a soft cyan glow morphs between tabs via matchedGeometryEffect. The
+/// outer shape is an irregular squircle (continuous corners) — no crisp
+/// edges, no rigid pill — to match the celestial / aura aesthetic.
 struct CustomTabBar: View {
     @Binding var selected: ContentView.Tab
     @Namespace private var ns
@@ -27,12 +27,21 @@ struct CustomTabBar: View {
                 button(for: tab)
             }
         }
-        .padding(5)
-        .background(.ultraThinMaterial, in: Capsule())
-        .overlay(Capsule().strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
-        .shadow(color: .black.opacity(0.45), radius: 14, x: 0, y: 6)
+        .padding(6)
+        .background {
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .fill(.ultraThinMaterial)
+        }
+        // Soft cyan halo behind the bar — the glow.
+        .background {
+            RoundedRectangle(cornerRadius: 32, style: .continuous)
+                .fill(Color.cyan.opacity(0.06))
+                .blur(radius: 18)
+                .scaleEffect(1.04)
+        }
+        .shadow(color: .black.opacity(0.55), radius: 18, x: 0, y: 8)
         .padding(.horizontal, 28)
-        .padding(.bottom, 8)
+        .padding(.bottom, 10)
         .sensoryFeedback(.selection, trigger: selected)
     }
 
@@ -65,10 +74,17 @@ struct CustomTabBar: View {
             .frame(maxWidth: isActive ? .infinity : nil)
             .background {
                 if isActive {
-                    Capsule()
-                        .fill(Color.cyan.opacity(0.18))
-                        .overlay(Capsule().strokeBorder(Color.cyan.opacity(0.35), lineWidth: 0.5))
-                        .matchedGeometryEffect(id: "active-pill", in: ns)
+                    ZStack {
+                        // Inner soft fill
+                        RoundedRectangle(cornerRadius: 22, style: .continuous)
+                            .fill(Color.cyan.opacity(0.18))
+                            .matchedGeometryEffect(id: "active-pill", in: ns)
+                        // Outer halo glow
+                        RoundedRectangle(cornerRadius: 26, style: .continuous)
+                            .fill(Color.cyan.opacity(0.14))
+                            .blur(radius: 10)
+                            .scaleEffect(1.1)
+                    }
                 }
             }
             .contentShape(Rectangle())
@@ -78,7 +94,6 @@ struct CustomTabBar: View {
 }
 
 /// Subtle press feedback — scale 0.96 + slight dim, spring back.
-/// Use for any interactive element that should "breathe" on tap.
 struct LivePressStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

@@ -35,6 +35,7 @@
 		AF749B480BCDCF24EBF180CA /* AnimatedAuraBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83295A3F857518282CCA3A31 /* AnimatedAuraBackground.swift */; };
 		AFDF8711798353000F29B7D4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60BABA74BF6E980433D44A99 /* Assets.xcassets */; };
 		B26CD4CAB7B67F498B57C0FF /* PrefrontalCortexWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7029F04609FE7711909E499F /* PrefrontalCortexWidgetBundle.swift */; };
+		B66BA02EFC3537C4E19767E5 /* WorkoutSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395D10B3699FF24CB00CDF30 /* WorkoutSessionView.swift */; };
 		BBAE93EDE0A633BEB7329896 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4B45A3F87E88F76B4C774B /* App.swift */; };
 		BE5AEEEDF724661BB1B75D5D /* DOWHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB03DDF028F9C4D8D12EB92 /* DOWHeatmapView.swift */; };
 		C8184071DD103801C2B4CDCC /* GenomicsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6BE7054D5CF649868F94F /* GenomicsView.swift */; };
@@ -87,6 +88,7 @@
 		25B6CECAC5F23E6EDED54107 /* PlanTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanTabView.swift; sourceTree = "<group>"; };
 		2CAED2897A33FF5197B09BB1 /* CorrelationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorrelationsView.swift; sourceTree = "<group>"; };
 		318E4861F4BDDB8438347982 /* PrefrontalCortex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PrefrontalCortex.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		395D10B3699FF24CB00CDF30 /* WorkoutSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSessionView.swift; sourceTree = "<group>"; };
 		3BDA89289885460CF309A52B /* WorkoutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutsView.swift; sourceTree = "<group>"; };
 		47E1E8B4C8CEBF4F91E20DC7 /* SampleExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleExporter.swift; sourceTree = "<group>"; };
 		51B603FEC1FEE012D1E97610 /* HealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
@@ -165,6 +167,7 @@
 				9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */,
 				7CCE7ED06BC81271F0ABADB1 /* VitalsView.swift */,
 				F5649DA3EFD054D4AA7AA70F /* WeeklyRecapView.swift */,
+				395D10B3699FF24CB00CDF30 /* WorkoutSessionView.swift */,
 				3BDA89289885460CF309A52B /* WorkoutsView.swift */,
 			);
 			path = Views;
@@ -398,6 +401,7 @@
 				7319F7561F8A5DB47F9D99BD /* VitalsView.swift in Sources */,
 				0E1038C8C4C2E62EB41B979F /* WeeklyRecapView.swift in Sources */,
 				7343D34926F03AE8AF097838 /* WidgetSnapshotWriter.swift in Sources */,
+				B66BA02EFC3537C4E19767E5 /* WorkoutSessionView.swift in Sources */,
 				4E4E8B6F9B3C7C6851B59A34 /* WorkoutsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
