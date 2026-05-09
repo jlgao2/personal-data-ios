@@ -630,23 +630,66 @@ func parseExercise(_ s: String) -> ParsedExercise {
         )
     }
 
-    // AMRAP / MAX — "Pushups — 3×AMRAP". Sets is the explicit number, reps
-    // is open-ended — we seed at 10 to give the user something to nudge from.
+    // AMRAP / MAX — "Pushups — 3×AMRAP". Sets is explicit, reps is open;
+    // we seed with a sensible per-exercise default so the user starts near
+    // the right ballpark rather than nudging from 10 every time.
     if let match = amrapRegex.firstMatch(in: s, range: range) {
         let setsStr = ns.substring(with: match.range(at: 1))
         let nameEnd = match.range.location
         let name = ns.substring(to: nameEnd)
             .trimmingCharacters(in: CharacterSet(charactersIn: " —–-:"))
+        let resolvedName = name.isEmpty ? s : name
         return ParsedExercise(
-            name: name.isEmpty ? s : name,
+            name: resolvedName,
             sets: Int(setsStr) ?? 1,
-            reps: 10,
+            reps: defaultAMRAPReps(for: resolvedName),
             isTime: false,
             isAMRAP: true
         )
     }
 
     return ParsedExercise(name: s, sets: 1, reps: 1, isTime: false, isAMRAP: false)
+}
+
+/// Sensible starting rep count for an AMRAP exercise based on the name.
+/// User overrides via the rep ↑/↓ presets — this is just a smarter starting
+/// point than a flat 10 for everything.
+func defaultAMRAPReps(for name: String) -> Int {
+    let n = name.lowercased()
+
+    // Pull patterns are the hardest — fewer reps
+    if n.contains("muscle-up") || n.contains("muscle up") { return 3 }
+    if n.contains("pull-up") || n.contains("pullup") || n.contains("chin") { return 8 }
+    if n.contains("ring row") || n.contains("inverted row") { return 10 }
+
+    // Push patterns
+    if n.contains("hspu") || n.contains("handstand") { return 5 }
+    if n.contains("dip") { return 10 }
+    if n.contains("ring push") || n.contains("decline push") { return 12 }
+    if n.contains("push") { return 20 }       // standard pushups
+
+    // Lower body bodyweight
+    if n.contains("pistol") || n.contains("shrimp") { return 5 }
+    if n.contains("split squat") || n.contains("bulgarian") { return 12 }
+    if n.contains("squat") { return 25 }      // bodyweight squat / air squat
+    if n.contains("lunge") { return 16 }      // 8 per side
+    if n.contains("bridge") || n.contains("hip thrust") { return 15 }
+    if n.contains("calf raise") { return 20 }
+
+    // Conditioning
+    if n.contains("burpee") { return 12 }
+    if n.contains("mountain climb") { return 30 }
+    if n.contains("jumping jack") { return 40 }
+    if n.contains("kettlebell swing") || n.contains("kb swing") { return 20 }
+    if n.contains("box jump") || n.contains("step up") { return 12 }
+
+    // Core
+    if n.contains("crunch") || n.contains("sit-up") || n.contains("situp") { return 20 }
+    if n.contains("leg raise") || n.contains("toes to bar") || n.contains("knee raise") { return 12 }
+    if n.contains("v-up") || n.contains("v up") { return 12 }
+
+    // Generic AMRAP fallback
+    return 10
 }
 
 /// Warm-up weights as a function of the working weight, in the user's unit.
