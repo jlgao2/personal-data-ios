@@ -138,11 +138,32 @@ struct WorkoutSessionView: View {
 
     // MARK: - Exercise card
 
+    /// Warm-up suggestion line — shown above the sets for any exercise
+    /// with non-trivial weight. Gives a concrete answer to "what should I
+    /// warm up with?" instead of leaving the user to guess.
+    @ViewBuilder
+    private func warmupHint(workingWeight: Double) -> some View {
+        let warmups = warmupSuggestions(workingWeight: workingWeight)
+        if !warmups.isEmpty {
+            HStack(spacing: 6) {
+                Image(systemName: "flame")
+                    .font(.caption2)
+                Text("warm up: " + warmups.map { "\(Int($0)) × 5" }.joined(separator: ", "))
+                    .font(.caption2.italic())
+            }
+            .foregroundStyle(.orange.opacity(0.85))
+        }
+    }
+
     @ViewBuilder
     private func exerciseCard(parsed: ParsedExercise, key: String) -> some View {
         let entries = sets[key] ?? []
         let unitLabel = parsed.isTime ? "sec" : "reps"
         let doneCount = entries.filter { $0.completed }.count
+        let targetText: String = {
+            if parsed.isAMRAP { return "Target \(parsed.sets) × AMRAP" }
+            return "Target \(parsed.sets) × \(parsed.reps) \(unitLabel)"
+        }()
 
         VStack(alignment: .leading, spacing: 8) {
             // Header
@@ -155,9 +176,11 @@ struct WorkoutSessionView: View {
                     .font(.caption2.monospaced())
                     .foregroundStyle(doneCount == entries.count && !entries.isEmpty ? .cyan : .secondary)
             }
-            Text("Target \(parsed.sets) × \(parsed.reps) \(unitLabel)")
+            Text(targetText)
                 .font(.caption2.monospaced())
                 .foregroundStyle(.secondary)
+
+            warmupHint(workingWeight: entries.first?.weight ?? 0)
 
             // Sets
             VStack(spacing: 6) {
@@ -187,58 +210,130 @@ struct WorkoutSessionView: View {
     // MARK: - Active set editor
 
     private func activeSetEditor(key: String, index: Int, entry: SetEntry, unitLabel: String) -> some View {
-        VStack(spacing: 14) {
+        VStack(spacing: 12) {
             HStack {
                 Text("SET \(index + 1)")
                     .font(.caption2.monospaced().bold())
                     .tracking(2)
                     .foregroundStyle(.cyan)
                 Spacer()
+                Text("base \(formattedWeight(entry.weight)) × \(entry.reps)")
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.secondary)
                 Button {
                     withAnimation { focused = nil }
                 } label: {
                     Image(systemName: "chevron.up")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .padding(.leading, 6)
                 }
                 .buttonStyle(LivePressStyle())
             }
 
-            paddleControl(label: "WEIGHT",
-                          value: entry.weight,
-                          unit: "lb",
-                          step: 5,
-                          format: "%g",
-                          onMinus: { adjustWeight(key: key, index: index, by: -5) },
-                          onPlus:  { adjustWeight(key: key, index: index, by:  5) })
-
-            paddleControl(label: unitLabel.uppercased(),
-                          value: Double(entry.reps),
-                          unit: unitLabel,
-                          step: 1,
-                          format: "%.0f",
-                          onMinus: { adjustReps(key: key, index: index, by: -1) },
-                          onPlus:  { adjustReps(key: key, index: index, by:  1) })
-
-            Button { markComplete(key: key, index: index) } label: {
-                HStack {
-                    Image(systemName: "checkmark.circle.fill")
-                    Text("Mark complete")
-                    Image(systemName: "arrow.right")
+            // Reps nudge — small inline ± so user can shape the rep count
+            // before tapping a weight preset.
+            HStack(spacing: 14) {
+                Text(unitLabel.uppercased())
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.secondary)
+                    .tracking(2)
+                Spacer()
+                repNudgeButton(symbol: "minus") {
+                    adjustReps(key: key, index: index, by: -1)
                 }
-                .font(.body.weight(.medium))
-                .foregroundStyle(.cyan)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(Color.cyan.opacity(0.15), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(Color.cyan.opacity(0.4)))
+                Text("\(entry.reps)")
+                    .font(.title3.monospaced().weight(.semibold))
+                    .foregroundStyle(.white)
+                    .frame(minWidth: 36)
+                    .contentTransition(.numericText(value: Double(entry.reps)))
+                repNudgeButton(symbol: "plus") {
+                    adjustReps(key: key, index: index, by: 1)
+                }
             }
-            .buttonStyle(LivePressStyle())
-            .sensoryFeedback(.success, trigger: entry.completed)
+            .animation(.spring(response: 0.3, dampingFraction: 0.75), value: entry.reps)
+
+            // 4 weight-preset buttons. Each tap = log this set with that weight
+            // and advance to the next. One-tap-per-set is the killer move.
+            VStack(spacing: 8) {
+                presetButton(.bigUp,    key: key, index: index, entry: entry)
+                presetButton(.smallUp,  key: key, index: index, entry: entry)
+                presetButton(.same,     key: key, index: index, entry: entry)
+                presetButton(.down,     key: key, index: index, entry: entry)
+            }
         }
-        .padding(10)
-        .background(Color.cyan.opacity(0.05), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(Color.cyan.opacity(0.25)))
+        .padding(12)
+        .background(Color.cyan.opacity(0.05), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(Color.cyan.opacity(0.25)))
+    }
+
+    private enum Preset {
+        case bigUp, smallUp, same, down
+        var delta: Double {
+            switch self {
+            case .bigUp:   return 10
+            case .smallUp: return 5
+            case .same:    return 0
+            case .down:    return -5
+            }
+        }
+        var label: String {
+            switch self {
+            case .bigUp:   return "↑↑  +10"
+            case .smallUp: return "↑   +5"
+            case .same:    return "=   same"
+            case .down:    return "↓   −5"
+            }
+        }
+        var color: Color {
+            switch self {
+            case .bigUp:   return .green
+            case .smallUp: return .cyan
+            case .same:    return .white
+            case .down:    return .orange
+            }
+        }
+    }
+
+    private func presetButton(_ p: Preset, key: String, index: Int, entry: SetEntry) -> some View {
+        let newWeight = max(0, entry.weight + p.delta)
+        let isBW = newWeight == 0
+        let preview = isBW ? "BW × \(entry.reps)"
+                           : "\(formattedWeight(newWeight)) × \(entry.reps)"
+
+        return Button {
+            logSetWith(weight: newWeight, key: key, index: index)
+        } label: {
+            HStack {
+                Text(p.label)
+                    .font(.body.monospaced().weight(.semibold))
+                Spacer()
+                Text(preview)
+                    .font(.caption.monospaced())
+                    .foregroundStyle(.white.opacity(0.7))
+            }
+            .padding(.vertical, 12).padding(.horizontal, 16)
+            .frame(maxWidth: .infinity)
+            .foregroundStyle(p.color)
+            .background(p.color.opacity(0.13),
+                        in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .strokeBorder(p.color.opacity(0.35)))
+        }
+        .buttonStyle(LivePressStyle())
+        .sensoryFeedback(.success, trigger: entry.completed)
+    }
+
+    private func repNudgeButton(symbol: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.body.weight(.semibold))
+                .foregroundStyle(.cyan)
+                .frame(width: 38, height: 38)
+                .background(Color.cyan.opacity(0.12), in: Circle())
+                .overlay(Circle().strokeBorder(Color.cyan.opacity(0.3)))
+        }
+        .buttonStyle(LivePressStyle())
     }
 
     private func paddleControl(label: String,
@@ -325,6 +420,16 @@ struct WorkoutSessionView: View {
         saveState()
     }
 
+    /// Set the weight on this set, then mark it complete (which inherits
+    /// values into the next set + advances focus). Used by the 4 weight
+    /// preset buttons in the active editor.
+    private func logSetWith(weight: Double, key: String, index: Int) {
+        guard var arr = sets[key], index < arr.count else { return }
+        arr[index].weight = max(0, weight)
+        sets[key] = arr
+        markComplete(key: key, index: index)
+    }
+
     private func adjustReps(key: String, index: Int, by delta: Int) {
         guard var arr = sets[key], index < arr.count else { return }
         arr[index].reps = max(0, arr[index].reps + delta)
@@ -385,7 +490,14 @@ struct WorkoutSessionView: View {
         for raw in allPrescribedItems() {
             let parsed = parseExercise(raw)
             let key = exerciseKey(raw)
-            let memory = UserDefaults.standard.double(forKey: weightMemoryKey(for: key))
+            // Memory wins; if never logged, fall back to a sensible default
+            // for the exercise type (bodyweight = 0, deadlift = 135, etc.).
+            let memory: Double
+            if let stored = UserDefaults.standard.object(forKey: weightMemoryKey(for: key)) as? Double {
+                memory = stored
+            } else {
+                memory = defaultWeight(for: parsed.name)
+            }
             fresh[key] = (0..<parsed.sets).map { _ in
                 SetEntry(weight: memory, reps: parsed.reps, completed: false)
             }
@@ -467,6 +579,7 @@ struct ParsedExercise {
     let sets: Int
     let reps: Int
     let isTime: Bool
+    let isAMRAP: Bool       // "as many reps as possible" — fluid target
 }
 
 private let exerciseRegex: NSRegularExpression = {
@@ -474,9 +587,17 @@ private let exerciseRegex: NSRegularExpression = {
     try! NSRegularExpression(pattern: #"(\d+)\s*[×xX]\s*(\d+)(\s*sec)?"#)
 }()
 
+private let amrapRegex: NSRegularExpression = {
+    // "3×AMRAP", "3 x MAX", "3xmax"
+    try! NSRegularExpression(
+        pattern: #"(\d+)\s*[×xX]\s*(?:AMRAP|amrap|MAX|max|fail|FAIL)"#
+    )
+}()
+
 func parseExercise(_ s: String) -> ParsedExercise {
     let ns = s as NSString
     let range = NSRange(location: 0, length: ns.length)
+
     if let match = exerciseRegex.firstMatch(in: s, range: range) {
         let setsStr = ns.substring(with: match.range(at: 1))
         let repsStr = ns.substring(with: match.range(at: 2))
@@ -488,10 +609,88 @@ func parseExercise(_ s: String) -> ParsedExercise {
             name: name.isEmpty ? s : name,
             sets: Int(setsStr) ?? 1,
             reps: Int(repsStr) ?? 1,
-            isTime: isTime
+            isTime: isTime,
+            isAMRAP: false
         )
     }
-    return ParsedExercise(name: s, sets: 1, reps: 1, isTime: false)
+
+    // AMRAP / MAX — "Pushups — 3×AMRAP". Sets is the explicit number, reps
+    // is open-ended — we seed at 10 to give the user something to nudge from.
+    if let match = amrapRegex.firstMatch(in: s, range: range) {
+        let setsStr = ns.substring(with: match.range(at: 1))
+        let nameEnd = match.range.location
+        let name = ns.substring(to: nameEnd)
+            .trimmingCharacters(in: CharacterSet(charactersIn: " —–-:"))
+        return ParsedExercise(
+            name: name.isEmpty ? s : name,
+            sets: Int(setsStr) ?? 1,
+            reps: 10,
+            isTime: false,
+            isAMRAP: true
+        )
+    }
+
+    return ParsedExercise(name: s, sets: 1, reps: 1, isTime: false, isAMRAP: false)
+}
+
+/// Warm-up weights as a function of the working weight. Single warm-up at
+/// 50% for moderate loads; two warm-ups (50% + 75%) for heavier compounds.
+/// Rounded to 5 lb to keep the math plate-friendly.
+func warmupSuggestions(workingWeight: Double) -> [Double] {
+    if workingWeight < 50 { return [] }
+    let half = (workingWeight * 0.5 / 5).rounded() * 5
+    if workingWeight < 95 { return [half] }
+    let threeQuarter = (workingWeight * 0.75 / 5).rounded() * 5
+    return [half, threeQuarter]
+}
+
+/// Sensible starting weight per exercise based on the name. Used only when
+/// there's no remembered weight from a prior session — once you log a set,
+/// that becomes the new default. Bodyweight stays bodyweight; common lifts
+/// start at sane plate-friendly values rather than 0.
+func defaultWeight(for name: String) -> Double {
+    let n = name.lowercased()
+
+    // Bodyweight — explicit no-load
+    let bwTokens = [
+        "push", "pull-up", "pullup", "chin", "dip", "plank", "side plank",
+        "hang", "knee raise", "leg raise", "flow", "yoga", "mobility",
+        "stretch", "warm", "warmup", "warm-up", "warm up", "foam",
+        "bird dog", "bird-dog", "dead bug", "deadbug", "crawl",
+        "walking", "march", "calf raise", "glute bridge", "single leg bridge",
+        "shoulder taps", "scapular", "wall slide", "couch stretch",
+        "90/90", "happy baby", "child's pose", "downward",
+        "(bw)", "bodyweight",
+    ]
+    if bwTokens.contains(where: { n.contains($0) }) { return 0 }
+
+    // Heavy compounds — one plate each side ≈ 135 lb
+    if n.contains("deadlift") || n.contains("trap bar") { return 135 }
+    if n.contains("back squat") || (n.contains("squat") && !n.contains("goblet")
+                                                       && !n.contains("split")) {
+        return 135
+    }
+    if n.contains("bench") { return 95 }
+
+    // Hinges and presses
+    if n.contains("hip thrust") { return 95 }
+    if n.contains("rdl") || n.contains("romanian") { return 65 }
+    if n.contains("overhead press") || n.contains("ohp") { return 65 }
+    if n.contains("press") { return 45 }   // accessory press
+
+    // Rows + carries + dumbbell work
+    if n.contains("row") { return 35 }
+    if n.contains("farmer") || n.contains("carry") { return 35 }
+    if n.contains("goblet") || n.contains("split squat") { return 25 }
+    if n.contains("lunge") { return 20 }
+
+    // Accessories — small dumbbells
+    if n.contains("curl") || n.contains("raise") || n.contains("extension")
+        || n.contains("fly") || n.contains("rear delt") {
+        return 15
+    }
+
+    return 0
 }
 
 func exerciseKey(_ raw: String) -> String {
