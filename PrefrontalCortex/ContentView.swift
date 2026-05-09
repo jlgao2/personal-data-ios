@@ -11,27 +11,27 @@ struct ContentView: View {
         case interventions, plan, profile, social
     }
 
+    /// Bottom padding added to every tab's scroll content so the last item
+    /// clears the floating tab bar (which sits ~~58pt tall + 8pt bottom inset).
+    private let tabBarClearance: CGFloat = 76
+
     var body: some View {
         TabView(selection: $selectedTab) {
             interventionsTab
-                .tabItem { Label("Now", systemImage: "target") }
                 .tag(Tab.interventions)
-
             planTab
-                .tabItem { Label("Plan", systemImage: "scope") }
                 .tag(Tab.plan)
-
             socialTab
-                .tabItem { Label("Social", systemImage: "person.2") }
                 .tag(Tab.social)
-
             profileTab
-                .tabItem { Label("Profile", systemImage: "person.text.rectangle") }
                 .tag(Tab.profile)
         }
         .preferredColorScheme(.dark)
         .tint(.cyan)
         .task { if store.bundle == nil { await store.bootstrap() } }
+        .overlay(alignment: .bottom) {
+            CustomTabBar(selected: $selectedTab)
+        }
         .overlay(alignment: .bottom) {
             if let msg = store.lastUploadResult {
                 Text(msg)
@@ -40,7 +40,7 @@ struct ContentView: View {
                     .background(Color.cyan.opacity(0.15))
                     .foregroundStyle(.cyan)
                     .cornerRadius(4)
-                    .padding(.bottom, 80)
+                    .padding(.bottom, 90)   // above the floating tab bar
                     .transition(.opacity)
                     .task(id: msg) {
                         try? await Task.sleep(for: .seconds(2.5))
@@ -65,7 +65,9 @@ struct ContentView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    if store.loading { ProgressView("Loading…").frame(maxWidth: .infinity, alignment: .center) }
+                    if store.loading {
+                        ProgressView("Loading…").frame(maxWidth: .infinity, alignment: .center)
+                    }
                     if let err = store.lastError { errorBanner(err) }
                     if let bundle = store.bundle {
                         TimelineView(bundle: bundle, calStore: calStore)
@@ -78,21 +80,7 @@ struct ContentView: View {
                             let prescribed = bundle.profile?.daily_protocol?[dayKey]
                             AdaptedSessionView(adapted: adapted, prescribedSession: prescribed)
                         }
-                        Button { showLogSession = true } label: {
-                            HStack {
-                                Image(systemName: "square.and.pencil")
-                                Text("Log what I actually did")
-                                Spacer()
-                                Image(systemName: "chevron.right").foregroundStyle(.secondary)
-                            }
-                            .font(.callout.italic())
-                            .foregroundStyle(.cyan)
-                            .padding(12)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color.white.opacity(0.04))
-                            .clipShape(RoundedRectangle(cornerRadius: 6))
-                        }
-                        .buttonStyle(.plain)
+                        logActualGhostLink
                         if let abst = bundle.profile?.abstinences, !abst.isEmpty {
                             AbstinenceBarView(abstinences: abst)
                         }
@@ -109,10 +97,12 @@ struct ContentView: View {
                     }
                 }
                 .padding()
-                .padding(.top, 32)   // breathing room under the dynamic island / status pill
+                .padding(.top, 32)
+                .padding(.bottom, tabBarClearance)
             }
             .background { AnimatedAuraBackground() }
             .toolbar(.hidden, for: .navigationBar)
+            .toolbar(.hidden, for: .tabBar)
             .refreshable {
                 await store.bootstrap()
                 await store.uploadTodaySamples()
@@ -162,11 +152,12 @@ struct ContentView: View {
                     }
                 }
                 .padding()
+                .padding(.top, 32)
+                .padding(.bottom, tabBarClearance)
             }
             .background(Color.black.ignoresSafeArea())
-            .navigationTitle("Plan")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.black, for: .navigationBar)
+            .toolbar(.hidden, for: .navigationBar)
+            .toolbar(.hidden, for: .tabBar)
         }
     }
 
@@ -187,11 +178,12 @@ struct ContentView: View {
                     }
                 }
                 .padding()
+                .padding(.top, 32)
+                .padding(.bottom, tabBarClearance)
             }
             .background(Color.black.ignoresSafeArea())
-            .navigationTitle("Social")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.black, for: .navigationBar)
+            .toolbar(.hidden, for: .navigationBar)
+            .toolbar(.hidden, for: .tabBar)
         }
     }
 
@@ -206,8 +198,6 @@ struct ContentView: View {
                         if let p = bundle.profile {
                             HealthProfileView(profile: p)
                         }
-                        // Reference list of drug classes to avoid (separate
-                        // from Interventions which surfaces firing alerts only)
                         if let avoid = bundle.profile?.medications_to_avoid,
                            !avoid.isEmpty {
                             MedReferenceView(classes: avoid)
@@ -218,22 +208,47 @@ struct ContentView: View {
                     }
                 }
                 .padding()
+                .padding(.top, 32)
+                .padding(.bottom, tabBarClearance)
             }
             .background(Color.black.ignoresSafeArea())
-            .navigationTitle("Profile")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.black, for: .navigationBar)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { showTransportSettings = true } label: {
-                        Image(systemName: "gearshape")
-                    }
+            .toolbar(.hidden, for: .navigationBar)
+            .toolbar(.hidden, for: .tabBar)
+            .overlay(alignment: .topTrailing) {
+                Button { showTransportSettings = true } label: {
+                    Image(systemName: "gearshape")
+                        .font(.body)
+                        .foregroundStyle(.white.opacity(0.5))
+                        .padding(8)
+                        .background(.ultraThinMaterial, in: Circle())
+                        .overlay(Circle().strokeBorder(Color.white.opacity(0.06)))
                 }
+                .buttonStyle(LivePressStyle())
+                .padding(.top, 8)
+                .padding(.trailing, 16)
             }
         }
     }
 
     // MARK: - Shared
+
+    /// Subtle ghost link — replaces the old full-width "Log what I actually did"
+    /// card. Sits as a quiet italic line, doesn't compete with the actual content.
+    private var logActualGhostLink: some View {
+        Button { showLogSession = true } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "square.and.pencil")
+                Text("log what i actually did")
+                Spacer()
+            }
+            .font(.caption2.italic())
+            .foregroundStyle(.white.opacity(0.4))
+            .padding(.horizontal, 4)
+            .padding(.vertical, 6)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(LivePressStyle())
+    }
 
     private func errorBanner(_ msg: String) -> some View {
         Text(msg)

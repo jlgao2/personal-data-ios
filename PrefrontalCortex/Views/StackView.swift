@@ -125,6 +125,7 @@ private struct StackChecklistRow: View {
                 Image(systemName: checked ? "checkmark.circle.fill" : "circle")
                     .font(.body)
                     .foregroundStyle(checked ? .cyan : .secondary)
+                    .symbolEffect(.bounce.up, value: checked)
                     .frame(width: 22)
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(alignment: .firstTextBaseline) {
@@ -145,6 +146,7 @@ private struct StackChecklistRow: View {
             .padding(.vertical, 6)
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(LivePressStyle())
+        .sensoryFeedback(.selection, trigger: checked)
     }
 }

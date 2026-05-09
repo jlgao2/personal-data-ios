@@ -47,6 +47,7 @@
 		E42927CA28EAA0B4A475781C /* SocialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A76360A24D8213529C18D9 /* SocialView.swift */; };
 		E6198CDE48405800A2634F16 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE1DBFF025F3858AADA1B0D0 /* ContentView.swift */; };
 		E62D90EA2080592A48B57E34 /* TransportSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA6452022D4422ED78891D /* TransportSettings.swift */; };
+		E7F9BBBD49E779CDA91C3ED7 /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7385963EC643DCC8A9E08A28 /* CustomTabBar.swift */; };
 		EB4A08C8C796334D1FF917F8 /* LogSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8D2C3F808A75C620760CD12 /* LogSessionView.swift */; };
 		EB9F700A0D535ABE7DC4322F /* MedAlertsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B5ED653FA19D4E97A0FFDB /* MedAlertsView.swift */; };
 		F87336E98889727B383EB7A0 /* HeroWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F866D5118D26371A1E50CA4C /* HeroWidget.swift */; };
@@ -100,6 +101,7 @@
 		6B0A65C7B78D5885DE143AA0 /* WidgetSnapshotWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotWriter.swift; sourceTree = "<group>"; };
 		6C9E20F1413ED37D4F33F289 /* DataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoader.swift; sourceTree = "<group>"; };
 		7029F04609FE7711909E499F /* PrefrontalCortexWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefrontalCortexWidgetBundle.swift; sourceTree = "<group>"; };
+		7385963EC643DCC8A9E08A28 /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
 		744D3B8F91BCD3408F6AE99E /* WidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshot.swift; sourceTree = "<group>"; };
 		77E4E8E7120A9943314812A1 /* PrefrontalCortex.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrefrontalCortex.entitlements; sourceTree = "<group>"; };
 		7CCE7ED06BC81271F0ABADB1 /* VitalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VitalsView.swift; sourceTree = "<group>"; };
@@ -146,6 +148,7 @@
 				55BE6EE78BCEA78C7FA8AA9F /* AdaptedSessionView.swift */,
 				83295A3F857518282CCA3A31 /* AnimatedAuraBackground.swift */,
 				2CAED2897A33FF5197B09BB1 /* CorrelationsView.swift */,
+				7385963EC643DCC8A9E08A28 /* CustomTabBar.swift */,
 				FAB03DDF028F9C4D8D12EB92 /* DOWHeatmapView.swift */,
 				0DA6BE7054D5CF649868F94F /* GenomicsView.swift */,
 				ECEA1D8862C5E08A3460C10D /* HealthProfileView.swift */,
@@ -370,6 +373,7 @@
 				4BC742CDBF46C79B53F5D51F /* CalendarStore.swift in Sources */,
 				E6198CDE48405800A2634F16 /* ContentView.swift in Sources */,
 				4F285409BAB0591E3D6251C6 /* CorrelationsView.swift in Sources */,
+				E7F9BBBD49E779CDA91C3ED7 /* CustomTabBar.swift in Sources */,
 				BE5AEEEDF724661BB1B75D5D /* DOWHeatmapView.swift in Sources */,
 				24D36ECC16F49C9A171B0ACA /* DataLoader.swift in Sources */,
 				C8184071DD103801C2B4CDCC /* GenomicsView.swift in Sources */,

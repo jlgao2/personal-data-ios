@@ -32,6 +32,7 @@ struct MindfulEatingTodayView: View {
                     Image(systemName: todayChecked ? "checkmark.circle.fill" : "circle")
                         .font(.title3)
                         .foregroundStyle(todayChecked ? .cyan : .secondary)
+                        .symbolEffect(.bounce.up, value: todayChecked)
                         .frame(width: 28)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(todayChecked ? "Today: ate mindfully" : "Did you eat mindfully today?")
@@ -50,7 +51,9 @@ struct MindfulEatingTodayView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 6))
                 .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(LivePressStyle())
+            .sensoryFeedback(.selection, trigger: todayChecked)
+            .sensoryFeedback(.success, trigger: streakDays >= 5)
         }
         .onAppear { loadState() }
     }
