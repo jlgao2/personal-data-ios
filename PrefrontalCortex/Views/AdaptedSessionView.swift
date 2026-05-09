@@ -51,6 +51,9 @@ struct AdaptedSessionView: View {
                 }
             }
 
+            SkipWorkoutButton()
+                .padding(.top, -2)
+
             // Traffic light header card
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .firstTextBaseline) {

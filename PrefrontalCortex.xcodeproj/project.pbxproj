@@ -8,12 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		0E1038C8C4C2E62EB41B979F /* WeeklyRecapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5649DA3EFD054D4AA7AA70F /* WeeklyRecapView.swift */; };
+		1BD0FF0A0008D4853BA6F4F1 /* SkipReasonSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EB7C734F47BC9A65C683DF4 /* SkipReasonSheet.swift */; };
 		1C05C2299DF8415064EA68E4 /* PrefrontalCortexWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1FFDE9EACD9CA92CF2D15D5A /* TransportClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086AC9497BBB1C47E305924B /* TransportClient.swift */; };
 		24D36ECC16F49C9A171B0ACA /* DataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9E20F1413ED37D4F33F289 /* DataLoader.swift */; };
 		25DC0CD155FC7C015FF7B7AC /* PrepChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5923EEFFB65C137A165223 /* PrepChecklistView.swift */; };
 		29C78052C4A214F6F51FA299 /* ReachOutWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A95A0809E4577DA3EC2AAF /* ReachOutWidget.swift */; };
 		2B4D12FCD105FF1B61E5288E /* NextUpWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43041A3F451E0F87B0314EB3 /* NextUpWidget.swift */; };
+		302AB971A16966508FC9258B /* SkipWorkoutButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14D52D330B8B679F4F233E48 /* SkipWorkoutButton.swift */; };
 		3E5EB1BD37E297641D02F70D /* Achievements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775D0C30FD995189DCCE5936 /* Achievements.swift */; };
 		43B296DDF029BA9C6975094D /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B603FEC1FEE012D1E97610 /* HealthStore.swift */; };
 		446309996D2BF7FA01BFE74A /* StackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557DB433C84126FC75B2AF52 /* StackView.swift */; };
@@ -43,6 +45,7 @@
 		B66BA02EFC3537C4E19767E5 /* WorkoutSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395D10B3699FF24CB00CDF30 /* WorkoutSessionView.swift */; };
 		BBAE93EDE0A633BEB7329896 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4B45A3F87E88F76B4C774B /* App.swift */; };
 		BE5AEEEDF724661BB1B75D5D /* DOWHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB03DDF028F9C4D8D12EB92 /* DOWHeatmapView.swift */; };
+		C6DBBBF5ACE5356A50867B84 /* DailyLockChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F821BFAB9FCC767583C2884 /* DailyLockChip.swift */; };
 		C8184071DD103801C2B4CDCC /* GenomicsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6BE7054D5CF649868F94F /* GenomicsView.swift */; };
 		CB75433BC4B91CECB6D97424 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0EDEAAB13326E848CA3C3E2 /* Bundle.swift */; };
 		CC44B2755427C5F66DF61A6F /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4963CF4D114C9F3EE61477 /* TimelineView.swift */; };
@@ -89,9 +92,11 @@
 		0D7C3271B3F0795A38C496A8 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		0DA6BE7054D5CF649868F94F /* GenomicsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenomicsView.swift; sourceTree = "<group>"; };
 		13BEE568095D6B8EFE3A8A43 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		14D52D330B8B679F4F233E48 /* SkipWorkoutButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkipWorkoutButton.swift; sourceTree = "<group>"; };
 		1A5923EEFFB65C137A165223 /* PrepChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepChecklistView.swift; sourceTree = "<group>"; };
 		25B6CECAC5F23E6EDED54107 /* PlanTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanTabView.swift; sourceTree = "<group>"; };
 		2CAED2897A33FF5197B09BB1 /* CorrelationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorrelationsView.swift; sourceTree = "<group>"; };
+		2F821BFAB9FCC767583C2884 /* DailyLockChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyLockChip.swift; sourceTree = "<group>"; };
 		318E4861F4BDDB8438347982 /* PrefrontalCortex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PrefrontalCortex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		395D10B3699FF24CB00CDF30 /* WorkoutSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSessionView.swift; sourceTree = "<group>"; };
 		3BDA89289885460CF309A52B /* WorkoutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutsView.swift; sourceTree = "<group>"; };
@@ -121,6 +126,7 @@
 		85B5ED653FA19D4E97A0FFDB /* MedAlertsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedAlertsView.swift; sourceTree = "<group>"; };
 		9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingEventsView.swift; sourceTree = "<group>"; };
 		94DF600C39513829392C28AA /* ActionLoopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionLoopView.swift; sourceTree = "<group>"; };
+		9EB7C734F47BC9A65C683DF4 /* SkipReasonSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkipReasonSheet.swift; sourceTree = "<group>"; };
 		A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = PrefrontalCortexWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8D2C3F808A75C620760CD12 /* LogSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogSessionView.swift; sourceTree = "<group>"; };
 		AAD7BB2CAFD1A54852624CF9 /* StreakState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakState.swift; sourceTree = "<group>"; };
@@ -162,6 +168,7 @@
 				83295A3F857518282CCA3A31 /* AnimatedAuraBackground.swift */,
 				2CAED2897A33FF5197B09BB1 /* CorrelationsView.swift */,
 				7385963EC643DCC8A9E08A28 /* CustomTabBar.swift */,
+				2F821BFAB9FCC767583C2884 /* DailyLockChip.swift */,
 				FAB03DDF028F9C4D8D12EB92 /* DOWHeatmapView.swift */,
 				0DA6BE7054D5CF649868F94F /* GenomicsView.swift */,
 				ECEA1D8862C5E08A3460C10D /* HealthProfileView.swift */,
@@ -170,6 +177,8 @@
 				C559BC519573C512391D4DE7 /* MindfulEatingTodayView.swift */,
 				25B6CECAC5F23E6EDED54107 /* PlanTabView.swift */,
 				1A5923EEFFB65C137A165223 /* PrepChecklistView.swift */,
+				9EB7C734F47BC9A65C683DF4 /* SkipReasonSheet.swift */,
+				14D52D330B8B679F4F233E48 /* SkipWorkoutButton.swift */,
 				E1A76360A24D8213529C18D9 /* SocialView.swift */,
 				557DB433C84126FC75B2AF52 /* StackView.swift */,
 				5E4963CF4D114C9F3EE61477 /* TimelineView.swift */,
@@ -404,6 +413,7 @@
 				E7F9BBBD49E779CDA91C3ED7 /* CustomTabBar.swift in Sources */,
 				BE5AEEEDF724661BB1B75D5D /* DOWHeatmapView.swift in Sources */,
 				8609FE4D600799951626E833 /* DailyLock.swift in Sources */,
+				C6DBBBF5ACE5356A50867B84 /* DailyLockChip.swift in Sources */,
 				24D36ECC16F49C9A171B0ACA /* DataLoader.swift in Sources */,
 				C8184071DD103801C2B4CDCC /* GenomicsView.swift in Sources */,
 				56CA6B8D4F88CB18F16FCCE5 /* HealthProfileView.swift in Sources */,
@@ -416,6 +426,8 @@
 				6C71BEF25BDB39325C68C8C0 /* PlanTabView.swift in Sources */,
 				25DC0CD155FC7C015FF7B7AC /* PrepChecklistView.swift in Sources */,
 				745766DC65277A58544E36C8 /* SampleExporter.swift in Sources */,
+				1BD0FF0A0008D4853BA6F4F1 /* SkipReasonSheet.swift in Sources */,
+				302AB971A16966508FC9258B /* SkipWorkoutButton.swift in Sources */,
 				E42927CA28EAA0B4A475781C /* SocialView.swift in Sources */,
 				446309996D2BF7FA01BFE74A /* StackView.swift in Sources */,
 				A0E9DD4BD6CDBFA39E28B379 /* StreakState.swift in Sources */,

@@ -84,6 +84,7 @@ struct ContentView: View {
                     if let err = store.lastError { errorBanner(err) }
                     if let bundle = store.bundle {
                         TimelineView(bundle: bundle, calStore: calStore)
+                        DailyLockChip()
                         if let supps = bundle.profile?.supplement_stack, !supps.isEmpty {
                             StackView(items: supps)
                         }
