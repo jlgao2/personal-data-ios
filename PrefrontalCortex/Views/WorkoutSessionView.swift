@@ -1,4 +1,5 @@
 import SwiftUI
+import WidgetKit
 
 /// Full-screen workout tracker — presented via .fullScreenCover from
 /// AdaptedSessionView's "Start →" button. Parses the prescribed exercises
@@ -657,6 +658,48 @@ struct WorkoutSessionView: View {
         // Remember this exercise's working weight for next session.
         UserDefaults.standard.set(arr[index].weight, forKey: weightMemoryKey(for: key))
         saveState()
+        syncToLockScreen()
+    }
+
+    /// Mirror current workout state into the App-Group store the lock-screen
+    /// widget reads. Called on focus changes and after every set commit so
+    /// the widget always shows the next-set prompt that matches the in-app
+    /// active editor.
+    private func syncToLockScreen() {
+        guard let focused else {
+            LockScreenWorkoutStore.clear()
+            WidgetCenter.shared.reloadAllTimelines()
+            return
+        }
+        let entries = sets[focused.exerciseKey] ?? []
+        let raw = allPrescribedItems().first { exerciseKey($0) == focused.exerciseKey } ?? ""
+        let parsed = parseExercise(raw)
+
+        let mode: LockScreenWorkoutState.Mode = {
+            if parsed.isTime { return .time }
+            if parsed.isBand { return .band }
+            if parsed.isAMRAP { return .amrap }
+            return .free
+        }()
+
+        let entry = entries[safe: focused.setIndex] ?? .init(weight: 0, reps: 0, completed: false)
+
+        let state = LockScreenWorkoutState(
+            inProgress: true,
+            exerciseKey: focused.exerciseKey,
+            exerciseName: parsed.name,
+            setIndex: focused.setIndex,
+            totalSets: parsed.sets,
+            lastWeight: entry.weight,
+            lastReps: entry.reps,
+            stage: .weight,
+            stagedWeight: nil,
+            mode: mode,
+            bandColor: entry.bandColor,
+            unit: unit.label
+        )
+        LockScreenWorkoutStore.save(state)
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     private func formattedWeight(_ w: Double) -> String {
@@ -726,9 +769,11 @@ struct WorkoutSessionView: View {
         for (k, arr) in sortedSetsKeys() {
             if let firstPending = arr.firstIndex(where: { !$0.completed }) {
                 focused = Focus(exerciseKey: k, setIndex: firstPending)
+                syncToLockScreen()
                 return
             }
         }
+        syncToLockScreen()
     }
 
     private func sortedSetsKeys() -> [(String, [SetEntry])] {
@@ -784,7 +829,15 @@ struct WorkoutSessionView: View {
         DailyLock.setWorkoutDone(source: .manual)
         _ = StreakState.refresh()
         _ = Achievements.refresh()
+        LockScreenWorkoutStore.clear()
+        WidgetCenter.shared.reloadAllTimelines()
         dismiss()
+    }
+}
+
+private extension Array {
+    subscript(safe i: Int) -> Element? {
+        indices.contains(i) ? self[i] : nil
     }
 }
 

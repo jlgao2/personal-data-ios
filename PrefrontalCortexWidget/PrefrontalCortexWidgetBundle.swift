@@ -7,5 +7,6 @@ struct PrefrontalCortexWidgetBundle: WidgetBundle {
         HeroWidget()
         SessionWidget()
         ReachOutWidget()
+        WorkoutLockWidget()
     }
 }

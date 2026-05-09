@@ -20,6 +20,9 @@ targets:
       - path: PrefrontalCortex
         excludes:
           - "**/.DS_Store"
+      - path: PrefrontalCortexShared
+        excludes:
+          - "**/.keep"
     info:
       path: PrefrontalCortex/Resources/Info.plist
       properties:
@@ -60,6 +63,9 @@ targets:
       - path: PrefrontalCortexWidget
         excludes:
           - "**/.DS_Store"
+      - path: PrefrontalCortexShared
+        excludes:
+          - "**/.keep"
     info:
       path: PrefrontalCortexWidget/Info.plist
       properties:
