@@ -42,6 +42,7 @@ targets:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
+        NSSupportsLiveActivities: true
     entitlements:
       path: PrefrontalCortex/Resources/PrefrontalCortex.entitlements
       properties:
@@ -55,6 +56,7 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     dependencies:
       - target: PrefrontalCortexWidget
+      - sdk: ActivityKit.framework
 
   PrefrontalCortexWidget:
     type: app-extension

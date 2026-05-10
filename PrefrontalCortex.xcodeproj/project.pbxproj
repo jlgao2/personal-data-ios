@@ -23,6 +23,7 @@
 		4BC742CDBF46C79B53F5D51F /* CalendarStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8B527DA8380933E8F6CA9A /* CalendarStore.swift */; };
 		4E4E8B6F9B3C7C6851B59A34 /* WorkoutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDA89289885460CF309A52B /* WorkoutsView.swift */; };
 		4F285409BAB0591E3D6251C6 /* CorrelationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAED2897A33FF5197B09BB1 /* CorrelationsView.swift */; };
+		50FA92CC72BF96986306EE14 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EA610BC0275EA22825B1E0B /* ActivityKit.framework */; };
 		5294CFD2CD1E8CC1AE387086 /* WorkoutLiveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1E720CAD6F60FDAD7F11F8 /* WorkoutLiveActivityAttributes.swift */; };
 		52C2DDA83F1CAAEA9CD92881 /* WorkoutSetButtonRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AFA9489B82B6746184A1EA4 /* WorkoutSetButtonRow.swift */; };
 		5306323CCA9DF60F878D9DCA /* MindfulEatingTodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C559BC519573C512391D4DE7 /* MindfulEatingTodayView.swift */; };
@@ -111,6 +112,7 @@
 		087ECBF6B1C16F87595783AC /* LockScreenWorkoutState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockScreenWorkoutState.swift; sourceTree = "<group>"; };
 		0D7C3271B3F0795A38C496A8 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		0DA6BE7054D5CF649868F94F /* GenomicsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenomicsView.swift; sourceTree = "<group>"; };
+		0EA610BC0275EA22825B1E0B /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
 		13BEE568095D6B8EFE3A8A43 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		14D52D330B8B679F4F233E48 /* SkipWorkoutButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkipWorkoutButton.swift; sourceTree = "<group>"; };
 		18202C69808A1D6591BB70A6 /* AchievementGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementGrid.swift; sourceTree = "<group>"; };
@@ -174,6 +176,17 @@
 		F866D5118D26371A1E50CA4C /* HeroWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroWidget.swift; sourceTree = "<group>"; };
 		FAB03DDF028F9C4D8D12EB92 /* DOWHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOWHeatmapView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F8E59BAEB14D91F6449D47A1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				50FA92CC72BF96986306EE14 /* ActivityKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		05E78D572BB4389103E0D1B2 /* Transport */ = {
@@ -241,6 +254,14 @@
 			path = PrefrontalCortexWidget;
 			sourceTree = "<group>";
 		};
+		4671836FEB051AF7F7D5B0CA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0EA610BC0275EA22825B1E0B /* ActivityKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		62397D79FFAC524A4F29CB29 /* PrefrontalCortex */ = {
 			isa = PBXGroup;
 			children = (
@@ -267,6 +288,7 @@
 				62397D79FFAC524A4F29CB29 /* PrefrontalCortex */,
 				F1CB09A516992C0F48C95470 /* PrefrontalCortexShared */,
 				3369153BB8E3E89E8216DA4D /* PrefrontalCortexWidget */,
+				4671836FEB051AF7F7D5B0CA /* Frameworks */,
 				A623912F3473E6F7BB93E5F9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -348,6 +370,7 @@
 			buildPhases = (
 				DC963F6AFE05F41A3A2ADFFB /* Sources */,
 				219B69B4DC70ACA3AF0D36B3 /* Resources */,
+				F8E59BAEB14D91F6449D47A1 /* Frameworks */,
 				739E58F6F1B5774FCD9E2639 /* Embed Foundation Extensions */,
 			);
 			buildRules = (

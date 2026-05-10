@@ -35,6 +35,8 @@
 	<string>Optional — write session annotations back to your health record.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Connect to your laptop on the same Wi-Fi to sync the daily bundle.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
