@@ -19,12 +19,13 @@ struct StageWeightDeltaIntent: AppIntent {
         state.stage = .reps
         LockScreenWorkoutStore.save(state)
         WidgetCenter.shared.reloadAllTimelines()
+        if #available(iOS 16.1, *) { await WorkoutLiveActivityRefresher.refresh() }
         return .result()
     }
 }
 
 /// Stage 2: pick a rep delta. Commits the set via WorkoutProgress, advances
-/// to the next set's stage 1, and refreshes the widget.
+/// to the next set's stage 1, and refreshes the widget + Live Activity.
 struct CommitRepDeltaIntent: AppIntent {
     static var title: LocalizedStringResource = "Commit rep delta"
     static var description = IntentDescription("Log this set with the given rep delta and advance.")
@@ -72,6 +73,7 @@ struct CommitRepDeltaIntent: AppIntent {
         state.lastReps = reps
         LockScreenWorkoutStore.save(state)
         WidgetCenter.shared.reloadAllTimelines()
+        if #available(iOS 16.1, *) { await WorkoutLiveActivityRefresher.refresh() }
         return .result()
     }
 }
@@ -99,6 +101,28 @@ struct BandColorCycleIntent: AppIntent {
         state.bandColor = Self.cycle[newIdx]
         state.stage = .reps
         LockScreenWorkoutStore.save(state)
+        WidgetCenter.shared.reloadAllTimelines()
+        if #available(iOS 16.1, *) { await WorkoutLiveActivityRefresher.refresh() }
+        return .result()
+    }
+}
+
+/// Powers the "End workout" button in the Dynamic Island expanded region.
+/// Flips inProgress=false, ends every Live Activity immediately, and
+/// reloads widget timelines so the rectangular widget reverts to NextUp.
+/// Intentionally NOT exposed on the lock-screen surface (per spec — too
+/// easy to fat-finger from a glanceable surface).
+struct EndWorkoutIntent: AppIntent {
+    static var title: LocalizedStringResource = "End workout"
+    static var description = IntentDescription("End the current workout session.")
+
+    init() {}
+
+    func perform() async throws -> some IntentResult {
+        var state = LockScreenWorkoutStore.load()
+        state.inProgress = false
+        LockScreenWorkoutStore.save(state)
+        if #available(iOS 16.1, *) { await WorkoutLiveActivityRefresher.endAllImmediate() }
         WidgetCenter.shared.reloadAllTimelines()
         return .result()
     }
