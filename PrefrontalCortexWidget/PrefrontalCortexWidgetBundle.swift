@@ -8,5 +8,8 @@ struct PrefrontalCortexWidgetBundle: WidgetBundle {
         SessionWidget()
         ReachOutWidget()
         WorkoutLockWidget()
+        if #available(iOS 16.1, *) {
+            WorkoutLiveActivityConfiguration()
+        }
     }
 }
