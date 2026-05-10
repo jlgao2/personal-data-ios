@@ -78,6 +78,7 @@
 		EB9F700A0D535ABE7DC4322F /* MedAlertsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B5ED653FA19D4E97A0FFDB /* MedAlertsView.swift */; };
 		F18E420171D9D5D4879F1560 /* LockScreenWorkoutState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ECBF6B1C16F87595783AC /* LockScreenWorkoutState.swift */; };
 		F87336E98889727B383EB7A0 /* HeroWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F866D5118D26371A1E50CA4C /* HeroWidget.swift */; };
+		FF5852BB4E9D41E1B6954129 /* WorkoutLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1111B4684CFCF0D31D50AB66 /* WorkoutLiveActivity.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,6 +114,7 @@
 		0D7C3271B3F0795A38C496A8 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		0DA6BE7054D5CF649868F94F /* GenomicsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenomicsView.swift; sourceTree = "<group>"; };
 		0EA610BC0275EA22825B1E0B /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
+		1111B4684CFCF0D31D50AB66 /* WorkoutLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutLiveActivity.swift; sourceTree = "<group>"; };
 		13BEE568095D6B8EFE3A8A43 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		14D52D330B8B679F4F233E48 /* SkipWorkoutButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkipWorkoutButton.swift; sourceTree = "<group>"; };
 		18202C69808A1D6591BB70A6 /* AchievementGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementGrid.swift; sourceTree = "<group>"; };
@@ -274,6 +276,7 @@
 				96BC6E7ABE69D3C3B7306C7C /* EventKit */,
 				D575155092A8BF6D78EBDAEA /* Game */,
 				99B7FCA4D3EE0A87E124C182 /* HealthKit */,
+				D41DFC96B52ADCFB95AA2610 /* LiveActivity */,
 				AA918D206966EEA7D609BB10 /* Models */,
 				E48D21CD4EAC12F89A5258A2 /* Resources */,
 				05E78D572BB4389103E0D1B2 /* Transport */,
@@ -325,6 +328,14 @@
 				E0EDEAAB13326E848CA3C3E2 /* Bundle.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		D41DFC96B52ADCFB95AA2610 /* LiveActivity */ = {
+			isa = PBXGroup;
+			children = (
+				1111B4684CFCF0D31D50AB66 /* WorkoutLiveActivity.swift */,
+			);
+			path = LiveActivity;
 			sourceTree = "<group>";
 		};
 		D575155092A8BF6D78EBDAEA /* Game */ = {
@@ -523,6 +534,7 @@
 				0E1038C8C4C2E62EB41B979F /* WeeklyRecapView.swift in Sources */,
 				7343D34926F03AE8AF097838 /* WidgetSnapshotWriter.swift in Sources */,
 				76E84494A3BF3BC32B5C2C1D /* WorkoutAppIntents.swift in Sources */,
+				FF5852BB4E9D41E1B6954129 /* WorkoutLiveActivity.swift in Sources */,
 				5294CFD2CD1E8CC1AE387086 /* WorkoutLiveActivityAttributes.swift in Sources */,
 				D74903BAD4A86E004D2C0DC3 /* WorkoutLiveActivityRefresher.swift in Sources */,
 				B05C079A3A5AAAC162F7C057 /* WorkoutProgress.swift in Sources */,
