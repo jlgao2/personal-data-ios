@@ -14,6 +14,9 @@ struct WidgetSnapshotWriter {
     }
 
     static func derive(bundle: IOSBundle, stackDoneToday: Int) -> WidgetSnapshotShape {
+        let todayDeviationCount: Int = DeviationEntry.Surface.allCases.reduce(0) { acc, s in
+            acc + (DeviationStore.entry(for: s) == nil ? 0 : 1)
+        }
         let stateRank = ["off": 0, "drift": 1, "ok": 2, "none": 3]
         let scored: [(card: ActionCard, state: String)] = bundle.action_loop.map { c in
             let s = computeCardStateForWidget(actual: c.latest_value,
@@ -66,7 +69,8 @@ struct WidgetSnapshotWriter {
             reach_out_top_days: firstReach?.days_since_last,
             next_up: computeNextUp(bundle: bundle),
             streak_current: streak.current,
-            streak_longest: streak.longest
+            streak_longest: streak.longest,
+            deviation_count_today: todayDeviationCount
         )
     }
 
@@ -192,6 +196,7 @@ struct WidgetSnapshotShape: Codable {
     let next_up: [WidgetNextUpItem]?
     let streak_current: Int?
     let streak_longest: Int?
+    let deviation_count_today: Int?
 }
 
 /// Mirror of NextUpItem — duplicated across the target boundary.
