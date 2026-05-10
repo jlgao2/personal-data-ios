@@ -31,6 +31,7 @@
 		5AECEE170CC49677E2116618 /* TransportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620539A39D5D3A8FC3B28392 /* TransportSettingsView.swift */; };
 		668EDC57AE37EAA8D7E29BA9 /* LockScreenWorkoutState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ECBF6B1C16F87595783AC /* LockScreenWorkoutState.swift */; };
 		6C71BEF25BDB39325C68C8C0 /* PlanTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B6CECAC5F23E6EDED54107 /* PlanTabView.swift */; };
+		6E76C7CA32EF72A9A30605F6 /* WorkoutLiveActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01314D648185C065F23DFC9F /* WorkoutLiveActivityView.swift */; };
 		716A4D7400B5C5F7C547398A /* StreakChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0600827102ADAF309F9B0E5D /* StreakChip.swift */; };
 		7319F7561F8A5DB47F9D99BD /* VitalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCE7ED06BC81271F0ABADB1 /* VitalsView.swift */; };
 		7343D34926F03AE8AF097838 /* WidgetSnapshotWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0A65C7B78D5885DE143AA0 /* WidgetSnapshotWriter.swift */; };
@@ -103,6 +104,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		01314D648185C065F23DFC9F /* WorkoutLiveActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutLiveActivityView.swift; sourceTree = "<group>"; };
 		0600827102ADAF309F9B0E5D /* StreakChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakChip.swift; sourceTree = "<group>"; };
 		06A95A0809E4577DA3EC2AAF /* ReachOutWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReachOutWidget.swift; sourceTree = "<group>"; };
 		086AC9497BBB1C47E305924B /* TransportClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportClient.swift; sourceTree = "<group>"; };
@@ -233,6 +235,7 @@
 				06A95A0809E4577DA3EC2AAF /* ReachOutWidget.swift */,
 				E6AA2869E1C0DBFEBBF5F912 /* SessionWidget.swift */,
 				744D3B8F91BCD3408F6AE99E /* WidgetSnapshot.swift */,
+				01314D648185C065F23DFC9F /* WorkoutLiveActivityView.swift */,
 				B6BD088CD1C8749096E90D11 /* WorkoutLockWidget.swift */,
 			);
 			path = PrefrontalCortexWidget;
@@ -440,6 +443,7 @@
 				CF7A90662B8C77A79955E596 /* WorkoutAppIntents.swift in Sources */,
 				AD8B0BD81B80C5D281A113A6 /* WorkoutLiveActivityAttributes.swift in Sources */,
 				80478231B3FF56CC81D9731B /* WorkoutLiveActivityRefresher.swift in Sources */,
+				6E76C7CA32EF72A9A30605F6 /* WorkoutLiveActivityView.swift in Sources */,
 				B8D65EC34CDADE6DAD7CAF46 /* WorkoutLockWidget.swift in Sources */,
 				D3253230DCC97C24F9CB1C44 /* WorkoutProgress.swift in Sources */,
 				52C2DDA83F1CAAEA9CD92881 /* WorkoutSetButtonRow.swift in Sources */,
