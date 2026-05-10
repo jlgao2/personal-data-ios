@@ -64,7 +64,7 @@ struct WorkoutLockView: View {
             Text(baselineText(s))
                 .font(.caption2.monospaced())
                 .foregroundStyle(.white.opacity(0.7))
-            buttonRow(for: s)
+            WorkoutSetButtonRow(state: s, layout: .compactLockScreen)
         }
         .padding(8)
     }
@@ -104,52 +104,4 @@ struct WorkoutLockView: View {
         return "\(trimmed) \(unit)"
     }
 
-    @ViewBuilder
-    private func buttonRow(for s: LockScreenWorkoutState) -> some View {
-        switch (s.mode, s.stage) {
-        case (.time, _):
-            HStack(spacing: 6) {
-                lockButton("−5s",  intent: CommitRepDeltaIntent(delta: -5),  color: .orange)
-                lockButton("=",    intent: CommitRepDeltaIntent(delta: 0),   color: .white)
-                lockButton("+5s",  intent: CommitRepDeltaIntent(delta: 5),   color: .green)
-            }
-        case (.amrap, _):
-            HStack(spacing: 6) {
-                lockButton("−1",  intent: CommitRepDeltaIntent(delta: -1),  color: .orange)
-                lockButton("=",   intent: CommitRepDeltaIntent(delta: 0),   color: .white)
-                lockButton("+1",  intent: CommitRepDeltaIntent(delta: 1),   color: .green)
-            }
-        case (.band, .weight):
-            HStack(spacing: 6) {
-                lockButton("←",  intent: BandColorCycleIntent(direction: -1), color: .orange)
-                lockButton("=",  intent: BandColorCycleIntent(direction: 0),  color: .white)
-                lockButton("→",  intent: BandColorCycleIntent(direction: 1),  color: .green)
-            }
-        case (.band, .reps), (.free, .reps):
-            HStack(spacing: 6) {
-                lockButton("−1",  intent: CommitRepDeltaIntent(delta: -1), color: .orange)
-                lockButton("=",   intent: CommitRepDeltaIntent(delta: 0),  color: .white)
-                lockButton("+1",  intent: CommitRepDeltaIntent(delta: 1),  color: .green)
-            }
-        case (.free, .weight):
-            HStack(spacing: 6) {
-                lockButton("−5",  intent: StageWeightDeltaIntent(delta: -5), color: .orange)
-                lockButton("=",   intent: StageWeightDeltaIntent(delta: 0),  color: .white)
-                lockButton("+5",  intent: StageWeightDeltaIntent(delta: 5),  color: .green)
-            }
-        }
-    }
-
-    private func lockButton<I: AppIntent>(_ label: String, intent: I, color: Color) -> some View {
-        Button(intent: intent) {
-            Text(label)
-                .font(.caption.monospaced().weight(.semibold))
-                .foregroundStyle(color)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 4)
-                .background(color.opacity(0.15), in: Capsule())
-                .overlay(Capsule().strokeBorder(color.opacity(0.4)))
-        }
-        .buttonStyle(.plain)
-    }
 }
