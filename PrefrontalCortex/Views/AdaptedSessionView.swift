@@ -7,6 +7,8 @@ struct AdaptedSessionView: View {
     let prescribedSession: DayProtocol?
     var onStart: (() -> Void)? = nil
 
+    @State private var showDeviationSheet: Bool = false
+
     private var lightColor: Color {
         switch adapted.traffic_light {
         case "green": return .green
@@ -51,8 +53,29 @@ struct AdaptedSessionView: View {
                 }
             }
 
+            if let entry = DeviationStore.entry(for: .workout) {
+                DeviationChip(entry: entry)
+            }
+
+            // The skip link still long-presses to commit, but now opens
+            // the unified DeviationSheet — skip is one branch alongside
+            // "did less / did more / did different / off-plan".
             SkipWorkoutButton()
                 .padding(.top, -2)
+                .simultaneousGesture(
+                    TapGesture().onEnded {
+                        showDeviationSheet = true
+                    }
+                )
+                .sheet(isPresented: $showDeviationSheet) {
+                    DeviationSheet(
+                        surface:    .workout,
+                        surfaceID:  nil,
+                        prescribed: prescribedSession?.session ?? (adapted.prescribed ?? ""),
+                        defaultDirection: .didDifferent
+                    )
+                    .presentationDetents([.large])
+                }
 
             // Traffic light header card
             VStack(alignment: .leading, spacing: 8) {
