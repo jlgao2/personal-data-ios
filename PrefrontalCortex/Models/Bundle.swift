@@ -14,6 +14,12 @@ struct IOSBundle: Codable {
     let social: SocialSummary?
     let calendar: [CalendarEvent]?
     let correlations: CorrelationsBundle?
+    let deviations_summary: DeviationsSummary?
+}
+
+struct DeviationsSummary: Codable {
+    let by_surface: [String: Int]?
+    let total: Int?
 }
 
 struct CorrelationsBundle: Codable {
