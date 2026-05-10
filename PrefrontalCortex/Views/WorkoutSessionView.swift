@@ -90,6 +90,13 @@ struct WorkoutSessionView: View {
                     .buttonStyle(LivePressStyle())
             }
         }
+        .safeAreaInset(edge: .top) {
+            if #available(iOS 16.2, *) {
+                LiveActivityDisabledBanner()
+                    .padding(.horizontal, 16)
+                    .padding(.top, 4)
+            }
+        }
         .preferredColorScheme(.dark)
         .onAppear { loadState() }
         .alert("Custom weight (\(unit.label))",
@@ -669,6 +676,9 @@ struct WorkoutSessionView: View {
         guard let focused else {
             LockScreenWorkoutStore.clear()
             WidgetCenter.shared.reloadAllTimelines()
+            if #available(iOS 16.2, *) {
+                Task { await WorkoutLiveActivity.endAll(immediate: true) }
+            }
             return
         }
         let entries = sets[focused.exerciseKey] ?? []
@@ -700,6 +710,15 @@ struct WorkoutSessionView: View {
         )
         LockScreenWorkoutStore.save(state)
         WidgetCenter.shared.reloadAllTimelines()
+
+        // Live Activity: idempotent — start() refreshes if one already exists,
+        // requests a new one otherwise. Title combines the day key with the
+        // session label from the prescribed bundle when present.
+        if #available(iOS 16.2, *) {
+            let title = (prescribed?.session ?? dayKey)
+            WorkoutLiveActivity.start(state: state, title: title)
+            Task { await WorkoutLiveActivity.refresh() }
+        }
     }
 
     private func formattedWeight(_ w: Double) -> String {
@@ -830,6 +849,9 @@ struct WorkoutSessionView: View {
         _ = StreakState.refresh()
         _ = Achievements.refresh()
         LockScreenWorkoutStore.clear()
+        if #available(iOS 16.2, *) {
+            await WorkoutLiveActivity.endAll(immediate: true)
+        }
         WidgetCenter.shared.reloadAllTimelines()
         dismiss()
     }
