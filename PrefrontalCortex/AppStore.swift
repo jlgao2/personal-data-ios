@@ -69,6 +69,9 @@ final class AppStore: ObservableObject {
 
     func bootstrap() async {
         loading = true
+        if #available(iOS 16.2, *) {
+            WorkoutLiveActivity.cleanupOrphans()
+        }
         do {
             try await HealthStore.shared.authorize()
         } catch {
