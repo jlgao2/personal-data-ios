@@ -71,6 +71,7 @@
 		D3253230DCC97C24F9CB1C44 /* WorkoutProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62F80D16783B706861D059EC /* WorkoutProgress.swift */; };
 		D74903BAD4A86E004D2C0DC3 /* WorkoutLiveActivityRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97FA9237BBC0015E8109A9AE /* WorkoutLiveActivityRefresher.swift */; };
 		DEB9C0366CA9C847FEA8178B /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = E684221FB8C4DDAB93886C3A /* Keychain.swift */; };
+		E1668F76D44536D3F8DF6884 /* TransportClient+Deviations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87FB26F790F564D40819B5D4 /* TransportClient+Deviations.swift */; };
 		E1EA7C66BD1B1A4417719864 /* ActionLoopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DF600C39513829392C28AA /* ActionLoopView.swift */; };
 		E42927CA28EAA0B4A475781C /* SocialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A76360A24D8213529C18D9 /* SocialView.swift */; };
 		E6198CDE48405800A2634F16 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE1DBFF025F3858AADA1B0D0 /* ContentView.swift */; };
@@ -155,6 +156,7 @@
 		811EB99A1E50FC654ADFA6DE /* LiveActivityDisabledBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityDisabledBanner.swift; sourceTree = "<group>"; };
 		83295A3F857518282CCA3A31 /* AnimatedAuraBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedAuraBackground.swift; sourceTree = "<group>"; };
 		85B5ED653FA19D4E97A0FFDB /* MedAlertsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedAlertsView.swift; sourceTree = "<group>"; };
+		87FB26F790F564D40819B5D4 /* TransportClient+Deviations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransportClient+Deviations.swift"; sourceTree = "<group>"; };
 		8AFA9489B82B6746184A1EA4 /* WorkoutSetButtonRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSetButtonRow.swift; sourceTree = "<group>"; };
 		909ABB88111C9071D9D0D7E0 /* AchievementUnlockToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementUnlockToast.swift; sourceTree = "<group>"; };
 		9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingEventsView.swift; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 			children = (
 				E684221FB8C4DDAB93886C3A /* Keychain.swift */,
 				086AC9497BBB1C47E305924B /* TransportClient.swift */,
+				87FB26F790F564D40819B5D4 /* TransportClient+Deviations.swift */,
 				BBEA6452022D4422ED78891D /* TransportSettings.swift */,
 				5F3BFED9D38B1C9E08BF83F2 /* WorkoutUnit.swift */,
 			);
@@ -533,6 +536,7 @@
 				716A4D7400B5C5F7C547398A /* StreakChip.swift in Sources */,
 				A0E9DD4BD6CDBFA39E28B379 /* StreakState.swift in Sources */,
 				CC44B2755427C5F66DF61A6F /* TimelineView.swift in Sources */,
+				E1668F76D44536D3F8DF6884 /* TransportClient+Deviations.swift in Sources */,
 				1FFDE9EACD9CA92CF2D15D5A /* TransportClient.swift in Sources */,
 				E62D90EA2080592A48B57E34 /* TransportSettings.swift in Sources */,
 				5AECEE170CC49677E2116618 /* TransportSettingsView.swift in Sources */,
