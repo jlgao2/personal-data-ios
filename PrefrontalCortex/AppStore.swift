@@ -63,11 +63,16 @@ final class AppStore: ObservableObject {
         if let b = bundle {
             WidgetSnapshotWriter.update(from: b)
         }
+        refreshAlternateHistory()
         await pullHealthKitWorkouts()
         evaluateGameState()
     }
 
     func bootstrap() async {
+        // One-shot migration: legacy workout-skip-reason keys → unified
+        // Deviation rows (guarded by did_migrate_skip_keys_v1).
+        DeviationStore.migrateLegacySkipKeys()
+
         loading = true
         if #available(iOS 16.2, *) {
             WorkoutLiveActivity.cleanupOrphans()
@@ -94,6 +99,7 @@ final class AppStore: ObservableObject {
         if let b = bundle {
             WidgetSnapshotWriter.update(from: b)
         }
+        refreshAlternateHistory()
         if let cards = bundle?.action_loop {
             let fired = await NotificationManager.shared.diffAndNotify(
                 cards: cards, live: liveValues)
@@ -104,6 +110,21 @@ final class AppStore: ObservableObject {
         await pullHealthKitWorkouts()
         evaluateGameState()
         loading = false
+    }
+
+    /// Refresh "what instead" alternate history (last 90d sport counts).
+    private func refreshAlternateHistory() {
+        guard let workouts = bundle?.workouts else { return }
+        var counts: [String: Int] = [:]
+        let cutoff = Date().addingTimeInterval(-90 * 24 * 3600)
+        let iso = ISO8601DateFormatter()
+        for w in workouts {
+            guard let s = w.sport, !s.isEmpty,
+                  let d = iso.date(from: w.ts_start), d > cutoff else { continue }
+            let pretty = s.replacingOccurrences(of: "_", with: " ").capitalized
+            counts[pretty, default: 0] += 1
+        }
+        DeviationStore.setAlternateHistory(counts)
     }
 
     func refreshLive() async {
