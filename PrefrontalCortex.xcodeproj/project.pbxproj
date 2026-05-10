@@ -38,6 +38,7 @@
 		74FF728E96F1EB6620090A28 /* WorkoutUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3BFED9D38B1C9E08BF83F2 /* WorkoutUnit.swift */; };
 		76E84494A3BF3BC32B5C2C1D /* WorkoutAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431D549E8B4DB3874AC980CE /* WorkoutAppIntents.swift */; };
 		7A4C635333E2854D71DA3FB7 /* TransportStatusPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F14F8C03DE8FED59DE62CC /* TransportStatusPill.swift */; };
+		80478231B3FF56CC81D9731B /* WorkoutLiveActivityRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97FA9237BBC0015E8109A9AE /* WorkoutLiveActivityRefresher.swift */; };
 		853D3DD8D11A848C33019AFC /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7C3271B3F0795A38C496A8 /* Notifications.swift */; };
 		8609FE4D600799951626E833 /* DailyLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BFDAE622A44DF5B46A68467 /* DailyLock.swift */; };
 		8B900A5894617B309551CB31 /* AchievementGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18202C69808A1D6591BB70A6 /* AchievementGrid.swift */; };
@@ -64,6 +65,7 @@
 		CF7A90662B8C77A79955E596 /* WorkoutAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431D549E8B4DB3874AC980CE /* WorkoutAppIntents.swift */; };
 		D290CD07C1BAC2EF3DCDAE79 /* WidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744D3B8F91BCD3408F6AE99E /* WidgetSnapshot.swift */; };
 		D3253230DCC97C24F9CB1C44 /* WorkoutProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62F80D16783B706861D059EC /* WorkoutProgress.swift */; };
+		D74903BAD4A86E004D2C0DC3 /* WorkoutLiveActivityRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97FA9237BBC0015E8109A9AE /* WorkoutLiveActivityRefresher.swift */; };
 		DEB9C0366CA9C847FEA8178B /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = E684221FB8C4DDAB93886C3A /* Keychain.swift */; };
 		E1EA7C66BD1B1A4417719864 /* ActionLoopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94DF600C39513829392C28AA /* ActionLoopView.swift */; };
 		E42927CA28EAA0B4A475781C /* SocialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A76360A24D8213529C18D9 /* SocialView.swift */; };
@@ -148,6 +150,7 @@
 		909ABB88111C9071D9D0D7E0 /* AchievementUnlockToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementUnlockToast.swift; sourceTree = "<group>"; };
 		9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingEventsView.swift; sourceTree = "<group>"; };
 		94DF600C39513829392C28AA /* ActionLoopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionLoopView.swift; sourceTree = "<group>"; };
+		97FA9237BBC0015E8109A9AE /* WorkoutLiveActivityRefresher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutLiveActivityRefresher.swift; sourceTree = "<group>"; };
 		9EB7C734F47BC9A65C683DF4 /* SkipReasonSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkipReasonSheet.swift; sourceTree = "<group>"; };
 		A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = PrefrontalCortexWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8D2C3F808A75C620760CD12 /* LogSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogSessionView.swift; sourceTree = "<group>"; };
@@ -326,6 +329,7 @@
 				087ECBF6B1C16F87595783AC /* LockScreenWorkoutState.swift */,
 				431D549E8B4DB3874AC980CE /* WorkoutAppIntents.swift */,
 				2B1E720CAD6F60FDAD7F11F8 /* WorkoutLiveActivityAttributes.swift */,
+				97FA9237BBC0015E8109A9AE /* WorkoutLiveActivityRefresher.swift */,
 				62F80D16783B706861D059EC /* WorkoutProgress.swift */,
 				8AFA9489B82B6746184A1EA4 /* WorkoutSetButtonRow.swift */,
 			);
@@ -435,6 +439,7 @@
 				D290CD07C1BAC2EF3DCDAE79 /* WidgetSnapshot.swift in Sources */,
 				CF7A90662B8C77A79955E596 /* WorkoutAppIntents.swift in Sources */,
 				AD8B0BD81B80C5D281A113A6 /* WorkoutLiveActivityAttributes.swift in Sources */,
+				80478231B3FF56CC81D9731B /* WorkoutLiveActivityRefresher.swift in Sources */,
 				B8D65EC34CDADE6DAD7CAF46 /* WorkoutLockWidget.swift in Sources */,
 				D3253230DCC97C24F9CB1C44 /* WorkoutProgress.swift in Sources */,
 				52C2DDA83F1CAAEA9CD92881 /* WorkoutSetButtonRow.swift in Sources */,
@@ -492,6 +497,7 @@
 				7343D34926F03AE8AF097838 /* WidgetSnapshotWriter.swift in Sources */,
 				76E84494A3BF3BC32B5C2C1D /* WorkoutAppIntents.swift in Sources */,
 				5294CFD2CD1E8CC1AE387086 /* WorkoutLiveActivityAttributes.swift in Sources */,
+				D74903BAD4A86E004D2C0DC3 /* WorkoutLiveActivityRefresher.swift in Sources */,
 				B05C079A3A5AAAC162F7C057 /* WorkoutProgress.swift in Sources */,
 				B66BA02EFC3537C4E19767E5 /* WorkoutSessionView.swift in Sources */,
 				95AD68B2BF347C3CD2629AB6 /* WorkoutSetButtonRow.swift in Sources */,
