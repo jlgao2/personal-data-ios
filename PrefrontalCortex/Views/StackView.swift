@@ -8,6 +8,7 @@ struct StackView: View {
     let items: [Supplement]
     @State private var morningDone: Bool = false
     @State private var eveningDone: Bool = false
+    @State private var deviationSheetPeriod: Period? = nil
 
     private var morningSupps: [Supplement] {
         items.filter { !Self.isEvening($0.timing) }
@@ -42,6 +43,10 @@ struct StackView: View {
                         glowColor: .yellow,
                         onTap: { toggle(period: .morning) }
                     )
+                    .onLongPressGesture(minimumDuration: 0.6) {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        deviationSheetPeriod = .morning
+                    }
                 }
                 if !eveningSupps.isEmpty {
                     PeriodButton(
@@ -51,15 +56,31 @@ struct StackView: View {
                         glowColor: .indigo,
                         onTap: { toggle(period: .evening) }
                     )
+                    .onLongPressGesture(minimumDuration: 0.6) {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        deviationSheetPeriod = .evening
+                    }
                 }
             }
         }
         .onAppear { loadState() }
+        .sheet(item: $deviationSheetPeriod) { period in
+            DeviationSheet(
+                surface:    period == .morning ? .suppsAM : .suppsPM,
+                surfaceID:  nil,
+                prescribed: period == .morning ? "AM stack" : "PM stack",
+                defaultDirection: .didLess
+            )
+            .presentationDetents([.large])
+        }
     }
 
     // MARK: - State
 
-    private enum Period: String { case morning, evening }
+    private enum Period: String, Identifiable {
+        case morning, evening
+        var id: String { rawValue }
+    }
 
     private var progressLabel: String {
         let done = (morningDone ? morningSupps.count : 0) +
