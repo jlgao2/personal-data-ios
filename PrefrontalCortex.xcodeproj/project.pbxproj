@@ -27,6 +27,7 @@
 		5294CFD2CD1E8CC1AE387086 /* WorkoutLiveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B1E720CAD6F60FDAD7F11F8 /* WorkoutLiveActivityAttributes.swift */; };
 		52C2DDA83F1CAAEA9CD92881 /* WorkoutSetButtonRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AFA9489B82B6746184A1EA4 /* WorkoutSetButtonRow.swift */; };
 		5306323CCA9DF60F878D9DCA /* MindfulEatingTodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C559BC519573C512391D4DE7 /* MindfulEatingTodayView.swift */; };
+		541D77E37AFB66648AA37EC7 /* DeviationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 189AC30EA16A4ED953187B31 /* DeviationSheet.swift */; };
 		56CA6B8D4F88CB18F16FCCE5 /* HealthProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECEA1D8862C5E08A3460C10D /* HealthProfileView.swift */; };
 		59EAC5A452EFEAAB4697D94A /* AdaptedSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BE6EE78BCEA78C7FA8AA9F /* AdaptedSessionView.swift */; };
 		5AECEE170CC49677E2116618 /* TransportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620539A39D5D3A8FC3B28392 /* TransportSettingsView.swift */; };
@@ -121,6 +122,7 @@
 		13BEE568095D6B8EFE3A8A43 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		14D52D330B8B679F4F233E48 /* SkipWorkoutButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkipWorkoutButton.swift; sourceTree = "<group>"; };
 		18202C69808A1D6591BB70A6 /* AchievementGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementGrid.swift; sourceTree = "<group>"; };
+		189AC30EA16A4ED953187B31 /* DeviationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviationSheet.swift; sourceTree = "<group>"; };
 		1A5923EEFFB65C137A165223 /* PrepChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepChecklistView.swift; sourceTree = "<group>"; };
 		25B6CECAC5F23E6EDED54107 /* PlanTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanTabView.swift; sourceTree = "<group>"; };
 		2B1E720CAD6F60FDAD7F11F8 /* WorkoutLiveActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutLiveActivityAttributes.swift; sourceTree = "<group>"; };
@@ -221,6 +223,7 @@
 				2CAED2897A33FF5197B09BB1 /* CorrelationsView.swift */,
 				7385963EC643DCC8A9E08A28 /* CustomTabBar.swift */,
 				2F821BFAB9FCC767583C2884 /* DailyLockChip.swift */,
+				189AC30EA16A4ED953187B31 /* DeviationSheet.swift */,
 				FAB03DDF028F9C4D8D12EB92 /* DOWHeatmapView.swift */,
 				0DA6BE7054D5CF649868F94F /* GenomicsView.swift */,
 				ECEA1D8862C5E08A3460C10D /* HealthProfileView.swift */,
@@ -515,6 +518,7 @@
 				8609FE4D600799951626E833 /* DailyLock.swift in Sources */,
 				C6DBBBF5ACE5356A50867B84 /* DailyLockChip.swift in Sources */,
 				24D36ECC16F49C9A171B0ACA /* DataLoader.swift in Sources */,
+				541D77E37AFB66648AA37EC7 /* DeviationSheet.swift in Sources */,
 				5E9DA7525997CB6A94A257F0 /* DeviationStore.swift in Sources */,
 				C8184071DD103801C2B4CDCC /* GenomicsView.swift in Sources */,
 				56CA6B8D4F88CB18F16FCCE5 /* HealthProfileView.swift in Sources */,
