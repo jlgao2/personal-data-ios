@@ -21,6 +21,7 @@
 		43B296DDF029BA9C6975094D /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B603FEC1FEE012D1E97610 /* HealthStore.swift */; };
 		446309996D2BF7FA01BFE74A /* StackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557DB433C84126FC75B2AF52 /* StackView.swift */; };
 		4BC742CDBF46C79B53F5D51F /* CalendarStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8B527DA8380933E8F6CA9A /* CalendarStore.swift */; };
+		4DC9B1D241E0C091A5DBF455 /* DeviationChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0656A1BA4B87D154358C89 /* DeviationChip.swift */; };
 		4E4E8B6F9B3C7C6851B59A34 /* WorkoutsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDA89289885460CF309A52B /* WorkoutsView.swift */; };
 		4F285409BAB0591E3D6251C6 /* CorrelationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAED2897A33FF5197B09BB1 /* CorrelationsView.swift */; };
 		50FA92CC72BF96986306EE14 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EA610BC0275EA22825B1E0B /* ActivityKit.framework */; };
@@ -115,6 +116,7 @@
 		06A95A0809E4577DA3EC2AAF /* ReachOutWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReachOutWidget.swift; sourceTree = "<group>"; };
 		086AC9497BBB1C47E305924B /* TransportClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportClient.swift; sourceTree = "<group>"; };
 		087ECBF6B1C16F87595783AC /* LockScreenWorkoutState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockScreenWorkoutState.swift; sourceTree = "<group>"; };
+		0C0656A1BA4B87D154358C89 /* DeviationChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviationChip.swift; sourceTree = "<group>"; };
 		0D7C3271B3F0795A38C496A8 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		0DA6BE7054D5CF649868F94F /* GenomicsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenomicsView.swift; sourceTree = "<group>"; };
 		0EA610BC0275EA22825B1E0B /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
@@ -223,6 +225,7 @@
 				2CAED2897A33FF5197B09BB1 /* CorrelationsView.swift */,
 				7385963EC643DCC8A9E08A28 /* CustomTabBar.swift */,
 				2F821BFAB9FCC767583C2884 /* DailyLockChip.swift */,
+				0C0656A1BA4B87D154358C89 /* DeviationChip.swift */,
 				189AC30EA16A4ED953187B31 /* DeviationSheet.swift */,
 				FAB03DDF028F9C4D8D12EB92 /* DOWHeatmapView.swift */,
 				0DA6BE7054D5CF649868F94F /* GenomicsView.swift */,
@@ -518,6 +521,7 @@
 				8609FE4D600799951626E833 /* DailyLock.swift in Sources */,
 				C6DBBBF5ACE5356A50867B84 /* DailyLockChip.swift in Sources */,
 				24D36ECC16F49C9A171B0ACA /* DataLoader.swift in Sources */,
+				4DC9B1D241E0C091A5DBF455 /* DeviationChip.swift in Sources */,
 				541D77E37AFB66648AA37EC7 /* DeviationSheet.swift in Sources */,
 				5E9DA7525997CB6A94A257F0 /* DeviationStore.swift in Sources */,
 				C8184071DD103801C2B4CDCC /* GenomicsView.swift in Sources */,
