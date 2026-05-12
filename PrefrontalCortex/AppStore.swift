@@ -11,6 +11,11 @@ final class AppStore: ObservableObject {
     @Published var lastTransportError: TransportError?
     @Published var pendingAchievements: [Achievement] = []
 
+    // MARK: - iCloud manifest state (replaces HTTP /v1/health polling)
+    @Published var manifest: Manifest?
+    @Published var lastSeenBundleSha: String?
+    private var metadataQuery: NSMetadataQuery?
+
     /// Fetch today's HKWorkout entries, POST any new ones to /v1/sessions,
     /// and mark the daily-lock workout slot done if at least one ≥10 min
     /// workout exists today.
@@ -72,6 +77,48 @@ final class AppStore: ObservableObject {
         _ = StreakState.refresh()
     }
 
+    func startObservingManifest() {
+        guard metadataQuery == nil else { return }
+        let q = NSMetadataQuery()
+        q.searchScopes  = [NSMetadataQueryUbiquitousDocumentsScope]
+        q.predicate     = NSPredicate(format: "%K == %@",
+                                      NSMetadataItemFSNameKey, "manifest.json")
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(manifestQueryDidUpdate(_:)),
+            name: .NSMetadataQueryDidUpdate, object: q)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(manifestQueryDidUpdate(_:)),
+            name: .NSMetadataQueryDidFinishGathering, object: q)
+        q.start()
+        metadataQuery = q
+    }
+
+    @objc private func manifestQueryDidUpdate(_ note: Notification) {
+        Task { @MainActor in await applyLatestManifest() }
+    }
+
+    @MainActor
+    func applyLatestManifest() async {
+        do {
+            let m = try await iCloudTransport.shared.fetchManifest()
+            self.manifest = m
+            // Re-fetch bundle ONLY if the sha actually changed.
+            if let newSha = m.bundle_sha256, newSha != lastSeenBundleSha {
+                if let data = try? await iCloudTransport.shared.fetchBundle() {
+                    if let decoded = try? JSONDecoder().decode(IOSBundle.self, from: data) {
+                        self.bundle = decoded
+                        self.lastSeenBundleSha = newSha
+                        if let b = self.bundle { WidgetSnapshotWriter.update(from: b) }
+                        refreshAlternateHistory()
+                    }
+                }
+            }
+        } catch {
+            // Container unavailable or decode failure — fall through to
+            // on-device cache via DataLoader (legacy path still in place).
+        }
+    }
+
     func uploadTodaySamples() async {
         if let msg = await SampleExporter.uploadDaily() {
             lastUploadResult = msg
@@ -119,14 +166,7 @@ final class AppStore: ObservableObject {
 
     func refreshOnForeground() async {
         await CalendarStore.shared.loadUpcoming()
-        do {
-            bundle = try await DataLoader.shared.loadBundle()
-            lastTransportError = nil
-        } catch let e as TransportError {
-            lastTransportError = e
-        } catch {
-            // non-transport errors are surfaced on next bootstrap
-        }
+        await applyLatestManifest()
         await refreshLive()
         if let b = bundle {
             WidgetSnapshotWriter.update(from: b)
@@ -153,6 +193,7 @@ final class AppStore: ObservableObject {
         DeviationStore.migrateLegacySkipKeys()
 
         loading = true
+        startObservingManifest()
         if #available(iOS 16.2, *) {
             WorkoutLiveActivity.cleanupOrphans()
             // Bring the always-on band Live Activity up. Idempotent: if
@@ -169,15 +210,7 @@ final class AppStore: ObservableObject {
         _ = await NotificationManager.shared.requestAuthorization()
         // Calendar — silently load if previously authorized
         await CalendarStore.shared.loadUpcoming()
-        do {
-            bundle = try await DataLoader.shared.loadBundle()
-            lastTransportError = nil
-        } catch let e as TransportError {
-            lastTransportError = e
-            lastError = e.localizedDescription
-        } catch {
-            lastError = "Bundle load failed: \(error.localizedDescription)"
-        }
+        await applyLatestManifest()
         await refreshLive()
         // Push a slim snapshot to the App Group so widgets can read it.
         if let b = bundle {
