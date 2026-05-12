@@ -115,6 +115,15 @@ struct AdaptedSessionView: View {
                 ), reason: nil)
             }
 
+            // Structured cardio recommendation banner (cardio-tagged days
+            // with a skewed sport-spread). Sits above the prescribed list
+            // because it's framing — "here's how this week's mix shapes
+            // which curated option fits today" — not a rewrite. Prescription
+            // below stays untouched.
+            if let suggestion = adapted.cardio_suggestion {
+                CardioSuggestionBanner(suggestion: suggestion)
+            }
+
             // Static prescribed list (rehab/warmup/main/core), shown after the
             // adjustments so the user can see the underlying program.
             if let p = prescribedSession {
@@ -127,6 +136,53 @@ struct AdaptedSessionView: View {
                 .padding(.top, 4)
             }
         }
+    }
+}
+
+/// Cyan-stroked banner that surfaces `adapted.cardio_suggestion` as a
+/// recommendation tile. Headline reads "SUGGESTED · {MODALITY}" with the
+/// `reason` rendered as a footnote-italic subtitle below; `alternatives`
+/// (when non-empty) get appended as a small monospaced tail so the user
+/// sees the runner-up picks without leaving the screen.
+private struct CardioSuggestionBanner: View {
+    let suggestion: CardioSuggestion
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 6) {
+                Text("SUGGESTED · \(suggestion.modality.uppercased())")
+                    .font(.caption.monospaced().weight(.bold))
+                    .tracking(2)
+                    .foregroundStyle(.cyan)
+                if suggestion.from_prescribed {
+                    // Tiny "from menu" affordance so the user knows the
+                    // pick is inside today's curated options rather than
+                    // engine-introduced.
+                    Text("· FROM MENU")
+                        .font(.caption2.monospaced())
+                        .foregroundStyle(.secondary)
+                        .tracking(1.5)
+                }
+                Spacer()
+            }
+            Text(suggestion.reason)
+                .font(.footnote.italic())
+                .foregroundStyle(.white.opacity(0.9))
+            if let alts = suggestion.alternatives, !alts.isEmpty {
+                Text("or: \(alts.joined(separator: " · "))")
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 2)
+            }
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.black.opacity(0.35))
+        .overlay(
+            RoundedRectangle(cornerRadius: 4)
+                .strokeBorder(Color.cyan.opacity(0.6), lineWidth: 1)
+        )
+        .padding(.top, 4)
     }
 }
 
