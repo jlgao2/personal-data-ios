@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "profile_metadata": {
+    "subject": {
+      "name": "Your name here",
+      "age": null,
+      "sex": null
+    },
+    "purpose": "Personal training + recovery dashboard"
+  },
+  "daily_protocol": {
+    "Day 1": {
+      "session": "Push + core",
+      "intensity_class": "heavy",
+      "tags": ["push", "core"],
+      "main": [],
+      "rehab": [],
+      "warmup": [],
+      "core": []
+    },
+    "Day 2": {
+      "session": "Pull + lower + core",
+      "intensity_class": "heavy",
+      "tags": ["pull", "lower", "core"],
+      "main": [],
+      "rehab": [],
+      "warmup": [],
+      "core": []
+    },
+    "Day 3": {
+      "session": "Push + core",
+      "intensity_class": "heavy",
+      "tags": ["push", "core"],
+      "main": [],
+      "rehab": [],
+      "warmup": [],
+      "core": []
+    },
+    "Day 4": {
+      "session": "Pull + lower + core",
+      "intensity_class": "heavy",
+      "tags": ["pull", "lower", "core"],
+      "main": [],
+      "rehab": [],
+      "warmup": [],
+      "core": []
+    },
+    "Day 5": {
+      "session": "Yoga / mobility",
+      "intensity_class": "light",
+      "tags": ["yoga", "mobility"],
+      "main": [],
+      "rehab": [],
+      "warmup": [],
+      "core": []
+    },
+    "Day 6": {
+      "session": "Cardio / outdoor",
+      "intensity_class": "moderate",
+      "tags": ["cardio", "outdoor"],
+      "main": [],
+      "rehab": [],
+      "warmup": [],
+      "core": []
+    },
+    "Day 7": {
+      "session": "Rest",
+      "intensity_class": "rest",
+      "tags": [],
+      "main": [],
+      "rehab": [],
+      "warmup": [],
+      "core": []
+    }
+  }
+}

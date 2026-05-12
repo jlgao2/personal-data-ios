@@ -64,12 +64,3 @@ struct TransportSettingsView: View {
         }
     }
 }
-
-// Temporary placeholder — replaced by the real ConfigRecoveryView in Task 21.
-struct ConfigRecoveryView: View {
-    var body: some View {
-        Text("Backups & reset coming soon.")
-            .foregroundStyle(.secondary)
-            .padding()
-    }
-}

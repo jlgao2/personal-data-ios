@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "exercises": [
+    {
+      "key": "push_ups",
+      "name": "Push-ups",
+      "mode": "amrap",
+      "default_reps": 10,
+      "tags": ["push", "bodyweight"]
+    },
+    {
+      "key": "bodyweight_squats",
+      "name": "Bodyweight squats",
+      "mode": "amrap",
+      "default_reps": 15,
+      "tags": ["lower", "bodyweight"]
+    },
+    {
+      "key": "plank",
+      "name": "Plank",
+      "mode": "time",
+      "default_seconds": 30,
+      "tags": ["core", "isometric"]
+    }
+  ]
+}

@@ -158,3 +158,33 @@ extension iCloudTransport {
         }
     }
 }
+
+extension iCloudTransport {
+    /// List backup directories newest-first. Returns directory NAMES (ISO timestamps).
+    func listBackups() throws -> [String] {
+        guard let dir = iCloudPaths.backupsDir else {
+            throw iCloudTransportError.containerUnavailable
+        }
+        let urls = (try? FileManager.default.contentsOfDirectory(
+            at: dir, includingPropertiesForKeys: nil)) ?? []
+        return urls
+            .filter { (try? $0.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true }
+            .map { $0.lastPathComponent }
+            .sorted(by: >)
+    }
+
+    /// Copy each `*.json` from `backups/<id>/` over `config/`.
+    func restoreBackup(_ id: String) async throws {
+        guard let backupsDir = iCloudPaths.backupsDir,
+              let configDir  = iCloudPaths.configDir else {
+            throw iCloudTransportError.containerUnavailable
+        }
+        let src = backupsDir.appendingPathComponent(id)
+        let fm = FileManager.default
+        let files = (try? fm.contentsOfDirectory(at: src, includingPropertiesForKeys: nil)) ?? []
+        for f in files where f.pathExtension == "json" {
+            let dest = configDir.appendingPathComponent(f.lastPathComponent)
+            _ = try? fm.replaceItemAt(dest, withItemAt: f)
+        }
+    }
+}
