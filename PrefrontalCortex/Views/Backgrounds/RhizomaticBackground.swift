@@ -34,6 +34,16 @@ struct RhizomaticBackground: View {
         .ignoresSafeArea()
     }
 
+    // Hoisted palette — see RiverOfGlowBackground for the rationale (Swift
+    // type-checker times out on inline mixed Color expressions inside the
+    // larger FlowFieldConfig initialiser).
+    private static let palette: [Color] = [
+        .cyan,
+        .teal,
+        Color(hue: 0.35, saturation: 0.6, brightness: 0.9),
+        Color.green.opacity(0.7),
+    ]
+
     private static let config = FlowFieldConfig(
         particleCount: 500,
         trailCapacity: 18,
@@ -41,12 +51,7 @@ struct RhizomaticBackground: View {
         maxLifespan: 11.0,
         velocityLerp: 0.10,
         speed: 0.0025,
-        palette: [
-            .cyan,
-            .teal,
-            Color(hue: 0.35, saturation: 0.6, brightness: 0.9),
-            Color.green.opacity(0.7),
-        ],
+        palette: palette,
         // Curl noise rotated 90° gives lateral spread (the "rhizomatic" feel).
         // A second low-frequency noise term reverses direction in places so
         // streams fork laterally rather than all flowing one way.

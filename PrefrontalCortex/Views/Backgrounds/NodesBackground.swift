@@ -45,6 +45,14 @@ struct NodesBackground: View {
         (0.82, 0.80),
     ]
 
+    // Hoisted palette — see RiverOfGlowBackground for the rationale.
+    private static let palette: [Color] = [
+        .cyan,
+        .indigo,
+        Color.purple.opacity(0.7),
+        Color.blue.opacity(0.5),
+    ]
+
     private static let config = FlowFieldConfig(
         particleCount: 500,
         trailCapacity: 18,
@@ -52,12 +60,7 @@ struct NodesBackground: View {
         maxLifespan: 9.5,
         velocityLerp: 0.12,
         speed: 0.0030,
-        palette: [
-            .cyan,
-            .indigo,
-            Color.purple.opacity(0.7),
-            Color.blue.opacity(0.5),
-        ],
+        palette: NodesBackground.palette,
         // 30% attractor force + 70% curl noise. The attractor sum is taken
         // weighted by 1/d² (clamped) and normalized so the result is roughly
         // unit-length; without normalization, particles inside a hub would

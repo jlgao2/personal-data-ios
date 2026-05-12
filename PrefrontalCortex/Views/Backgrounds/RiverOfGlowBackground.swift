@@ -31,6 +31,19 @@ struct RiverOfGlowBackground: View {
         .ignoresSafeArea()
     }
 
+    // Palette is hoisted to its own typed constant so Swift's type-checker
+    // doesn't have to infer through the mixed Color expressions
+    // (Color.opacity, Color(hue:saturation:brightness:), shorthand) inside
+    // the larger FlowFieldConfig initialiser. Without this hoist the
+    // inline literal causes "compiler unable to type-check in reasonable
+    // time" build failures.
+    private static let palette: [Color] = [
+        .cyan,
+        Color(hue: 0.55, saturation: 0.7, brightness: 0.9),
+        Color.orange.opacity(0.6),
+        Color.yellow.opacity(0.4),
+    ]
+
     private static let config = FlowFieldConfig(
         particleCount: 500,
         trailCapacity: 22,  // longer trails for the streak look
@@ -38,12 +51,7 @@ struct RiverOfGlowBackground: View {
         maxLifespan: 9.0,
         velocityLerp: 0.14,  // a bit snappier so the laminar shape stays crisp
         speed: 0.0040,       // fastest of the four panes — it's a river
-        palette: [
-            .cyan,
-            Color(hue: 0.55, saturation: 0.7, brightness: 0.9),
-            Color.orange.opacity(0.6),
-            Color.yellow.opacity(0.4),
-        ],
+        palette: palette,
         // Strong x-direction flow with a gentle vertical wiggle. Tilted
         // slightly so the river isn't perfectly horizontal (more painterly
         // when it angles 5–10° down across the frame).

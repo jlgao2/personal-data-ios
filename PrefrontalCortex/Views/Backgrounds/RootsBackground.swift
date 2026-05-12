@@ -32,6 +32,14 @@ struct RootsBackground: View {
         .ignoresSafeArea()
     }
 
+    // Hoisted palette — see RiverOfGlowBackground for the rationale.
+    private static let palette: [Color] = [
+        Color(hue: 0.08, saturation: 0.7, brightness: 0.6),
+        Color.orange.opacity(0.5),
+        Color(hue: 0.65, saturation: 0.4, brightness: 0.3),
+        Color.brown.opacity(0.6),
+    ]
+
     private static let config = FlowFieldConfig(
         particleCount: 500,
         trailCapacity: 20,
@@ -39,12 +47,7 @@ struct RootsBackground: View {
         maxLifespan: 10.0,
         velocityLerp: 0.09,  // slower lerp — roots feel deliberate
         speed: 0.0028,
-        palette: [
-            Color(hue: 0.08, saturation: 0.7, brightness: 0.6),
-            Color.orange.opacity(0.5),
-            Color(hue: 0.65, saturation: 0.4, brightness: 0.3),
-            Color.brown.opacity(0.6),
-        ],
+        palette: palette,
         // Vertical-downward bias. Curl provides the lateral wiggle/branch,
         // but the y-component is `|curl_y| + 0.5` so it never reverses
         // (roots don't grow up). The lateral component is curl_x scaled
