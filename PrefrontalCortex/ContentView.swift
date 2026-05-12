@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit  // UITabBar.appearance() override — see ContentView.init()
 
 struct ContentView: View {
     @EnvironmentObject var store: AppStore
@@ -9,6 +10,23 @@ struct ContentView: View {
     @State private var showWorkoutSession = false
     /// User-controlled feature gates (see TransportSettingsView).
     @AppStorage("med_alerts_enabled") private var medAlertsEnabled: Bool = false
+
+    /// Hide the system `UITabBar` globally before any view appears.
+    /// Each tab also has `.toolbar(.hidden, for: .tabBar)` inside its
+    /// NavigationStack, but those modifiers only take effect once the tab's
+    /// content has been laid out — during the first render frame (and during
+    /// `loading == true` when `store.bundle == nil`) the standard system
+    /// tab bar would otherwise briefly appear alongside our `CustomTabBar`
+    /// overlay. This UIKit appearance override removes that flash entirely.
+    init() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = .clear
+        appearance.shadowColor = .clear
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
+        UITabBar.appearance().isHidden = true
+    }
 
     enum Tab: String, Hashable {
         case interventions, plan, profile, social
