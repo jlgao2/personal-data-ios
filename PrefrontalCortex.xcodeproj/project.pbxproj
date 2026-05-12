@@ -11,12 +11,14 @@
 		1BD0FF0A0008D4853BA6F4F1 /* SkipReasonSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EB7C734F47BC9A65C683DF4 /* SkipReasonSheet.swift */; };
 		1C05C2299DF8415064EA68E4 /* PrefrontalCortexWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1FFDE9EACD9CA92CF2D15D5A /* TransportClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086AC9497BBB1C47E305924B /* TransportClient.swift */; };
+		2345603C556A84E4184ECC79 /* iCloudTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6528130DCBAA78C9D9F367FE /* iCloudTransport.swift */; };
 		24D36ECC16F49C9A171B0ACA /* DataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C9E20F1413ED37D4F33F289 /* DataLoader.swift */; };
 		25DC0CD155FC7C015FF7B7AC /* PrepChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5923EEFFB65C137A165223 /* PrepChecklistView.swift */; };
 		29C78052C4A214F6F51FA299 /* ReachOutWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A95A0809E4577DA3EC2AAF /* ReachOutWidget.swift */; };
 		2B4D12FCD105FF1B61E5288E /* NextUpWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43041A3F451E0F87B0314EB3 /* NextUpWidget.swift */; };
 		302AB971A16966508FC9258B /* SkipWorkoutButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14D52D330B8B679F4F233E48 /* SkipWorkoutButton.swift */; };
 		3648793088A6D0C167B8D65A /* AchievementUnlockToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909ABB88111C9071D9D0D7E0 /* AchievementUnlockToast.swift */; };
+		38811677B5A066C364997490 /* Manifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3528157226FF2B1EB42A0BC1 /* Manifest.swift */; };
 		3E5EB1BD37E297641D02F70D /* Achievements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775D0C30FD995189DCCE5936 /* Achievements.swift */; };
 		43B296DDF029BA9C6975094D /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B603FEC1FEE012D1E97610 /* HealthStore.swift */; };
 		446309996D2BF7FA01BFE74A /* StackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557DB433C84126FC75B2AF52 /* StackView.swift */; };
@@ -156,6 +158,7 @@
 		2CAED2897A33FF5197B09BB1 /* CorrelationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorrelationsView.swift; sourceTree = "<group>"; };
 		2F821BFAB9FCC767583C2884 /* DailyLockChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyLockChip.swift; sourceTree = "<group>"; };
 		318E4861F4BDDB8438347982 /* PrefrontalCortex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PrefrontalCortex.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3528157226FF2B1EB42A0BC1 /* Manifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Manifest.swift; sourceTree = "<group>"; };
 		395D10B3699FF24CB00CDF30 /* WorkoutSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSessionView.swift; sourceTree = "<group>"; };
 		3BDA89289885460CF309A52B /* WorkoutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutsView.swift; sourceTree = "<group>"; };
 		43041A3F451E0F87B0314EB3 /* NextUpWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextUpWidget.swift; sourceTree = "<group>"; };
@@ -181,6 +184,7 @@
 		6136BB9719DE848FE949B115 /* PrefrontalCortexWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrefrontalCortexWidget.entitlements; sourceTree = "<group>"; };
 		620539A39D5D3A8FC3B28392 /* TransportSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportSettingsView.swift; sourceTree = "<group>"; };
 		62F80D16783B706861D059EC /* WorkoutProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutProgress.swift; sourceTree = "<group>"; };
+		6528130DCBAA78C9D9F367FE /* iCloudTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iCloudTransport.swift; sourceTree = "<group>"; };
 		6B0A65C7B78D5885DE143AA0 /* WidgetSnapshotWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotWriter.swift; sourceTree = "<group>"; };
 		6C9E20F1413ED37D4F33F289 /* DataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoader.swift; sourceTree = "<group>"; };
 		7029F04609FE7711909E499F /* PrefrontalCortexWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefrontalCortexWidgetBundle.swift; sourceTree = "<group>"; };
@@ -244,6 +248,7 @@
 			isa = PBXGroup;
 			children = (
 				79058244CC8254C72CE824A1 /* iCloudPaths.swift */,
+				6528130DCBAA78C9D9F367FE /* iCloudTransport.swift */,
 				E684221FB8C4DDAB93886C3A /* Keychain.swift */,
 				086AC9497BBB1C47E305924B /* TransportClient.swift */,
 				87FB26F790F564D40819B5D4 /* TransportClient+Deviations.swift */,
@@ -389,6 +394,7 @@
 			isa = PBXGroup;
 			children = (
 				E0EDEAAB13326E848CA3C3E2 /* Bundle.swift */,
+				3528157226FF2B1EB42A0BC1 /* Manifest.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -608,6 +614,7 @@
 				AA543D4F992C1FEDB1D7CD85 /* LiveActivityDisabledBanner.swift in Sources */,
 				668EDC57AE37EAA8D7E29BA9 /* LockScreenWorkoutState.swift in Sources */,
 				EB4A08C8C796334D1FF917F8 /* LogSessionView.swift in Sources */,
+				38811677B5A066C364997490 /* Manifest.swift in Sources */,
 				EB9F700A0D535ABE7DC4322F /* MedAlertsView.swift in Sources */,
 				5306323CCA9DF60F878D9DCA /* MindfulEatingTodayView.swift in Sources */,
 				AF38E6D41D55F5640F6CC978 /* NodesBackground.swift in Sources */,
@@ -648,6 +655,7 @@
 				74FF728E96F1EB6620090A28 /* WorkoutUnit.swift in Sources */,
 				4E4E8B6F9B3C7C6851B59A34 /* WorkoutsView.swift in Sources */,
 				79EB35971D2A18BADCE9DE70 /* iCloudPaths.swift in Sources */,
+				2345603C556A84E4184ECC79 /* iCloudTransport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
