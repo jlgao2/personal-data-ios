@@ -116,20 +116,32 @@ private struct HRZoneBar: View {
     ]
 
     var body: some View {
-        HStack(spacing: 0) {
-            ForEach(0..<6, id: \.self) { z in
-                let v = Double(zones["zone_\(z)"] ?? 0)
-                let pct = total > 0 ? v / total : 0
-                if pct > 0 {
-                    Rectangle()
-                        .fill(WorkoutsView_HRZoneBar_color(z))
-                        .frame(width: max(2, CGFloat(pct) * 280))
-                        .frame(height: 4)
+        // Previously each segment was sized as `pct * 280` (hardcoded
+        // width). Sum of all six segments could reach ~280pt; combined
+        // with WorkoutRow's horizontal padding (24pt) and the planTab's
+        // outer padding (32pt), the row's intrinsic width crept into
+        // 336pt territory — which overflows the safe-area width on
+        // iPhone SE / 13 mini (375pt) and with display zoom on. That
+        // overflow propagated all the way up through the planTab
+        // ScrollView, manifesting as a sideways scroll on the entire
+        // tab. Switch to a GeometryReader-sized bar so the segments
+        // share the parent's actual width.
+        GeometryReader { geo in
+            HStack(spacing: 0) {
+                ForEach(0..<6, id: \.self) { z in
+                    let v = Double(zones["zone_\(z)"] ?? 0)
+                    let pct = total > 0 ? v / total : 0
+                    if pct > 0 {
+                        Rectangle()
+                            .fill(WorkoutsView_HRZoneBar_color(z))
+                            .frame(width: max(2, CGFloat(pct) * geo.size.width),
+                                   height: 4)
+                    }
                 }
             }
+            .clipShape(RoundedRectangle(cornerRadius: 1))
         }
         .frame(height: 4)
-        .clipShape(RoundedRectangle(cornerRadius: 1))
     }
 }
 
