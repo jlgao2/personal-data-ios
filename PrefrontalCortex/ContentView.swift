@@ -30,28 +30,22 @@ struct ContentView: View {
     private let tabBarClearance: CGFloat = 76
 
     var body: some View {
-        ZStack {
-            ThematicBackground(tab: selectedTab.thematic)
-                .ignoresSafeArea()
-
-            // TabView's content area carries a system-managed opaque
-            // background by default — it would mask the ZStack's backdrop
-            // layer above. Hide the system tab-bar background AND set the
-            // TabView surface itself to clear so the thematic backdrop
-            // actually shows through behind every pane.
-            TabView(selection: $selectedTab) {
-                interventionsTab
-                    .tag(Tab.interventions)
-                planTab
-                    .tag(Tab.plan)
-                socialTab
-                    .tag(Tab.social)
-                profileTab
-                    .tag(Tab.profile)
-            }
-            .background(Color.clear)
-            .toolbarBackground(Color.clear, for: .tabBar)
-            .toolbarBackground(.hidden, for: .tabBar)
+        // Per-tab ZStack approach: every tab paints its OWN
+        // ThematicBackground inside its NavigationStack. The outer TabView
+        // never has to be transparent — it just hosts the four tabs, each
+        // of which is fully responsible for its own backdrop. This sidesteps
+        // SwiftUI's TabView system-managed opaque container, which ignores
+        // `.background(Color.clear)` and `.toolbarBackground(...)` modifiers
+        // in practice.
+        TabView(selection: $selectedTab) {
+            interventionsTab
+                .tag(Tab.interventions)
+            planTab
+                .tag(Tab.plan)
+            socialTab
+                .tag(Tab.social)
+            profileTab
+                .tag(Tab.profile)
         }
         .preferredColorScheme(.dark)
         .tint(.cyan)
@@ -105,6 +99,8 @@ struct ContentView: View {
     @ViewBuilder
     private var interventionsTab: some View {
         NavigationStack {
+          ZStack {
+            ThematicBackground(tab: .interventions).ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     if store.loading {
@@ -171,6 +167,7 @@ struct ContentView: View {
                 .padding(.top, 8)
                 .padding(.trailing, 16)
             }
+          }
         }
     }
 
@@ -179,7 +176,12 @@ struct ContentView: View {
     @ViewBuilder
     private var planTab: some View {
         NavigationStack {
-            ScrollView {
+          ZStack {
+            ThematicBackground(tab: .plan).ignoresSafeArea()
+            // Force vertical-only ScrollView axis; SwiftUI's default is
+            // .vertical but being explicit guards against accidental
+            // horizontal-axis enablement from nested modifiers.
+            ScrollView(.vertical) {
                 VStack(alignment: .leading, spacing: 28) {
                     if let bundle = store.bundle {
                         if let p = bundle.profile {
@@ -209,16 +211,17 @@ struct ContentView: View {
                         }
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
                 .padding(.top, 32)
                 .padding(.bottom, tabBarClearance)
             }
-            // Backdrop is rendered behind the TabView via `ThematicBackground`.
-            // Keep the ScrollView's own surface clear so it shows through.
+            // Backdrop lives in the per-tab ZStack above.
             .scrollContentBackground(.hidden)
             .background(Color.clear)
             .toolbar(.hidden, for: .navigationBar)
             .toolbar(.hidden, for: .tabBar)
+          }
         }
     }
 
@@ -227,6 +230,8 @@ struct ContentView: View {
     @ViewBuilder
     private var socialTab: some View {
         NavigationStack {
+          ZStack {
+            ThematicBackground(tab: .social).ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
                     if let s = store.bundle?.social {
@@ -242,12 +247,12 @@ struct ContentView: View {
                 .padding(.top, 32)
                 .padding(.bottom, tabBarClearance)
             }
-            // Backdrop is rendered behind the TabView via `ThematicBackground`.
-            // Keep the ScrollView's own surface clear so it shows through.
+            // Backdrop lives in the per-tab ZStack above.
             .scrollContentBackground(.hidden)
             .background(Color.clear)
             .toolbar(.hidden, for: .navigationBar)
             .toolbar(.hidden, for: .tabBar)
+          }
         }
     }
 
@@ -256,6 +261,8 @@ struct ContentView: View {
     @ViewBuilder
     private var profileTab: some View {
         NavigationStack {
+          ZStack {
+            ThematicBackground(tab: .profile).ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     if let bundle = store.bundle {
@@ -297,6 +304,7 @@ struct ContentView: View {
                 .padding(.top, 8)
                 .padding(.trailing, 16)
             }
+          }
         }
     }
 
