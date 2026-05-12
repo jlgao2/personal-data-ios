@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit  // UITabBar.appearance() override — see ContentView.init()
 
 struct ContentView: View {
     @EnvironmentObject var store: AppStore
@@ -10,23 +9,6 @@ struct ContentView: View {
     @State private var showWorkoutSession = false
     /// User-controlled feature gates (see TransportSettingsView).
     @AppStorage("med_alerts_enabled") private var medAlertsEnabled: Bool = false
-
-    /// Hide the system `UITabBar` globally before any view appears.
-    /// Each tab also has `.toolbar(.hidden, for: .tabBar)` inside its
-    /// NavigationStack, but those modifiers only take effect once the tab's
-    /// content has been laid out — during the first render frame (and during
-    /// `loading == true` when `store.bundle == nil`) the standard system
-    /// tab bar would otherwise briefly appear alongside our `CustomTabBar`
-    /// overlay. This UIKit appearance override removes that flash entirely.
-    init() {
-        let appearance = UITabBarAppearance()
-        appearance.configureWithTransparentBackground()
-        appearance.backgroundColor = .clear
-        appearance.shadowColor = .clear
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
-        UITabBar.appearance().isHidden = true
-    }
 
     enum Tab: String, Hashable {
         case interventions, plan, profile, social
@@ -48,22 +30,23 @@ struct ContentView: View {
     private let tabBarClearance: CGFloat = 76
 
     var body: some View {
-        // Per-tab ZStack approach: every tab paints its OWN
-        // ThematicBackground inside its NavigationStack. The outer TabView
-        // never has to be transparent — it just hosts the four tabs, each
-        // of which is fully responsible for its own backdrop. This sidesteps
-        // SwiftUI's TabView system-managed opaque container, which ignores
-        // `.background(Color.clear)` and `.toolbarBackground(...)` modifiers
-        // in practice.
-        TabView(selection: $selectedTab) {
-            interventionsTab
-                .tag(Tab.interventions)
-            planTab
-                .tag(Tab.plan)
-            socialTab
-                .tag(Tab.social)
-            profileTab
-                .tag(Tab.profile)
+        // Manual tab switching via ZStack + conditional content. Replaces
+        // the previous TabView wiring because hiding the system tab bar
+        // (via .toolbar(.hidden, for: .tabBar) or UITabBar appearance
+        // override) causes iOS to enable horizontal swipe-between-tabs
+        // as an alternative navigation gesture — there's no SwiftUI
+        // modifier to disable that swipe while keeping the tab bar
+        // hidden. With manual switching, only the CustomTabBar buttons
+        // can change `selectedTab`; no horizontal swipe is bound to
+        // anything, so the "plan tab moves sideways as a piece" bug
+        // disappears.
+        ZStack {
+            switch selectedTab {
+            case .interventions: interventionsTab
+            case .plan:          planTab
+            case .social:        socialTab
+            case .profile:       profileTab
+            }
         }
         .preferredColorScheme(.dark)
         .tint(.cyan)
