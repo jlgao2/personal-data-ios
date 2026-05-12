@@ -34,6 +34,11 @@ struct ContentView: View {
             ThematicBackground(tab: selectedTab.thematic)
                 .ignoresSafeArea()
 
+            // TabView's content area carries a system-managed opaque
+            // background by default — it would mask the ZStack's backdrop
+            // layer above. Hide the system tab-bar background AND set the
+            // TabView surface itself to clear so the thematic backdrop
+            // actually shows through behind every pane.
             TabView(selection: $selectedTab) {
                 interventionsTab
                     .tag(Tab.interventions)
@@ -44,6 +49,9 @@ struct ContentView: View {
                 profileTab
                     .tag(Tab.profile)
             }
+            .background(Color.clear)
+            .toolbarBackground(Color.clear, for: .tabBar)
+            .toolbarBackground(.hidden, for: .tabBar)
         }
         .preferredColorScheme(.dark)
         .tint(.cyan)

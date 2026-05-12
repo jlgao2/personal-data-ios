@@ -371,14 +371,16 @@ private struct StreakRow: View {
                 .font(.caption2.monospaced())
                 .foregroundStyle(.secondary)
                 .tracking(1.5)
+            // 84 cells in one row would overflow when each one demands its
+            // intrinsic aspect-ratio'd width — instead let the HStack share
+            // the available width equally and pin a fixed row height. No
+            // aspect-ratio enforcement; cells just inherit equal flex slots.
             HStack(spacing: 2) {
                 ForEach(Array(states.enumerated()), id: \.offset) { _, s in
-                    Rectangle()
-                        .fill(colorFor(s))
-                        .aspectRatio(1, contentMode: .fit)
+                    Rectangle().fill(colorFor(s))
                 }
             }
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, minHeight: 8, idealHeight: 12, maxHeight: 14)
         }
     }
 }
