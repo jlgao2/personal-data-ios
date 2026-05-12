@@ -10,6 +10,17 @@ struct ContentView: View {
 
     enum Tab: String, Hashable {
         case interventions, plan, profile, social
+
+        /// Map to the router's mirrored enum. Kept here so the router file
+        /// doesn't have to import or reach into `ContentView`.
+        var thematic: ThematicBackground.Tab {
+            switch self {
+            case .interventions: return .interventions
+            case .plan:          return .plan
+            case .social:        return .social
+            case .profile:       return .profile
+            }
+        }
     }
 
     /// Bottom padding added to every tab's scroll content so the last item
@@ -17,15 +28,20 @@ struct ContentView: View {
     private let tabBarClearance: CGFloat = 76
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            interventionsTab
-                .tag(Tab.interventions)
-            planTab
-                .tag(Tab.plan)
-            socialTab
-                .tag(Tab.social)
-            profileTab
-                .tag(Tab.profile)
+        ZStack {
+            ThematicBackground(tab: selectedTab.thematic)
+                .ignoresSafeArea()
+
+            TabView(selection: $selectedTab) {
+                interventionsTab
+                    .tag(Tab.interventions)
+                planTab
+                    .tag(Tab.plan)
+                socialTab
+                    .tag(Tab.social)
+                profileTab
+                    .tag(Tab.profile)
+            }
         }
         .preferredColorScheme(.dark)
         .tint(.cyan)
@@ -120,7 +136,10 @@ struct ContentView: View {
                 .padding(.top, 32)
                 .padding(.bottom, tabBarClearance)
             }
-            .background { AnimatedAuraBackground() }
+            // Backdrop now lives behind the TabView via `ThematicBackground`.
+            // Use a clear scroll background so it shows through.
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
             .toolbar(.hidden, for: .navigationBar)
             .toolbar(.hidden, for: .tabBar)
             .refreshable {
@@ -178,7 +197,10 @@ struct ContentView: View {
                 .padding(.top, 32)
                 .padding(.bottom, tabBarClearance)
             }
-            .background(Color.black.ignoresSafeArea())
+            // Backdrop is rendered behind the TabView via `ThematicBackground`.
+            // Keep the ScrollView's own surface clear so it shows through.
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
             .toolbar(.hidden, for: .navigationBar)
             .toolbar(.hidden, for: .tabBar)
         }
@@ -204,7 +226,10 @@ struct ContentView: View {
                 .padding(.top, 32)
                 .padding(.bottom, tabBarClearance)
             }
-            .background(Color.black.ignoresSafeArea())
+            // Backdrop is rendered behind the TabView via `ThematicBackground`.
+            // Keep the ScrollView's own surface clear so it shows through.
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
             .toolbar(.hidden, for: .navigationBar)
             .toolbar(.hidden, for: .tabBar)
         }
@@ -236,7 +261,10 @@ struct ContentView: View {
                 .padding(.top, 32)
                 .padding(.bottom, tabBarClearance)
             }
-            .background(Color.black.ignoresSafeArea())
+            // Backdrop is rendered behind the TabView via `ThematicBackground`.
+            // Keep the ScrollView's own surface clear so it shows through.
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
             .toolbar(.hidden, for: .navigationBar)
             .toolbar(.hidden, for: .tabBar)
             .overlay(alignment: .topTrailing) {
