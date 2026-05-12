@@ -23,14 +23,14 @@ enum TransportError: Error, LocalizedError {
 struct HealthResponse: Decodable { let ok: Bool; let bundle_mtime: String? }
 struct SamplesUploadResponse: Decodable { let written: Int; let path: String }
 
-struct SampleUpload: Encodable {
+struct SampleUpload: Codable {
     let ts: String
     let type: String
     let value: Double
     let unit: String?
 }
 
-struct DeviationUpload: Encodable {
+struct DeviationUpload: Codable {
     let client_id: String
     let ts: String
     let surface: String
@@ -48,7 +48,7 @@ struct DeviationUpload: Encodable {
 /// `pipeline/parsers/ios_sessions.py` expects on the laptop, so the JSON
 /// shape produced by `JSONEncoder` is the wire format — no manual dict
 /// assembly. If you add a field here, mirror it in the parser.
-struct SessionUpload: Encodable {
+struct SessionUpload: Codable {
     let client_id: String
     let ts: String            // ISO8601
     let sport: String         // UPPER_SNAKE (e.g. "CYCLING")
