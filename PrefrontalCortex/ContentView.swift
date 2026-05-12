@@ -99,8 +99,11 @@ struct ContentView: View {
 
     @ViewBuilder
     private var interventionsTab: some View {
-        NavigationStack {
-          ZStack {
+        // No NavigationStack — nothing in this pane pushes a NavigationLink,
+        // and NavigationStack's UINavigationController brings an interactive
+        // pop-gesture recognizer that can grab horizontal pans on root and
+        // make the whole pane drift sideways as one block.
+        ZStack {
             ThematicBackground(tab: .interventions).ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
@@ -149,12 +152,10 @@ struct ContentView: View {
                 .padding(.top, 32)
                 .padding(.bottom, tabBarClearance)
             }
-            // Backdrop now lives behind the TabView via `ThematicBackground`.
+            // Backdrop now lives behind the per-tab ZStack via `ThematicBackground`.
             // Use a clear scroll background so it shows through.
             .scrollContentBackground(.hidden)
             .background(Color.clear)
-            .toolbar(.hidden, for: .navigationBar)
-            .toolbar(.hidden, for: .tabBar)
             .refreshable {
                 await store.bootstrap()
                 await store.uploadTodaySamples()
@@ -168,7 +169,6 @@ struct ContentView: View {
                 .padding(.top, 8)
                 .padding(.trailing, 16)
             }
-          }
         }
     }
 
@@ -176,8 +176,7 @@ struct ContentView: View {
 
     @ViewBuilder
     private var planTab: some View {
-        NavigationStack {
-          ZStack {
+        ZStack {
             ThematicBackground(tab: .plan).ignoresSafeArea()
             // Force vertical-only ScrollView axis; SwiftUI's default is
             // .vertical but being explicit guards against accidental
@@ -238,9 +237,7 @@ struct ContentView: View {
             // Backdrop lives in the per-tab ZStack above.
             .scrollContentBackground(.hidden)
             .background(Color.clear)
-            .toolbar(.hidden, for: .navigationBar)
             .toolbar(.hidden, for: .tabBar)
-          }
         }
     }
 
@@ -248,8 +245,7 @@ struct ContentView: View {
 
     @ViewBuilder
     private var socialTab: some View {
-        NavigationStack {
-          ZStack {
+        ZStack {
             ThematicBackground(tab: .social).ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
@@ -269,9 +265,7 @@ struct ContentView: View {
             // Backdrop lives in the per-tab ZStack above.
             .scrollContentBackground(.hidden)
             .background(Color.clear)
-            .toolbar(.hidden, for: .navigationBar)
             .toolbar(.hidden, for: .tabBar)
-          }
         }
     }
 
@@ -279,8 +273,7 @@ struct ContentView: View {
 
     @ViewBuilder
     private var profileTab: some View {
-        NavigationStack {
-          ZStack {
+        ZStack {
             ThematicBackground(tab: .profile).ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
@@ -308,7 +301,6 @@ struct ContentView: View {
             // Keep the ScrollView's own surface clear so it shows through.
             .scrollContentBackground(.hidden)
             .background(Color.clear)
-            .toolbar(.hidden, for: .navigationBar)
             .toolbar(.hidden, for: .tabBar)
             .overlay(alignment: .topTrailing) {
                 Button { showTransportSettings = true } label: {
@@ -323,7 +315,6 @@ struct ContentView: View {
                 .padding(.top, 8)
                 .padding(.trailing, 16)
             }
-          }
         }
     }
 
