@@ -4,6 +4,7 @@ import WidgetKit
 /// Stage 1: pick a weight delta. Updates LockScreenWorkoutState.stagedWeight
 /// and advances stage to .reps. Lock-screen widget refreshes to show stage 2.
 struct StageWeightDeltaIntent: AppIntent {
+    static var openAppWhenRun: Bool { false }
     static var title: LocalizedStringResource = "Stage weight delta"
     static var description = IntentDescription("Stage a weight delta for the next set.")
 
@@ -27,6 +28,7 @@ struct StageWeightDeltaIntent: AppIntent {
 /// Stage 2: pick a rep delta. Commits the set via WorkoutProgress, advances
 /// to the next set's stage 1, and refreshes the widget + Live Activity.
 struct CommitRepDeltaIntent: AppIntent {
+    static var openAppWhenRun: Bool { false }
     static var title: LocalizedStringResource = "Commit rep delta"
     static var description = IntentDescription("Log this set with the given rep delta and advance.")
 
@@ -64,13 +66,27 @@ struct CommitRepDeltaIntent: AppIntent {
         )
 
         state.setIndex += 1
+        state.lastWeight = weight
+        state.lastReps = reps
         if state.setIndex >= state.totalSets {
-            state.inProgress = false
+            // Current exercise done — advance to the next one if the host
+            // app pre-populated a queue. Otherwise mark the workout complete.
+            if !state.queue.isEmpty {
+                let next = state.queue.removeFirst()
+                state.exerciseKey = next.exerciseKey
+                state.exerciseName = next.exerciseName
+                state.setIndex = 0
+                state.totalSets = next.totalSets
+                state.lastWeight = next.lastWeight
+                state.lastReps = next.lastReps
+                state.mode = next.mode
+                state.bandColor = next.bandColor
+            } else {
+                state.inProgress = false
+            }
         }
         state.stage = .weight
         state.stagedWeight = nil
-        state.lastWeight = weight
-        state.lastReps = reps
         LockScreenWorkoutStore.save(state)
         WidgetCenter.shared.reloadAllTimelines()
         if #available(iOS 16.1, *) { await WorkoutLiveActivityRefresher.refresh() }
@@ -81,6 +97,7 @@ struct CommitRepDeltaIntent: AppIntent {
 /// For band exercises, stage 1 cycles through the 5 BandColor cases.
 /// `direction = -1` (prev) | 0 (same) | +1 (next).
 struct BandColorCycleIntent: AppIntent {
+    static var openAppWhenRun: Bool { false }
     static var title: LocalizedStringResource = "Cycle band color"
 
     @Parameter(title: "Direction") var direction: Int
@@ -113,6 +130,7 @@ struct BandColorCycleIntent: AppIntent {
 /// Intentionally NOT exposed on the lock-screen surface (per spec — too
 /// easy to fat-finger from a glanceable surface).
 struct EndWorkoutIntent: AppIntent {
+    static var openAppWhenRun: Bool { false }
     static var title: LocalizedStringResource = "End workout"
     static var description = IntentDescription("End the current workout session.")
 

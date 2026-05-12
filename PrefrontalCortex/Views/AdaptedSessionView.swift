@@ -8,6 +8,21 @@ struct AdaptedSessionView: View {
     var onStart: (() -> Void)? = nil
 
     @State private var showDeviationSheet: Bool = false
+    @State private var deviationDirection: DeviationEntry.Direction = .didDifferent
+    @State private var deviationDefaultActual: String = ""
+    @State private var deviationDefaultActualQuant: String = ""
+
+    /// HK/Garmin workout(s) that landed today, pulled from `DeviationStore`.
+    /// Drives the prominent "Log <Sport>" button below the Start pill — when
+    /// the user has obviously done something other than the prescribed
+    /// session, surface a one-tap log path pre-filled with that activity
+    /// instead of making them hold-to-skip and type the sport.
+    private var todaysSessions: [DeviationStore.TodayWorkout] {
+        DeviationStore.todayWorkouts()
+    }
+    private var prescribedIsRest: Bool {
+        (prescribedSession?.intensity_class ?? "").lowercased() == "rest"
+    }
 
     private var lightColor: Color {
         switch adapted.traffic_light {
@@ -35,7 +50,19 @@ struct AdaptedSessionView: View {
                         .font(.caption2.monospaced())
                         .foregroundStyle(.cyan)
                 }
-                if let onStart {
+                if DailyLock.isWorkoutDone() {
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.circle.fill")
+                        Text("DONE")
+                    }
+                    .font(.caption2.monospaced().bold())
+                    .tracking(1.5)
+                    .foregroundStyle(.green)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .overlay(Capsule().strokeBorder(Color.green.opacity(0.6), lineWidth: 1))
+                    .clipShape(Capsule())
+                } else if let onStart {
                     Button(action: onStart) {
                         HStack(spacing: 4) {
                             Text("START")
@@ -57,25 +84,31 @@ struct AdaptedSessionView: View {
                 DeviationChip(entry: entry)
             }
 
-            // The skip link still long-presses to commit, but now opens
-            // the unified DeviationSheet — skip is one branch alongside
-            // "did less / did more / did different / off-plan".
-            SkipWorkoutButton()
+            // If the user did an HK-logged workout today, surface a
+            // prominent one-tap "Log <Sport>" button that opens the
+            // DeviationSheet pre-filled with the actual activity + its
+            // duration. Otherwise fall back to the small "hold to skip"
+            // link (long-press → skip, tap → did-different).
+            if !todaysSessions.isEmpty {
+                logActualButton
+                    .padding(.top, 4)
+            } else {
+                SkipWorkoutButton(onCommit: {
+                    deviationDefaultActual = ""
+                    deviationDefaultActualQuant = ""
+                    deviationDirection = .didSkip
+                    showDeviationSheet = true
+                })
                 .padding(.top, -2)
                 .simultaneousGesture(
                     TapGesture().onEnded {
+                        deviationDefaultActual = ""
+                        deviationDefaultActualQuant = ""
+                        deviationDirection = .didDifferent
                         showDeviationSheet = true
                     }
                 )
-                .sheet(isPresented: $showDeviationSheet) {
-                    DeviationSheet(
-                        surface:    .workout,
-                        surfaceID:  nil,
-                        prescribed: prescribedSession?.session ?? (adapted.prescribed ?? ""),
-                        defaultDirection: .didDifferent
-                    )
-                    .presentationDetents([.large])
-                }
+            }
 
             // Traffic light header card
             VStack(alignment: .leading, spacing: 8) {
@@ -150,6 +183,49 @@ struct AdaptedSessionView: View {
                 .padding(.top, 4)
             }
         }
+        .sheet(isPresented: $showDeviationSheet) {
+            DeviationSheet(
+                surface:    .workout,
+                surfaceID:  nil,
+                prescribed: prescribedSession?.session ?? (adapted.prescribed ?? ""),
+                defaultDirection:   deviationDirection,
+                defaultActual:      deviationDefaultActual,
+                defaultActualQuant: deviationDefaultActualQuant
+            )
+            .presentationDetents([.large])
+        }
+    }
+
+    // MARK: - "Log <Sport>" pill (shown when today's HK has data)
+
+    @ViewBuilder
+    private var logActualButton: some View {
+        let primary = todaysSessions.first
+        let label   = primary.map { "LOG \($0.sport.uppercased()) (\($0.durationMin) MIN) ↩" }
+                      ?? "LOG WHAT YOU DID ↩"
+        Button {
+            if let p = primary {
+                deviationDefaultActual      = p.sport
+                deviationDefaultActualQuant = String(p.durationMin)
+            }
+            // If the prescription is a rest day, treat the actual workout
+            // as "outside plan"; otherwise it's "did different".
+            deviationDirection = prescribedIsRest ? .didOutsidePlan : .didDifferent
+            showDeviationSheet = true
+        } label: {
+            HStack(spacing: 4) {
+                Text(label)
+            }
+            .font(.caption2.monospaced().bold())
+            .tracking(1.5)
+            .foregroundStyle(.cyan)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .overlay(Capsule().strokeBorder(Color.cyan.opacity(0.6), lineWidth: 1))
+            .clipShape(Capsule())
+        }
+        .buttonStyle(LivePressStyle())
     }
 }
 

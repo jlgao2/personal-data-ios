@@ -70,6 +70,21 @@ enum DeviationStore {
 
     private static let migrationFlagKey = "did_migrate_skip_keys_v1"
     private static let altHistoryKey    = "deviation_alt_history_v1"
+    private static let todayWorkoutsKey = "deviation_today_workouts_v1"
+
+    /// One row per HK/Garmin workout that landed today, populated by AppStore
+    /// from `bundle.workouts`. Used by the home-screen "today's workout"
+    /// indicator AND by DeviationSheet's "what instead?" pre-fill so the
+    /// sport you actually did is the first chip.
+    ///
+    /// `date` carries the workout's local start-of-day so reads can filter
+    /// to "today" automatically — yesterday's entries fall off without an
+    /// explicit clear call, which avoids a class of date-rollover bugs.
+    struct TodayWorkout: Codable, Equatable {
+        var sport: String          // pretty-cased, e.g. "Cycling"
+        var durationMin: Int
+        var date: Date             // local start-of-day for the workout
+    }
 
     // MARK: - Read / write
 
@@ -126,6 +141,26 @@ enum DeviationStore {
     static func setAlternateHistory(_ counts: [String: Int]) {
         guard let data = try? JSONEncoder().encode(counts) else { return }
         defaults.set(data, forKey: altHistoryKey)
+    }
+
+    // MARK: - Today's HK workouts
+
+    /// Today's logged workouts (from `bundle.workouts` filtered to today).
+    /// Populated by AppStore alongside the 90-day alternate history.
+    /// Filters by `row.date` so stale entries from prior days disappear
+    /// automatically on date rollover without an explicit clear call.
+    static func todayWorkouts() -> [TodayWorkout] {
+        guard let data = defaults.data(forKey: todayWorkoutsKey),
+              let rows = try? JSONDecoder().decode([TodayWorkout].self, from: data)
+        else { return [] }
+        let cal = Calendar.current
+        let todayStart = cal.startOfDay(for: Date())
+        return rows.filter { cal.isDate($0.date, inSameDayAs: todayStart) }
+    }
+
+    static func setTodayWorkouts(_ rows: [TodayWorkout]) {
+        guard let data = try? JSONEncoder().encode(rows) else { return }
+        defaults.set(data, forKey: todayWorkoutsKey)
     }
 
     // MARK: - Legacy migration

@@ -3,20 +3,20 @@ import UIKit
 
 /// Low-contrast text link below the Start pill. Long-press 2.0 s to commit;
 /// the link visually fills with cyan from left to right as you hold. Release
-/// before completion cancels (with a soft spring-back). On completion, the
-/// SkipReasonSheet appears.
-///
-/// SwiftUI's LongPressGesture doesn't expose progress, so we model the fill
-/// manually: a DragGesture starts a Timer onChanged that increments progress
-/// every 50ms, and onEnded cancels if not yet at 1.0.
+/// before completion cancels (with a soft spring-back). On completion the
+/// `onCommit` callback fires — the parent is responsible for showing the
+/// reason picker (the unified `DeviationSheet` with `.didSkip` pre-selected).
 struct SkipWorkoutButton: View {
 
+    let onCommit: () -> Void
+
     @State private var pressProgress: Double = 0
-    @State private var pressTimer: Timer?
-    @State private var showReasonSheet = false
-    @State private var didCommit = false
 
     private let holdDuration: Double = 2.0
+
+    init(onCommit: @escaping () -> Void = {}) {
+        self.onCommit = onCommit
+    }
 
     var body: some View {
         ZStack(alignment: .leading) {
@@ -39,49 +39,31 @@ struct SkipWorkoutButton: View {
         .background(Color.white.opacity(0.03), in: Capsule())
         .overlay(Capsule().strokeBorder(Color.white.opacity(0.06)))
         .contentShape(Capsule())
-        .gesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in startHold() }
-                .onEnded   { _ in cancelIfIncomplete() }
-        )
-        .sheet(isPresented: $showReasonSheet) {
-            SkipReasonSheet { reason in
-                DailyLock.setWorkoutDone(source: .skip, reason: reason)
-                _ = StreakState.refresh()
-                _ = Achievements.refresh()
-            }
-            .presentationDetents([.medium])
-        }
-    }
-
-    private func startHold() {
-        if pressTimer != nil { return }
-        didCommit = false
-        let tickInterval: Double = 0.05
-        pressTimer = Timer.scheduledTimer(withTimeInterval: tickInterval, repeats: true) { _ in
-            withAnimation(.linear(duration: tickInterval)) {
-                pressProgress = min(1.0, pressProgress + tickInterval / holdDuration)
-            }
-            if pressProgress >= 1.0 {
-                stopTimer()
-                didCommit = true
+        .onLongPressGesture(
+            minimumDuration: holdDuration,
+            maximumDistance: .infinity,
+            perform: {
                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                showReasonSheet = true
+                onCommit()
+                // The fill is already at 1.0 from the press animation;
+                // let it linger briefly so the user registers completion,
+                // then fade it out.
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                     withAnimation(.easeOut(duration: 0.4)) { pressProgress = 0 }
                 }
+            },
+            onPressingChanged: { isPressing in
+                if isPressing {
+                    withAnimation(.linear(duration: holdDuration)) {
+                        pressProgress = 1.0
+                    }
+                } else {
+                    // Release (or cancel by drag/scroll) — spring the fill back.
+                    withAnimation(.easeOut(duration: 0.25)) {
+                        pressProgress = 0
+                    }
+                }
             }
-        }
-    }
-
-    private func cancelIfIncomplete() {
-        guard !didCommit else { return }
-        stopTimer()
-        withAnimation(.easeOut(duration: 0.25)) { pressProgress = 0 }
-    }
-
-    private func stopTimer() {
-        pressTimer?.invalidate()
-        pressTimer = nil
+        )
     }
 }

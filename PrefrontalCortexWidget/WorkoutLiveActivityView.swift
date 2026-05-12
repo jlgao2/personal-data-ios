@@ -24,7 +24,7 @@ struct WorkoutLiveActivityConfiguration: Widget {
                 // Expanded — long-press to reveal
                 DynamicIslandExpandedRegion(.leading) {
                     Text(context.state.exerciseName.uppercased())
-                        .font(.footnote.monospaced().bold())
+                        .font(.callout.monospaced().bold())
                         .foregroundStyle(.cyan)
                         .lineLimit(1)
                 }
@@ -44,18 +44,23 @@ struct WorkoutLiveActivityConfiguration: Widget {
                     } else {
                         VStack(spacing: 6) {
                             WorkoutSetButtonRow(
-                                state: LockScreenWorkoutStore.load(),
+                                mode: LockScreenWorkoutState.Mode(rawValue: context.state.mode) ?? .free,
+                                stage: LockScreenWorkoutState.Stage(rawValue: context.state.stage) ?? .weight,
                                 layout: .island
                             )
                             Divider().background(.white.opacity(0.2))
                             Button(intent: EndWorkoutIntent()) {
                                 Text("End workout")
-                                    .font(.caption.monospaced().weight(.semibold))
+                                    .font(.footnote.monospaced().weight(.semibold))
                                     .foregroundStyle(.red)
                                     .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 6)
-                                    .background(Color.red.opacity(0.12), in: Capsule())
-                                    .overlay(Capsule().strokeBorder(Color.red.opacity(0.4)))
+                                    .padding(.vertical, 8)
+                                    .background(Color.red.opacity(0.08),
+                                                in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                            .strokeBorder(Color.red.opacity(0.30))
+                                    )
                             }
                             .buttonStyle(.plain)
                         }
@@ -93,38 +98,39 @@ private struct WorkoutLiveActivityLockScreenView: View {
     let content: WorkoutLiveActivityAttributes.ContentState
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("SET \(content.setIndex + 1)/\(content.totalSets)")
-                    .font(.caption2.monospaced().bold())
+                    .font(.caption.monospaced().bold())
                     .foregroundStyle(.cyan)
                     .tracking(1.5)
                 Spacer()
                 Text(content.exerciseName.uppercased())
-                    .font(.caption2.monospaced())
-                    .foregroundStyle(.secondary)
+                    .font(.footnote.monospaced().weight(.medium))
+                    .foregroundStyle(.white.opacity(0.9))
                     .lineLimit(1)
             }
             if content.isComplete {
                 Text("✓ WORKOUT COMPLETE")
-                    .font(.caption2.monospaced().weight(.bold))
+                    .font(.footnote.monospaced().weight(.bold))
                     .foregroundStyle(.green)
                     .padding(.top, 6)
             } else {
                 Text(IslandSubtitle.text(content: content))
-                    .font(.caption2.monospaced())
-                    .foregroundStyle(.white.opacity(0.7))
+                    .font(.caption.monospaced())
+                    .foregroundStyle(.white.opacity(0.75))
                 // The lock-screen surface intentionally OMITS the End
                 // button — the spec calls that out as island-only because
                 // the lock screen surface is glanceable, not interactive
                 // for high-stakes operations.
                 WorkoutSetButtonRow(
-                    state: LockScreenWorkoutStore.load(),
+                    mode: LockScreenWorkoutState.Mode(rawValue: content.mode) ?? .free,
+                    stage: LockScreenWorkoutState.Stage(rawValue: content.stage) ?? .weight,
                     layout: .compactLockScreen
                 )
             }
         }
-        .padding(8)
+        .padding(12)
     }
 }
 

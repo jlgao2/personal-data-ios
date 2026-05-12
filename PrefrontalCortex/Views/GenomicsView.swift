@@ -3,6 +3,10 @@ import SwiftUI
 struct GenomicsView: View {
     let genomics: Genomics
 
+    /// Currently selected tier filter (A/B/C). nil = all visible.
+    /// Tapping a TierPill toggles this; tapping the same pill again clears it.
+    @State private var selectedTier: String? = nil
+
     private static let sourceLabels: [String: String] = [
         "pgx_quick":        "Drugs (PGx)",
         "clinvar_acmg":     "ACMG SF",
@@ -43,18 +47,31 @@ struct GenomicsView: View {
             if let counts = genomics.tier_counts, !counts.isEmpty {
                 HStack(spacing: 8) {
                     ForEach(counts.sorted(by: { $0.key < $1.key }), id: \.key) { kv in
-                        TierPill(tier: kv.key, count: kv.value)
+                        TierPill(
+                            tier: kv.key,
+                            count: kv.value,
+                            selected: selectedTier == kv.key,
+                            tap: {
+                                selectedTier = (selectedTier == kv.key) ? nil : kv.key
+                            }
+                        )
                     }
                 }
             }
 
             VStack(spacing: 1) {
                 ForEach(sortedSources, id: \.key) { entry in
-                    GenomicsSection(
-                        sourceKey: entry.key,
-                        label: GenomicsView.sourceLabels[entry.key] ?? entry.key,
-                        rows: entry.rows
-                    )
+                    let visibleRows = selectedTier == nil
+                        ? entry.rows
+                        : entry.rows.filter { $0.tier == selectedTier }
+                    if !visibleRows.isEmpty {
+                        GenomicsSection(
+                            sourceKey: entry.key,
+                            label: GenomicsView.sourceLabels[entry.key] ?? entry.key,
+                            rows: visibleRows,
+                            forceExpand: selectedTier != nil
+                        )
+                    }
                 }
             }
         }
@@ -64,6 +81,8 @@ struct GenomicsView: View {
 private struct TierPill: View {
     let tier: String
     let count: Int
+    let selected: Bool
+    let tap: () -> Void
 
     private var color: Color {
         switch tier {
@@ -75,15 +94,20 @@ private struct TierPill: View {
     }
 
     var body: some View {
-        HStack(spacing: 4) {
-            Text("Tier \(tier)")
-            Text("\(count)").bold()
+        Button(action: tap) {
+            HStack(spacing: 4) {
+                Text("Tier \(tier)")
+                Text("\(count)").bold()
+            }
+            .font(.caption2.monospaced())
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .foregroundStyle(selected ? Color.black : color)
+            .background(selected ? color : Color.clear,
+                        in: RoundedRectangle(cornerRadius: 2))
+            .overlay(RoundedRectangle(cornerRadius: 2).stroke(color, lineWidth: 0.5))
         }
-        .font(.caption2.monospaced())
-        .padding(.horizontal, 6)
-        .padding(.vertical, 2)
-        .foregroundStyle(color)
-        .overlay(RoundedRectangle(cornerRadius: 2).stroke(color, lineWidth: 0.5))
+        .buttonStyle(.plain)
     }
 }
 
@@ -91,14 +115,20 @@ private struct GenomicsSection: View {
     let sourceKey: String
     let label: String
     let rows: [Finding]
+    /// When true, the section auto-expands regardless of local toggle —
+    /// used so the tier-filter pill reveals matching rows without an
+    /// extra tap per section.
+    var forceExpand: Bool = false
 
     @State private var expanded: Bool = false
+
+    private var isExpanded: Bool { forceExpand || expanded }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Button(action: { withAnimation { expanded.toggle() } }) {
                 HStack {
-                    Image(systemName: expanded ? "chevron.down" : "chevron.right")
+                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
                         .font(.caption.monospaced())
                         .foregroundStyle(.cyan)
                     Text(label.uppercased())
@@ -117,7 +147,7 @@ private struct GenomicsSection: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            if expanded {
+            if isExpanded {
                 ForEach(rows) { row in
                     FindingRow(row: row)
                 }

@@ -15,6 +15,55 @@ struct IOSBundle: Codable {
     let calendar: [CalendarEvent]?
     let correlations: CorrelationsBundle?
     let deviations_summary: DeviationsSummary?
+
+    private enum CodingKeys: String, CodingKey {
+        case exported_at
+        case vitals
+        case workouts
+        case action_loop
+        case profile
+        case genomics
+        case med_alerts
+        case adapted_session
+        case social
+        case calendar
+        case correlations
+        case deviations_summary
+    }
+
+    /// Resilient decode: each top-level field is decoded independently so a
+    /// single malformed field doesn't brick the entire home screen. Nested
+    /// Codable types (Workout, ActionCard, etc.) still throw on bad input —
+    /// only this top-level swallows per-field decode errors.
+    init(from decoder: Decoder) throws {
+        // If the JSON isn't an object at all, fail outright — there's nothing
+        // useful we can recover.
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+
+        func decodeField<T: Decodable>(_ type: T.Type, _ key: CodingKeys) -> T? {
+            do {
+                return try c.decodeIfPresent(T.self, forKey: key)
+            } catch {
+                print("[IOSBundle] failed to decode field \(key.rawValue): \(error)")
+                return nil
+            }
+        }
+
+        // exported_at is non-optional but we'd rather render the rest of the
+        // bundle with an empty timestamp than blank the whole screen.
+        self.exported_at        = decodeField(String.self, .exported_at) ?? ""
+        self.vitals             = decodeField([String: VitalSeries].self, .vitals) ?? [:]
+        self.workouts           = decodeField([Workout].self, .workouts) ?? []
+        self.action_loop        = decodeField([ActionCard].self, .action_loop) ?? []
+        self.profile            = decodeField(HealthProfile.self, .profile)
+        self.genomics           = decodeField(Genomics.self, .genomics)
+        self.med_alerts         = decodeField([MedAlertEvent].self, .med_alerts)
+        self.adapted_session    = decodeField(AdaptedSession.self, .adapted_session)
+        self.social             = decodeField(SocialSummary.self, .social)
+        self.calendar           = decodeField([CalendarEvent].self, .calendar)
+        self.correlations       = decodeField(CorrelationsBundle.self, .correlations)
+        self.deviations_summary = decodeField(DeviationsSummary.self, .deviations_summary)
+    }
 }
 
 struct DeviationsSummary: Codable {
@@ -268,6 +317,13 @@ struct Supplement: Codable, Identifiable {
 
 struct DayProtocol: Codable {
     let session: String
+    /// Optional — emitted by `data/health_profile.json` after the durable
+    /// refactor on the laptop side. Values: "rest" | "light" | "moderate"
+    /// | "heavy". Drives whether the iOS-side UX surfaces "did different"
+    /// vs "outside plan" pre-fills when today's HK workout doesn't match
+    /// the prescription.
+    let intensity_class: String?
+    let tags: [String]?
     let rehab: [String]?
     let warmup: [String]?
     let main: [String]?

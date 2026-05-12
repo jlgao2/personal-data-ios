@@ -23,6 +23,19 @@ enum TransportError: Error, LocalizedError {
 struct HealthResponse: Decodable { let ok: Bool; let bundle_mtime: String? }
 struct SamplesUploadResponse: Decodable { let written: Int; let path: String }
 
+/// Typed contract for `POST /v1/sessions`. Field names match what
+/// `pipeline/parsers/ios_sessions.py` expects on the laptop, so the JSON
+/// shape produced by `JSONEncoder` is the wire format — no manual dict
+/// assembly. If you add a field here, mirror it in the parser.
+struct SessionUpload: Encodable {
+    let client_id: String
+    let ts: String            // ISO8601
+    let sport: String         // UPPER_SNAKE (e.g. "CYCLING")
+    let duration_min: Int
+    let rpe: Int?
+    let note: String
+}
+
 final class TransportClient {
     static let shared = TransportClient()
 
@@ -58,8 +71,8 @@ final class TransportClient {
     }
 
     /// POST self-logged session(s) to /v1/sessions. Same response shape as samples.
-    func uploadSessions(_ rows: [[String: Any]]) async throws -> SamplesUploadResponse {
-        let body = try JSONSerialization.data(withJSONObject: rows, options: [])
+    func uploadSessions(_ rows: [SessionUpload]) async throws -> SamplesUploadResponse {
+        let body = try JSONEncoder().encode(rows)
         let req = try await makeAuthedRequest(path: "v1/sessions", method: "POST", body: body)
         let (data, resp) = try await session.data(for: req)
         try Self.assertOK(resp)

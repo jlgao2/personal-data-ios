@@ -20,18 +20,37 @@ struct StreakState: Codable {
         UserDefaults(suiteName: appGroup) ?? .standard
     }
 
+    // Session-lifetime cache. Invalidated on save().
+    private static var cached: StreakState?
+    private static let cacheLock = NSLock()
+
     static func load() -> StreakState {
-        guard let data = defaults.data(forKey: key),
-              let s = try? JSONDecoder().decode(StreakState.self, from: data) else {
-            return .empty
+        cacheLock.lock()
+        if let c = cached {
+            cacheLock.unlock()
+            return c
         }
-        return s
+        cacheLock.unlock()
+        let loaded: StreakState
+        if let data = defaults.data(forKey: key),
+           let s = try? JSONDecoder().decode(StreakState.self, from: data) {
+            loaded = s
+        } else {
+            loaded = .empty
+        }
+        cacheLock.lock()
+        cached = loaded
+        cacheLock.unlock()
+        return loaded
     }
 
     static func save(_ s: StreakState) {
         if let data = try? JSONEncoder().encode(s) {
             defaults.set(data, forKey: key)
         }
+        cacheLock.lock()
+        cached = s
+        cacheLock.unlock()
     }
 
     // MARK: - Recompute

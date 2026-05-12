@@ -33,13 +33,17 @@ struct DeviationSheet: View {
          surfaceID: String?,
          prescribed: String,
          defaultDirection: DeviationEntry.Direction,
+         defaultActual: String = "",
+         defaultActualQuant: String = "",
          onSubmit: (() -> Void)? = nil) {
         self.surface          = surface
         self.surfaceID        = surfaceID
         self.prescribed       = prescribed
         self.defaultDirection = defaultDirection
         self.onSubmit         = onSubmit
-        _direction = State(initialValue: defaultDirection)
+        _direction    = State(initialValue: defaultDirection)
+        _actual       = State(initialValue: defaultActual)
+        _actualQuant  = State(initialValue: defaultActualQuant)
     }
 
     var body: some View {
@@ -107,9 +111,15 @@ struct DeviationSheet: View {
             Text("What instead?")
                 .font(.caption.monospaced())
                 .foregroundStyle(.secondary)
+            // Today's HK/Garmin sports go first so the activity the user
+            // actually did is the easiest tap. Then the 90-day rolling top-N,
+            // then the hardcoded fallback if neither is populated yet.
+            let todays     = DeviationStore.todayWorkouts().map(\.sport)
             let alternates = DeviationStore.topAlternates(limit: 4)
             let fallback   = ["Cycling", "Run", "Yoga", "Swim", "Other strength", "Mobility"]
-            let pool       = alternates.count >= 4 ? alternates : fallback
+            let body       = alternates.count >= 4 ? alternates : fallback
+            var seen = Set<String>()
+            let pool = (todays + body).filter { seen.insert($0).inserted }
             DeviationFlowLayout(spacing: 8) {
                 ForEach(pool, id: \.self) { name in
                     chip(label: name, selected: actual == name) { actual = name }

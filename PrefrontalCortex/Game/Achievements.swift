@@ -210,18 +210,37 @@ enum Achievements {
         UserDefaults(suiteName: appGroup) ?? .standard
     }
 
+    // Session-lifetime cache for State. Invalidated on save().
+    private static var cachedState: State?
+    private static let stateLock = NSLock()
+
     static func load() -> State {
-        guard let data = defaults.data(forKey: key),
-              let s = try? JSONDecoder().decode(State.self, from: data) else {
-            return State()
+        stateLock.lock()
+        if let c = cachedState {
+            stateLock.unlock()
+            return c
         }
-        return s
+        stateLock.unlock()
+        let loaded: State
+        if let data = defaults.data(forKey: key),
+           let s = try? JSONDecoder().decode(State.self, from: data) {
+            loaded = s
+        } else {
+            loaded = State()
+        }
+        stateLock.lock()
+        cachedState = loaded
+        stateLock.unlock()
+        return loaded
     }
 
     static func save(_ s: State) {
         if let data = try? JSONEncoder().encode(s) {
             defaults.set(data, forKey: key)
         }
+        stateLock.lock()
+        cachedState = s
+        stateLock.unlock()
     }
 
     // MARK: - Refresh
@@ -247,23 +266,76 @@ enum Achievements {
         return newlyUnlocked
     }
 
+    // Cached historical portion of buildContext: covers days <= yesterday.
+    // Keyed by today's YYYY-MM-DD string; when the wall-clock day rolls the
+    // key changes and we rebuild. Today's row is always read live.
+    private struct HistoricalSnapshot {
+        let todayKey: String
+        let history: [String: Bool]
+        let sources: [String: DailyLock.WorkoutSource]
+        let mindful: [String: Bool]
+    }
+    private static var cachedHistory: HistoricalSnapshot?
+    private static let historyLock = NSLock()
+
     private static func buildContext(now: Date) -> Achievement.Context {
         let cal = Calendar.current
         let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"
         f.locale = Locale(identifier: "en_US_POSIX")
         let today = cal.startOfDay(for: now)
-        var history: [String: Bool] = [:]
-        var sources: [String: DailyLock.WorkoutSource] = [:]
-        var mindful: [String: Bool] = [:]
-        for back in 0..<400 {
-            guard let day = cal.date(byAdding: .day, value: -back, to: today) else { break }
-            let key = f.string(from: day)
-            history[key] = DailyLock.isComplete(date: day)
-            if let src = DailyLock.workoutSource(date: day) {
-                sources[key] = src
+        let todayKey = f.string(from: today)
+
+        // Pull cached historical snapshot (days <= yesterday) if it still
+        // matches today's calendar day.
+        historyLock.lock()
+        let snapshot = cachedHistory
+        historyLock.unlock()
+
+        var history: [String: Bool]
+        var sources: [String: DailyLock.WorkoutSource]
+        var mindful: [String: Bool]
+
+        if let s = snapshot, s.todayKey == todayKey {
+            history = s.history
+            sources = s.sources
+            mindful = s.mindful
+        } else {
+            history = [:]
+            sources = [:]
+            mindful = [:]
+            // back >= 1 — yesterday and older are stable for the session.
+            // (Today is added live below.) Original loop covered 0..<400
+            // (400 days including today); this covers 1..<400 (399 historical
+            // days) + today added live → same 400-day total.
+            for back in 1..<400 {
+                guard let day = cal.date(byAdding: .day, value: -back, to: today) else { break }
+                let key = f.string(from: day)
+                history[key] = DailyLock.isComplete(date: day)
+                if let src = DailyLock.workoutSource(date: day) {
+                    sources[key] = src
+                }
+                mindful[key] = DailyLock.isMindfulEatingDone(date: day)
             }
-            mindful[key] = DailyLock.isMindfulEatingDone(date: day)
+            let newSnap = HistoricalSnapshot(
+                todayKey: todayKey,
+                history: history,
+                sources: sources,
+                mindful: mindful
+            )
+            historyLock.lock()
+            cachedHistory = newSnap
+            historyLock.unlock()
         }
+
+        // Today is always read live — it can mutate within a session.
+        history[todayKey] = DailyLock.isComplete(date: today)
+        if let src = DailyLock.workoutSource(date: today) {
+            sources[todayKey] = src
+        } else {
+            sources.removeValue(forKey: todayKey)
+        }
+        mindful[todayKey] = DailyLock.isMindfulEatingDone(date: today)
+
         return .init(now: now, streak: StreakState.load(),
                      history: history, sources: sources, mindful: mindful)
     }

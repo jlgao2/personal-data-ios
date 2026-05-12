@@ -18,16 +18,22 @@ enum WorkoutLiveActivityRefresher {
         let isComplete = !state.inProgress
         let content = WorkoutLiveActivityAttributes.ContentState.from(state, isComplete: isComplete)
 
+        let payload = ActivityContent(state: content, staleDate: nil)
         for activity in Activity<WorkoutLiveActivityAttributes>.activities {
             if isComplete {
+                // Belt-and-suspenders: `.update` first so the UI flips to
+                // "✓ WORKOUT COMPLETE" regardless of whether `.end` reliably
+                // takes effect from this process (widget-extension calls to
+                // `.end` on activities started by the host app have been
+                // observed to silently no-op on some iOS versions). Then
+                // schedule the natural 30s dismissal.
+                await activity.update(payload)
                 await activity.end(
-                    ActivityContent(state: content, staleDate: nil),
+                    payload,
                     dismissalPolicy: .after(Date().addingTimeInterval(30))
                 )
             } else {
-                await activity.update(
-                    ActivityContent(state: content, staleDate: nil)
-                )
+                await activity.update(payload)
             }
         }
     }

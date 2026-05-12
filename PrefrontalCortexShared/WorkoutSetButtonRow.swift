@@ -10,8 +10,8 @@ enum WorkoutSetButtonRowLayout {
 
     var verticalPadding: CGFloat {
         switch self {
-        case .compactLockScreen: return 4
-        case .island:            return 6
+        case .compactLockScreen: return 7
+        case .island:            return 8
         }
     }
     var horizontalSpacing: CGFloat {
@@ -22,8 +22,14 @@ enum WorkoutSetButtonRowLayout {
     }
     var font: Font {
         switch self {
-        case .compactLockScreen: return .caption.monospaced().weight(.semibold)
+        case .compactLockScreen: return .footnote.monospaced().weight(.semibold)
         case .island:            return .footnote.monospaced().weight(.semibold)
+        }
+    }
+    var cornerRadius: CGFloat {
+        switch self {
+        case .compactLockScreen: return 10
+        case .island:            return 12
         }
     }
 }
@@ -37,16 +43,28 @@ enum WorkoutSetButtonRowLayout {
 /// the lock-screen activity, or the island all flow through the same
 /// `StageWeightDeltaIntent` / `CommitRepDeltaIntent` / `BandColorCycleIntent`.
 struct WorkoutSetButtonRow: View {
-    let state: LockScreenWorkoutState
+    let mode: LockScreenWorkoutState.Mode
+    let stage: LockScreenWorkoutState.Stage
     let layout: WorkoutSetButtonRowLayout
 
-    init(state: LockScreenWorkoutState, layout: WorkoutSetButtonRowLayout = .compactLockScreen) {
-        self.state = state
+    init(mode: LockScreenWorkoutState.Mode,
+         stage: LockScreenWorkoutState.Stage,
+         layout: WorkoutSetButtonRowLayout = .compactLockScreen) {
+        self.mode = mode
+        self.stage = stage
         self.layout = layout
     }
 
+    /// Convenience for the rectangular widget, which reads the full state
+    /// from the App Group at timeline-build time. The Live Activity must
+    /// NOT use this — its body has to derive from `ContentState`, otherwise
+    /// the rendered surface won't refresh on `activity.update(...)`.
+    init(state: LockScreenWorkoutState, layout: WorkoutSetButtonRowLayout = .compactLockScreen) {
+        self.init(mode: state.mode, stage: state.stage, layout: layout)
+    }
+
     var body: some View {
-        switch (state.mode, state.stage) {
+        switch (mode, stage) {
         case (.time, _):
             HStack(spacing: layout.horizontalSpacing) {
                 lockButton("−5s", intent: CommitRepDeltaIntent(delta: -5), color: .orange)
@@ -82,14 +100,15 @@ struct WorkoutSetButtonRow: View {
 
     @ViewBuilder
     private func lockButton<I: AppIntent>(_ label: String, intent: I, color: Color) -> some View {
+        let shape = RoundedRectangle(cornerRadius: layout.cornerRadius, style: .continuous)
         Button(intent: intent) {
             Text(label)
                 .font(layout.font)
                 .foregroundStyle(color)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, layout.verticalPadding)
-                .background(color.opacity(0.15), in: Capsule())
-                .overlay(Capsule().strokeBorder(color.opacity(0.4)))
+                .background(color.opacity(0.10), in: shape)
+                .overlay(shape.strokeBorder(color.opacity(0.30)))
         }
         .buttonStyle(.plain)
     }

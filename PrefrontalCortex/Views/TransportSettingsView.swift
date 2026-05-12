@@ -9,6 +9,10 @@ struct TransportSettingsView: View {
     @State private var testStatus: TestStatus = .idle
     @State private var saveError: String?
     @AppStorage("workout_unit") private var unitRaw: String = WorkoutUnit.pounds.rawValue
+    /// Hide the "MED WATCH" card + the Profile-tab drug-class reference unless
+    /// the user has opted in. Off by default — useful only for users who pull
+    /// MyChart bundles, otherwise it's noise.
+    @AppStorage("med_alerts_enabled") private var medAlertsEnabled: Bool = false
 
     enum TestStatus {
         case idle
@@ -48,6 +52,12 @@ struct TransportSettingsView: View {
                     }
                     .pickerStyle(.segmented)
                     Text("Affects all weights, defaults, warm-up suggestions, and increments in the workout tracker.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                Section("Features") {
+                    Toggle("Med watch", isOn: $medAlertsEnabled)
+                    Text("Surface the MED WATCH card on the Now tab + drug-class reference on Profile. Only useful if you sync MyChart bundles to the laptop.")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }
