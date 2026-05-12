@@ -109,12 +109,24 @@ extension iCloudTransport {
 
     /// Public convenience matching today's TransportClient API.
     func uploadSamples(_ rows: [SampleUpload]) async throws {
+        guard iCloudPaths.isAvailable else {
+            PendingInbox.enqueue(kind: "samples", rows: rows)
+            throw iCloudTransportError.containerUnavailable
+        }
         try await uploadInbox(kind: "samples", rows: rows, dedupeKey: { "\($0.ts)|\($0.type)" })
     }
     func uploadSessions(_ rows: [SessionUpload]) async throws {
+        guard iCloudPaths.isAvailable else {
+            PendingInbox.enqueue(kind: "sessions", rows: rows)
+            throw iCloudTransportError.containerUnavailable
+        }
         try await uploadInbox(kind: "sessions", rows: rows, dedupeKey: { $0.client_id })
     }
     func uploadDeviations(_ rows: [DeviationUpload]) async throws {
+        guard iCloudPaths.isAvailable else {
+            PendingInbox.enqueue(kind: "deviations", rows: rows)
+            throw iCloudTransportError.containerUnavailable
+        }
         try await uploadInbox(kind: "deviations", rows: rows, dedupeKey: { $0.client_id })
     }
 

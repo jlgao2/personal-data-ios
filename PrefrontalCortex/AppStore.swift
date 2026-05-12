@@ -84,6 +84,19 @@ final class AppStore: ObservableObject {
             name: .NSMetadataQueryDidFinishGathering, object: q)
         q.start()
         metadataQuery = q
+
+        // Drain any writes queued while iCloud was unavailable.
+        Task {
+            await PendingInbox.draining(kind: "sessions", decoding: SessionUpload.self) { row in
+                try await iCloudTransport.shared.uploadSessions([row])
+            }
+            await PendingInbox.draining(kind: "samples", decoding: SampleUpload.self) { row in
+                try await iCloudTransport.shared.uploadSamples([row])
+            }
+            await PendingInbox.draining(kind: "deviations", decoding: DeviationUpload.self) { row in
+                try await iCloudTransport.shared.uploadDeviations([row])
+            }
+        }
     }
 
     @objc private func manifestQueryDidUpdate(_ note: Notification) {
