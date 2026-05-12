@@ -23,6 +23,27 @@ enum TransportError: Error, LocalizedError {
 struct HealthResponse: Decodable { let ok: Bool; let bundle_mtime: String? }
 struct SamplesUploadResponse: Decodable { let written: Int; let path: String }
 
+struct SampleUpload: Encodable {
+    let ts: String
+    let type: String
+    let value: Double
+    let unit: String?
+}
+
+struct DeviationUpload: Encodable {
+    let client_id: String
+    let ts: String
+    let surface: String
+    let surface_id: String?
+    let direction: String
+    let cause: String?
+    let prescribed: String
+    let actual: String
+    let actual_quant: Double?
+    let lock_in: Bool
+    let note: String?
+}
+
 /// Typed contract for `POST /v1/sessions`. Field names match what
 /// `pipeline/parsers/ios_sessions.py` expects on the laptop, so the JSON
 /// shape produced by `JSONEncoder` is the wire format — no manual dict

@@ -77,3 +77,72 @@ final class iCloudTransport {
         throw iCloudTransportError.fileMissing(url)
     }
 }
+
+extension iCloudTransport {
+
+    /// Read-merge-rewrite for a date-keyed inbox file. Dedupe key is
+    /// `client_id` for sessions/deviations; `(ts, type)` for samples.
+    /// Caller passes a closure that extracts the dedupe key from a row.
+    func uploadInbox<T: Codable>(
+        kind: String,
+        rows: [T],
+        dedupeKey: (T) -> String
+    ) async throws {
+        guard !rows.isEmpty else { return }
+        guard let url = iCloudPaths.inboxFile(kind: kind, date: Date()) else {
+            throw iCloudTransportError.containerUnavailable
+        }
+        try? FileManager.default.createDirectory(
+            at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+
+        try await coordinatedReadModifyWrite(url) { existingData -> Data in
+            var existing: [T] = []
+            if let existingData,
+               let decoded = try? JSONDecoder().decode([T].self, from: existingData) {
+                existing = decoded
+            }
+            let seen = Set(existing.map(dedupeKey))
+            let merged = existing + rows.filter { !seen.contains(dedupeKey($0)) }
+            return try JSONEncoder().encode(merged)
+        }
+    }
+
+    /// Public convenience matching today's TransportClient API.
+    func uploadSamples(_ rows: [SampleUpload]) async throws {
+        try await uploadInbox(kind: "samples", rows: rows, dedupeKey: { "\($0.ts)|\($0.type)" })
+    }
+    func uploadSessions(_ rows: [SessionUpload]) async throws {
+        try await uploadInbox(kind: "sessions", rows: rows, dedupeKey: { $0.client_id })
+    }
+    func uploadDeviations(_ rows: [DeviationUpload]) async throws {
+        try await uploadInbox(kind: "deviations", rows: rows, dedupeKey: { $0.client_id })
+    }
+
+    // MARK: - Internals
+
+    private func coordinatedReadModifyWrite(
+        _ url: URL,
+        _ transform: (Data?) throws -> Data
+    ) async throws {
+        try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
+            let coord = NSFileCoordinator(filePresenter: nil)
+            var err: NSError?
+            coord.coordinate(writingItemAt: url, options: .forReplacing,
+                              error: &err) { resolved in
+                do {
+                    let existing = try? Data(contentsOf: resolved)
+                    let next = try transform(existing)
+                    let tmp = resolved.appendingPathExtension("tmp")
+                    try next.write(to: tmp, options: .atomic)
+                    _ = try FileManager.default.replaceItemAt(resolved, withItemAt: tmp)
+                    cont.resume(returning: ())
+                } catch {
+                    cont.resume(throwing: error)
+                }
+            }
+            if let err {
+                cont.resume(throwing: iCloudTransportError.coordinationFailed(err))
+            }
+        }
+    }
+}
