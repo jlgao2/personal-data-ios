@@ -194,6 +194,9 @@ final class AppStore: ObservableObject {
     }
 
     func bootstrap() async {
+        // One-shot migration: clear legacy bearer-token + URL keys from UserDefaults.
+        Migrations.runIfNeeded(into: self)
+
         // One-shot migration: legacy workout-skip-reason keys → unified
         // Deviation rows (guarded by did_migrate_skip_keys_v1).
         DeviationStore.migrateLegacySkipKeys()

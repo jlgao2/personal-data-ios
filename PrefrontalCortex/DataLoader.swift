@@ -8,13 +8,12 @@ final class DataLoader {
         return docs?.appendingPathComponent("last_bundle.json")
     }
 
-    /// Load the latest bundle from the laptop, falling back to last cache,
+    /// Load the latest bundle from iCloud, falling back to last cache,
     /// then to the bundled sample. Throws on configured-but-failing transport.
     func loadBundle() async throws -> IOSBundle {
-        let isConfigured = await TransportSettings.shared.isConfigured
-        if isConfigured {
+        if iCloudPaths.isAvailable {
             do {
-                let data = try await TransportClient.shared.fetchBundle()
+                let data = try await iCloudTransport.shared.fetchBundle()
                 let bundle = try JSONDecoder().decode(IOSBundle.self, from: data)
                 if let url = cacheURL { try? data.write(to: url, options: .atomic) }
                 return bundle
@@ -24,7 +23,7 @@ final class DataLoader {
                    let cached = try? JSONDecoder().decode(IOSBundle.self, from: data) {
                     return cached
                 }
-                throw TransportClient.wrap(error)
+                throw TransportError.wrap(error)
             }
         }
 
