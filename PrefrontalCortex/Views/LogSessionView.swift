@@ -123,14 +123,14 @@ struct LogSessionView: View {
             note:         note
         )
         do {
-            let resp = try await TransportClient.shared.uploadSessions([row])
-            status = .ok("Logged (\(resp.written) row)")
+            try await iCloudTransport.shared.uploadSessions([row])
+            status = .ok("Logged")
             store.lastUploadResult = "Session logged: \(sport.label) · \(durationMin) min"
             // Brief confirmation, then dismiss.
             try? await Task.sleep(for: .milliseconds(600))
             dismiss()
         } catch {
-            status = .fail(TransportClient.wrap(error).localizedDescription)
+            status = .fail(error.localizedDescription)
         }
     }
 }

@@ -113,17 +113,13 @@ struct MindfulEatingTodayView: View {
     /// Forward the daily check to the laptop as a sample so the spine can
     /// roll it up into the weekly goal `current`. Silent best-effort.
     private func syncToLaptop() async {
-        guard await TransportSettings.shared.isConfigured else { return }
         let now = ISO8601DateFormatter().string(from: Date())
-        let row: [String: Any] = [
-            "ts": now,
-            "ts_end": now,
-            "source": "ios_app",
-            "type": "mindful_eating",
-            "value": todayChecked ? 1.0 : 0.0,
-            "unit": "bool",
-            "meta": "{\"via\":\"intuitive_eating_checkin\"}",
-        ]
-        _ = try? await TransportClient.shared.uploadSamples([row])
+        let row = SampleUpload(
+            ts:    now,
+            type:  "mindful_eating",
+            value: todayChecked ? 1.0 : 0.0,
+            unit:  "bool"
+        )
+        _ = try? await iCloudTransport.shared.uploadSamples([row])
     }
 }

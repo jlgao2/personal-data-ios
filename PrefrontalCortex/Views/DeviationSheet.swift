@@ -208,9 +208,20 @@ struct DeviationSheet: View {
         let cid = DeviationStore.clientID(surface: surface,
                                           surfaceID: surfaceID,
                                           date: now)
-        if await TransportSettings.shared.isConfigured {
-            _ = try? await TransportClient.shared.uploadDeviation(entry, clientID: cid)
-        }
+        let upload = DeviationUpload(
+            client_id:   cid,
+            ts:          ISO8601DateFormatter().string(from: now),
+            surface:     entry.surface.rawValue,
+            surface_id:  entry.surfaceID,
+            direction:   entry.direction.rawValue,
+            cause:       entry.cause?.rawValue,
+            prescribed:  entry.prescribed,
+            actual:      entry.actual,
+            actual_quant: entry.actualQuant,
+            lock_in:     entry.lockIn,
+            note:        entry.note
+        )
+        _ = try? await iCloudTransport.shared.uploadDeviations([upload])
 
         // The deviation counts as completion for the slot — refresh
         // streak + achievements on the way out.

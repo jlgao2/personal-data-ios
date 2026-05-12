@@ -44,19 +44,12 @@ final class AppStore: ObservableObject {
             DeviationStore.setTodayWorkouts(todayWorkouts)
         }
 
-        // Best-effort upload to laptop. Failures here are common (laptop
-        // off, different network, server down for refresh) — surface them
-        // into `lastTransportError` so the TransportStatusPill flips to
-        // "Laptop offline" instead of silently dropping the upload.
-        if await TransportSettings.shared.isConfigured {
-            do {
-                _ = try await TransportClient.shared.uploadSessions(rows)
-                lastTransportError = nil
-            } catch let e as TransportError {
-                lastTransportError = e
-            } catch {
-                lastTransportError = TransportClient.wrap(error)
-            }
+        // Best-effort upload to iCloud inbox.
+        do {
+            try await iCloudTransport.shared.uploadSessions(rows)
+            lastTransportError = nil
+        } catch {
+            lastTransportError = TransportError.unreachable(error.localizedDescription)
         }
 
         let wasAlreadyDone = DailyLock.isWorkoutDone()

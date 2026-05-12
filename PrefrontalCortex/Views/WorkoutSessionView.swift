@@ -911,7 +911,7 @@ struct WorkoutSessionView: View {
             note:         "\(dayLabel) · \(note)"
         )
         do {
-            _ = try await TransportClient.shared.uploadSessions([row])
+            try await iCloudTransport.shared.uploadSessions([row])
             store.lastUploadResult = "Workout logged · \(total.count) sets"
         } catch {
             store.lastUploadResult = "Logged locally (laptop unreachable)"

@@ -52,14 +52,18 @@ struct SampleExporter {
     static func uploadDaily() async -> String? {
         let rows = await dailySamples()
         guard !rows.isEmpty else { return "No samples to upload" }
-        guard await TransportSettings.shared.isConfigured else {
-            return nil
+        let uploads = rows.compactMap { d -> SampleUpload? in
+            guard let ts    = d["ts"]    as? String,
+                  let type  = d["type"]  as? String,
+                  let value = d["value"] as? Double else { return nil }
+            return SampleUpload(ts: ts, type: type, value: value, unit: d["unit"] as? String)
         }
+        guard !uploads.isEmpty else { return "No samples to upload" }
         do {
-            let resp = try await TransportClient.shared.uploadSamples(rows)
-            return "Uploaded \(resp.written) of \(rows.count) sample\(rows.count == 1 ? "" : "s")"
+            try await iCloudTransport.shared.uploadSamples(uploads)
+            return "Uploaded \(uploads.count) sample\(uploads.count == 1 ? "" : "s")"
         } catch {
-            return "Upload failed: \(TransportClient.wrap(error).localizedDescription)"
+            return "Upload failed: \(error.localizedDescription)"
         }
     }
 
