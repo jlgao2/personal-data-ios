@@ -666,6 +666,24 @@ struct WorkoutSessionView: View {
         UserDefaults.standard.set(arr[index].weight, forKey: weightMemoryKey(for: key))
         saveState()
         syncToLockScreen()
+
+        // Auto-minimise when every prescribed set across every exercise is
+        // checked off. Short delay so the final tick's bounce animation
+        // plays before the cover drops.
+        if allSetsComplete {
+            Task {
+                try? await Task.sleep(for: .milliseconds(700))
+                await commitAndDismiss()
+            }
+        }
+    }
+
+    /// True once every entry in every exercise is marked completed. Used as
+    /// the auto-minimise trigger so the user doesn't need to tap Done after
+    /// logging their last set.
+    private var allSetsComplete: Bool {
+        guard !sets.isEmpty else { return false }
+        return sets.values.allSatisfy { $0.allSatisfy(\.completed) }
     }
 
     /// Mirror current workout state into the App-Group store the lock-screen
