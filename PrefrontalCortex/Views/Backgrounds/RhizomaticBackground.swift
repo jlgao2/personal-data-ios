@@ -45,12 +45,12 @@ struct RhizomaticBackground: View {
     ]
 
     private static let config = FlowFieldConfig(
-        particleCount: 500,
-        trailCapacity: 18,
-        minLifespan: 6.0,
-        maxLifespan: 11.0,
-        velocityLerp: 0.10,
-        speed: 0.0025,
+        particleCount: 220,    // dialed down from 500 — less powerful
+        trailCapacity: 22,     // slightly longer trails to keep continuity at lower density
+        minLifespan: 9.0,      // longer-lived: organic, deliberate
+        maxLifespan: 16.0,
+        velocityLerp: 0.04,    // gentler velocity easing → smoother organic motion
+        speed: 0.0011,         // half-speed — slow ground-cover bloom
         palette: palette,
         // Curl noise rotated 90° gives lateral spread (the "rhizomatic" feel).
         // A second low-frequency noise term reverses direction in places so

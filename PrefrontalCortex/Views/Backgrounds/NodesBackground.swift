@@ -54,12 +54,12 @@ struct NodesBackground: View {
     ]
 
     private static let config = FlowFieldConfig(
-        particleCount: 500,
-        trailCapacity: 18,
-        minLifespan: 5.0,
-        maxLifespan: 9.5,
-        velocityLerp: 0.12,
-        speed: 0.0030,
+        particleCount: 200,    // dialed down — less powerful
+        trailCapacity: 22,
+        minLifespan: 8.0,      // longer-lived; particles glide between hubs
+        maxLifespan: 14.0,
+        velocityLerp: 0.05,    // smoother drift
+        speed: 0.0013,         // slower meander between hubs
         palette: NodesBackground.palette,
         // 30% attractor force + 70% curl noise. The attractor sum is taken
         // weighted by 1/d² (clamped) and normalized so the result is roughly

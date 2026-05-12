@@ -41,12 +41,12 @@ struct RootsBackground: View {
     ]
 
     private static let config = FlowFieldConfig(
-        particleCount: 500,
-        trailCapacity: 20,
-        minLifespan: 5.5,
-        maxLifespan: 10.0,
-        velocityLerp: 0.09,  // slower lerp — roots feel deliberate
-        speed: 0.0028,
+        particleCount: 220,    // dialed down — less powerful
+        trailCapacity: 24,     // longer trails for the slow-descent feel
+        minLifespan: 8.0,      // longer-lived; roots take their time
+        maxLifespan: 15.0,
+        velocityLerp: 0.04,    // very gentle easing — taproot-deliberate
+        speed: 0.0012,         // slow downward drift
         palette: palette,
         // Vertical-downward bias. Curl provides the lateral wiggle/branch,
         // but the y-component is `|curl_y| + 0.5` so it never reverses

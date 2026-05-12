@@ -45,12 +45,12 @@ struct RiverOfGlowBackground: View {
     ]
 
     private static let config = FlowFieldConfig(
-        particleCount: 500,
-        trailCapacity: 22,  // longer trails for the streak look
-        minLifespan: 5.0,
-        maxLifespan: 9.0,
-        velocityLerp: 0.14,  // a bit snappier so the laminar shape stays crisp
-        speed: 0.0040,       // fastest of the four panes — it's a river
+        particleCount: 200,    // dialed down — less powerful
+        trailCapacity: 26,     // longest trails (still the streak look at lower density)
+        minLifespan: 7.0,
+        maxLifespan: 12.0,
+        velocityLerp: 0.06,    // smoother, more painterly current
+        speed: 0.0016,         // ~40% of prior speed — still a river, slow water
         palette: palette,
         // Strong x-direction flow with a gentle vertical wiggle. Tilted
         // slightly so the river isn't perfectly horizontal (more painterly

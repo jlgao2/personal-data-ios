@@ -236,7 +236,11 @@ struct FlowFieldCanvas: View {
                 let by = p.trail[bSlot * 2 + 1] * size.height
                 // Alpha rises along the trail (tail dim, head bright).
                 let segFrac = Double(i + 1) / Double(filled)
-                let alpha = segFrac * segFrac * 0.55 * envelope
+                // Peak alpha lowered to keep the field as ambient presence,
+                // not co-protagonist. Combined with .screen blending the
+                // overlap regions still glow nicely without overwhelming
+                // foreground text.
+                let alpha = segFrac * segFrac * 0.32 * envelope
                 var seg = Path()
                 seg.move(to: CGPoint(x: ax, y: ay))
                 seg.addLine(to: CGPoint(x: bx, y: by))

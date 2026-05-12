@@ -182,6 +182,13 @@ struct ContentView: View {
             // .vertical but being explicit guards against accidental
             // horizontal-axis enablement from nested modifiers.
             ScrollView(.vertical) {
+                // Each child gets `.frame(maxWidth: .infinity)` so that if
+                // any one of them emits content with an intrinsic width
+                // larger than the viewport (a Chart, a fixed-width row, a
+                // GeometryReader that doesn't clamp), that overflow stays
+                // contained inside that child rather than propagating up
+                // through the VStack to the ScrollView and making the
+                // whole tab scroll sideways.
                 VStack(alignment: .leading, spacing: 28) {
                     if let bundle = store.bundle {
                         if let p = bundle.profile {
@@ -192,22 +199,29 @@ struct ContentView: View {
                                 actionLoop: bundle.action_loop,
                                 live: store.liveValues
                             )
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         WeeklyRecapView(vitals: bundle.vitals, workouts: bundle.workouts)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         if let supps = bundle.profile?.supplement_stack, !supps.isEmpty {
                             StackDetailView(items: supps)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         if let corr = bundle.correlations {
                             if let findings = corr.correlations, !findings.isEmpty {
                                 CorrelationsView(findings: findings)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             if let dow = corr.day_of_week, !dow.isEmpty {
                                 DOWHeatmapView(stats: dow)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
                         }
                         VitalsView(vitals: bundle.vitals, live: store.liveValues)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         if !bundle.workouts.isEmpty {
                             WorkoutsView(workouts: bundle.workouts)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
                 }
@@ -216,6 +230,10 @@ struct ContentView: View {
                 .padding(.top, 32)
                 .padding(.bottom, tabBarClearance)
             }
+            // Defense-in-depth: clipped on the ScrollView so even if a
+            // child still produces an out-of-bounds box, it's visually
+            // truncated rather than expanding the scrollable area.
+            .clipped()
             // Backdrop lives in the per-tab ZStack above.
             .scrollContentBackground(.hidden)
             .background(Color.clear)
