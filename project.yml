@@ -43,12 +43,23 @@ targets:
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
         NSSupportsLiveActivities: true
+        NSUbiquitousContainers:
+          iCloud.com.jlgao.PrefrontalCortex:
+            NSUbiquitousContainerIsDocumentScopePublic: true
+            NSUbiquitousContainerName: PrefrontalCortex
+            NSUbiquitousContainerSupportedFolderLevels: Any
     entitlements:
       path: PrefrontalCortex/Resources/PrefrontalCortex.entitlements
       properties:
         com.apple.developer.healthkit: true
         com.apple.security.application-groups:
           - group.com.jlgao.PrefrontalCortex
+        com.apple.developer.icloud-container-identifiers:
+          - iCloud.com.jlgao.PrefrontalCortex
+        com.apple.developer.icloud-services:
+          - CloudDocuments
+        com.apple.developer.ubiquity-container-identifiers:
+          - iCloud.com.jlgao.PrefrontalCortex
     settings:
       base:
         TARGETED_DEVICE_FAMILY: "1,2"
