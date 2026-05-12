@@ -108,6 +108,23 @@ struct AdaptedSession: Codable {
     let added: [SessionItem]?
     let notes: [String]?
     let rules_fired: [String]?
+    // Structured cardio-modality recommendation for cardio-tagged days
+    // (populated by `rule_cardio_modality_suggest`). nil when no rotation
+    // pressure or the day isn't cardio. AdaptedSessionView renders a
+    // cyan-stroked banner above the prescribed `main[]` when present.
+    let cardio_suggestion: CardioSuggestion?
+}
+
+/// Sidecar suggestion for cardio days — the engine emphasizes which
+/// curated modality fits this week's spread without rewriting the
+/// prescribed list. `from_prescribed` is true when `modality` already
+/// appears in today's curated `main[]`; false when engine-introduced
+/// (e.g. swimming substituted for running under a peroneal condition).
+struct CardioSuggestion: Codable {
+    let modality: String                // "swimming" | "cycling" | "running"
+    let reason: String
+    let from_prescribed: Bool
+    let alternatives: [String]?
 }
 
 struct SessionSwap: Codable, Identifiable {
