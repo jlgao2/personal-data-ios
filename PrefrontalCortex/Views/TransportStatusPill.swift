@@ -1,72 +1,58 @@
 import SwiftUI
 
 struct TransportStatusPill: View {
-    @ObservedObject var settings: TransportSettings = .shared
-    let bundleExportedAt: String?
-    let lastError: TransportError?
-    @Binding var presentSettings: Bool
+    @EnvironmentObject var store: AppStore
+
+    enum State {
+        case synced(exportedAt: String)
+        case stale(hoursOld: Int)
+        case errored(message: String)
+        case noiCloud
+        case pendingEdit
+    }
+
+    private var derivedState: State {
+        if !iCloudPaths.isAvailable { return .noiCloud }
+        guard let m = store.manifest else { return .pendingEdit }
+        if m.status == "error" { return .errored(message: m.error ?? "Unknown error") }
+        let age = staleHours(since: m.exported_at) ?? 0
+        if age >= 6 { return .stale(hoursOld: age) }
+        return .synced(exportedAt: m.exported_at)
+    }
 
     var body: some View {
-        if let label, let color {
-            Button {
-                presentSettings = true
-            } label: {
-                Text(label)
-                    .font(.caption2.monospaced())
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(.ultraThinMaterial, in: Capsule())
-                    .overlay(Capsule().strokeBorder(color.opacity(0.4)))
-                    .foregroundStyle(color)
-            }
-            .buttonStyle(.plain)
+        switch derivedState {
+        case .synced(let at):
+            chip(color: .green,   label: "SYNCED", subtitle: shortTime(at))
+        case .stale(let h):
+            chip(color: .orange,  label: "STALE",  subtitle: "\(h)h old")
+        case .errored(let msg):
+            chip(color: .red,     label: "ERROR",  subtitle: msg)
+        case .noiCloud:
+            chip(color: .gray,    label: "NO iCLOUD", subtitle: "tap to sign in")
+        case .pendingEdit:
+            chip(color: .cyan,    label: "SAVING…", subtitle: nil)
         }
     }
 
-    private var label: String? {
-        if !settings.isConfigured { return "Setup → Settings" }
-        if let lastError = lastError {
-            switch lastError {
-            case .unauthorized:           return "Auth error"
-            case .bundleMissing:          return "Run refresh.sh"
-            case .unreachable:            return "Laptop offline"
-            case .notConfigured:          return "Setup → Settings"
-            case .serverError(let c, _):  return "Server \(c)"
-            case .decodingFailed:         return "Bad bundle"
-            }
+    private func chip(color: Color, label: String, subtitle: String?) -> some View {
+        HStack(spacing: 4) {
+            Text(label).font(.caption2.monospaced().bold()).tracking(1.5)
+            if let subtitle { Text(subtitle).font(.caption2).foregroundStyle(.secondary) }
         }
-        if let bundleExportedAt, let days = staleDays(since: bundleExportedAt), days >= 1 {
-            return "Bundle \(days)d old"
-        }
-        return nil
+        .padding(.horizontal, 8).padding(.vertical, 3)
+        .overlay(Capsule().strokeBorder(color.opacity(0.6)))
+        .clipShape(Capsule())
+        .foregroundStyle(color)
     }
 
-    private var color: Color? {
-        if !settings.isConfigured { return .yellow }
-        if let lastError = lastError {
-            switch lastError {
-            case .unauthorized:   return .orange
-            case .bundleMissing:  return .yellow
-            case .unreachable:    return .gray
-            case .notConfigured:  return .yellow
-            case .serverError:    return .orange
-            case .decodingFailed: return .orange
-            }
-        }
-        if let bundleExportedAt, let days = staleDays(since: bundleExportedAt), days >= 1 {
-            return .yellow
-        }
-        return nil
-    }
-
-    private func staleDays(since iso: String) -> Int? {
+    private func staleHours(since iso: String) -> Int? {
         let f = ISO8601DateFormatter()
-        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        guard let date = f.date(from: iso) ?? ISO8601DateFormatter().date(from: iso) else {
-            return nil
-        }
-        let hours = Date().timeIntervalSince(date) / 3600
-        guard hours >= 24 else { return nil }
-        return Int(hours / 24)
+        guard let d = f.date(from: iso) else { return nil }
+        return Int(Date().timeIntervalSince(d) / 3600)
+    }
+    private func shortTime(_ iso: String) -> String {
+        let f = ISO8601DateFormatter(); guard let d = f.date(from: iso) else { return "" }
+        let df = DateFormatter(); df.timeStyle = .short; return df.string(from: d)
     }
 }

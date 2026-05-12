@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0E1038C8C4C2E62EB41B979F /* WeeklyRecapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5649DA3EFD054D4AA7AA70F /* WeeklyRecapView.swift */; };
 		0F1F5CDE99DB2B257DF9E652 /* PendingInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29DEE146B7D16CC46B5AF670 /* PendingInbox.swift */; };
+		1404B8DAA2C8A047F35A41A3 /* ConfigOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CF4E49F61420DFEA0C08664 /* ConfigOnboardingView.swift */; };
 		1BD0FF0A0008D4853BA6F4F1 /* SkipReasonSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EB7C734F47BC9A65C683DF4 /* SkipReasonSheet.swift */; };
 		1C05C2299DF8415064EA68E4 /* PrefrontalCortexWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1FFDE9EACD9CA92CF2D15D5A /* TransportClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086AC9497BBB1C47E305924B /* TransportClient.swift */; };
@@ -158,6 +159,7 @@
 		F2F2F3F3A4A4A5A5B6B6B7B8 /* BandLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandLiveActivity.swift; sourceTree = "<group>"; };
 		1A1A2B2B3C3C4D4D5E5E6F70 /* BandLiveActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandLiveActivityView.swift; sourceTree = "<group>"; };
 		2CAED2897A33FF5197B09BB1 /* CorrelationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorrelationsView.swift; sourceTree = "<group>"; };
+		2CF4E49F61420DFEA0C08664 /* ConfigOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigOnboardingView.swift; sourceTree = "<group>"; };
 		2F821BFAB9FCC767583C2884 /* DailyLockChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyLockChip.swift; sourceTree = "<group>"; };
 		318E4861F4BDDB8438347982 /* PrefrontalCortex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PrefrontalCortex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3528157226FF2B1EB42A0BC1 /* Manifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Manifest.swift; sourceTree = "<group>"; };
@@ -272,6 +274,7 @@
 				83295A3F857518282CCA3A31 /* AnimatedAuraBackground.swift */,
 				66778899AABBCC55DDEE5567 /* AuthorshipContextMenu.swift */,
 				CC33DD44EE55FF6677AA1235 /* BandDivider.swift */,
+				2CF4E49F61420DFEA0C08664 /* ConfigOnboardingView.swift */,
 				2CAED2897A33FF5197B09BB1 /* CorrelationsView.swift */,
 				7385963EC643DCC8A9E08A28 /* CustomTabBar.swift */,
 				2F821BFAB9FCC767583C2884 /* DailyLockChip.swift */,
@@ -591,6 +594,7 @@
 				AC8AA5E8C50D97F870B45311 /* AppStore.swift in Sources */,
 				CB75433BC4B91CECB6D97424 /* Bundle.swift in Sources */,
 				4BC742CDBF46C79B53F5D51F /* CalendarStore.swift in Sources */,
+				1404B8DAA2C8A047F35A41A3 /* ConfigOnboardingView.swift in Sources */,
 				E6198CDE48405800A2634F16 /* ContentView.swift in Sources */,
 				4F285409BAB0591E3D6251C6 /* CorrelationsView.swift in Sources */,
 				E7F9BBBD49E779CDA91C3ED7 /* CustomTabBar.swift in Sources */,

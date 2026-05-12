@@ -178,7 +178,10 @@ struct ContentView: View {
                                 avoidClasses: bundle.profile?.medications_to_avoid ?? []
                             )
                         }
+                    } else if iCloudPaths.isAvailable {
+                        ConfigOnboardingView()
                     }
+                    // else: rely on the noiCloud pill / existing UI to indicate sign-in needed
                 }
                 .padding()
                 .padding(.top, 32)
@@ -193,13 +196,9 @@ struct ContentView: View {
                 await store.uploadTodaySamples()
             }
             .overlay(alignment: .topTrailing) {
-                TransportStatusPill(
-                    bundleExportedAt: store.bundle?.exported_at,
-                    lastError: store.lastTransportError,
-                    presentSettings: $showTransportSettings
-                )
-                .padding(.top, 8)
-                .padding(.trailing, 16)
+                TransportStatusPill()
+                    .padding(.top, 8)
+                    .padding(.trailing, 16)
             }
         }
     }
