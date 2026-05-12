@@ -98,7 +98,26 @@ struct WorkoutSessionView: View {
             }
         }
         .preferredColorScheme(.dark)
-        .onAppear { loadState() }
+        .onAppear {
+            loadState()
+            // Reopen-into-complete-state guard: if `sets` restored from
+            // UserDefaults already shows every prescribed set ticked,
+            // the user has nothing to do here. Minimise immediately.
+            // If DailyLock already flagged today's workout as done,
+            // skip the upload path (it already ran when they originally
+            // completed); otherwise commit so the session lands on the
+            // spine even if the app was force-killed before the rising-
+            // edge auto-dismiss in `markComplete` could fire.
+            if allSetsComplete {
+                Task { @MainActor in
+                    if DailyLock.isWorkoutDone() {
+                        dismiss()
+                    } else {
+                        await commitAndDismiss()
+                    }
+                }
+            }
+        }
         .alert("Custom weight (\(unit.label))",
                isPresented: Binding(
                     get: { customWeightTarget != nil },
