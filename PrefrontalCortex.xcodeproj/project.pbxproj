@@ -37,6 +37,7 @@
 		52E30437C2A5C03C092A08DC /* RiverOfGlowBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A71F62A979B4C2DF7ACFFC /* RiverOfGlowBackground.swift */; };
 		5306323CCA9DF60F878D9DCA /* MindfulEatingTodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C559BC519573C512391D4DE7 /* MindfulEatingTodayView.swift */; };
 		541D77E37AFB66648AA37EC7 /* DeviationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 189AC30EA16A4ED953187B31 /* DeviationSheet.swift */; };
+		543410AE5CF6B6C384B722EA /* DeviationStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC3B31BEDE3F3924B9ED913 /* DeviationStoreTests.swift */; };
 		56CA6B8D4F88CB18F16FCCE5 /* HealthProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECEA1D8862C5E08A3460C10D /* HealthProfileView.swift */; };
 		59EAC5A452EFEAAB4697D94A /* AdaptedSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BE6EE78BCEA78C7FA8AA9F /* AdaptedSessionView.swift */; };
 		5AECEE170CC49677E2116618 /* TransportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620539A39D5D3A8FC3B28392 /* TransportSettingsView.swift */; };
@@ -52,6 +53,7 @@
 		745766DC65277A58544E36C8 /* SampleExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E1E8B4C8CEBF4F91E20DC7 /* SampleExporter.swift */; };
 		74FF728E96F1EB6620090A28 /* WorkoutUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3BFED9D38B1C9E08BF83F2 /* WorkoutUnit.swift */; };
 		76E84494A3BF3BC32B5C2C1D /* WorkoutAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 431D549E8B4DB3874AC980CE /* WorkoutAppIntents.swift */; };
+		77485033548B1C8224708D98 /* BundleDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103A0887BBB9F9C09DEE2446 /* BundleDecodeTests.swift */; };
 		79EB35971D2A18BADCE9DE70 /* iCloudPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79058244CC8254C72CE824A1 /* iCloudPaths.swift */; };
 		7A4C635333E2854D71DA3FB7 /* TransportStatusPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F14F8C03DE8FED59DE62CC /* TransportStatusPill.swift */; };
 		80478231B3FF56CC81D9731B /* WorkoutLiveActivityRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97FA9237BBC0015E8109A9AE /* WorkoutLiveActivityRefresher.swift */; };
@@ -88,6 +90,7 @@
 		BBAE93EDE0A633BEB7329896 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4B45A3F87E88F76B4C774B /* App.swift */; };
 		BE5AEEEDF724661BB1B75D5D /* DOWHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB03DDF028F9C4D8D12EB92 /* DOWHeatmapView.swift */; };
 		C582BD6D72FDF1C89514EB29 /* UploadModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D902D74491F834FBB32F2A7A /* UploadModels.swift */; };
+		C64CD15435D7E8C54666ED29 /* iCloudTransportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5122F44CAC5CF738E772DCC7 /* iCloudTransportTests.swift */; };
 		C6DBBBF5ACE5356A50867B84 /* DailyLockChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F821BFAB9FCC767583C2884 /* DailyLockChip.swift */; };
 		C8184071DD103801C2B4CDCC /* GenomicsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6BE7054D5CF649868F94F /* GenomicsView.swift */; };
 		CB75433BC4B91CECB6D97424 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0EDEAAB13326E848CA3C3E2 /* Bundle.swift */; };
@@ -122,6 +125,13 @@
 			remoteGlobalIDString = C740D41B96D2FD25F411AD73;
 			remoteInfo = PrefrontalCortexWidget;
 		};
+		5045735E0480D438DFB4B6E6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AB9DA3E2D27C6369804937FC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66B373569183C7125334D491;
+			remoteInfo = PrefrontalCortex;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -147,6 +157,7 @@
 		0D7C3271B3F0795A38C496A8 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		0DA6BE7054D5CF649868F94F /* GenomicsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenomicsView.swift; sourceTree = "<group>"; };
 		0EA610BC0275EA22825B1E0B /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
+		103A0887BBB9F9C09DEE2446 /* BundleDecodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleDecodeTests.swift; sourceTree = "<group>"; };
 		1111B4684CFCF0D31D50AB66 /* WorkoutLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutLiveActivity.swift; sourceTree = "<group>"; };
 		13BEE568095D6B8EFE3A8A43 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		14D52D330B8B679F4F233E48 /* SkipWorkoutButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkipWorkoutButton.swift; sourceTree = "<group>"; };
@@ -180,6 +191,7 @@
 		33445566AABBCC22DDEE5567 /* Authorship.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Authorship.swift; sourceTree = "<group>"; };
 		66778899AABBCC55DDEE5567 /* AuthorshipContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorshipContextMenu.swift; sourceTree = "<group>"; };
 		77889900AABBCC66DDEE5567 /* EmptyHero.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyHero.swift; sourceTree = "<group>"; };
+		5122F44CAC5CF738E772DCC7 /* iCloudTransportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iCloudTransportTests.swift; sourceTree = "<group>"; };
 		51B603FEC1FEE012D1E97610 /* HealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
 		524F8D7C2732C9FF93D336A4 /* NodesBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodesBackground.swift; sourceTree = "<group>"; };
 		557DB433C84126FC75B2AF52 /* StackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackView.swift; sourceTree = "<group>"; };
@@ -218,6 +230,7 @@
 		A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = PrefrontalCortexWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8D2C3F808A75C620760CD12 /* LogSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogSessionView.swift; sourceTree = "<group>"; };
 		AAD7BB2CAFD1A54852624CF9 /* StreakState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakState.swift; sourceTree = "<group>"; };
+		ACC3B31BEDE3F3924B9ED913 /* DeviationStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviationStoreTests.swift; sourceTree = "<group>"; };
 		AD8B527DA8380933E8F6CA9A /* CalendarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStore.swift; sourceTree = "<group>"; };
 		AE1DBFF025F3858AADA1B0D0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B460BE72524EB3C56F569BA0 /* RootsBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootsBackground.swift; sourceTree = "<group>"; };
@@ -232,6 +245,7 @@
 		D2F135FF57EF665F0E7E623A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D8F14F8C03DE8FED59DE62CC /* TransportStatusPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportStatusPill.swift; sourceTree = "<group>"; };
 		D902D74491F834FBB32F2A7A /* UploadModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadModels.swift; sourceTree = "<group>"; };
+		DFE5522A2A4F07727311CD80 /* PrefrontalCortexTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PrefrontalCortexTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0EDEAAB13326E848CA3C3E2 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		E1A76360A24D8213529C18D9 /* SocialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialView.swift; sourceTree = "<group>"; };
 		E684221FB8C4DDAB93886C3A /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
@@ -377,11 +391,22 @@
 			path = PrefrontalCortex;
 			sourceTree = "<group>";
 		};
+		6DA4946733837C7F1EDE197E /* PrefrontalCortexTests */ = {
+			isa = PBXGroup;
+			children = (
+				103A0887BBB9F9C09DEE2446 /* BundleDecodeTests.swift */,
+				ACC3B31BEDE3F3924B9ED913 /* DeviationStoreTests.swift */,
+				5122F44CAC5CF738E772DCC7 /* iCloudTransportTests.swift */,
+			);
+			path = PrefrontalCortexTests;
+			sourceTree = "<group>";
+		};
 		8A540932C82D1E9FF816E7AC = {
 			isa = PBXGroup;
 			children = (
 				62397D79FFAC524A4F29CB29 /* PrefrontalCortex */,
 				F1CB09A516992C0F48C95470 /* PrefrontalCortexShared */,
+				6DA4946733837C7F1EDE197E /* PrefrontalCortexTests */,
 				3369153BB8E3E89E8216DA4D /* PrefrontalCortexWidget */,
 				4671836FEB051AF7F7D5B0CA /* Frameworks */,
 				A623912F3473E6F7BB93E5F9 /* Products */,
@@ -410,6 +435,7 @@
 			isa = PBXGroup;
 			children = (
 				318E4861F4BDDB8438347982 /* PrefrontalCortex.app */,
+				DFE5522A2A4F07727311CD80 /* PrefrontalCortexTests.xctest */,
 				A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */,
 			);
 			name = Products;
@@ -526,6 +552,24 @@
 			productReference = A64EEB750F900CCFAA84CE95 /* PrefrontalCortexWidget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		D93CE92DDA4C105CE5DA2D75 /* PrefrontalCortexTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F1476A98060AA6FEB0D76C59 /* Build configuration list for PBXNativeTarget "PrefrontalCortexTests" */;
+			buildPhases = (
+				8B9C994D0C146DAF30ACF217 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7AA0BDC5210AC1F9647DA4F6 /* PBXTargetDependency */,
+			);
+			name = PrefrontalCortexTests;
+			packageProductDependencies = (
+			);
+			productName = PrefrontalCortexTests;
+			productReference = DFE5522A2A4F07727311CD80 /* PrefrontalCortexTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -539,6 +583,9 @@
 						DevelopmentTeam = 7SK8MG8FY6;
 					};
 					C740D41B96D2FD25F411AD73 = {
+						DevelopmentTeam = 7SK8MG8FY6;
+					};
+					D93CE92DDA4C105CE5DA2D75 = {
 						DevelopmentTeam = 7SK8MG8FY6;
 					};
 				};
@@ -558,6 +605,7 @@
 			projectRoot = "";
 			targets = (
 				66B373569183C7125334D491 /* PrefrontalCortex */,
+				D93CE92DDA4C105CE5DA2D75 /* PrefrontalCortexTests */,
 				C740D41B96D2FD25F411AD73 /* PrefrontalCortexWidget */,
 			);
 		};
@@ -598,6 +646,16 @@
 				B8D65EC34CDADE6DAD7CAF46 /* WorkoutLockWidget.swift in Sources */,
 				D3253230DCC97C24F9CB1C44 /* WorkoutProgress.swift in Sources */,
 				52C2DDA83F1CAAEA9CD92881 /* WorkoutSetButtonRow.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8B9C994D0C146DAF30ACF217 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				77485033548B1C8224708D98 /* BundleDecodeTests.swift in Sources */,
+				543410AE5CF6B6C384B722EA /* DeviationStoreTests.swift in Sources */,
+				C64CD15435D7E8C54666ED29 /* iCloudTransportTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -699,6 +757,11 @@
 			target = C740D41B96D2FD25F411AD73 /* PrefrontalCortexWidget */;
 			targetProxy = 3392ACDA42553DED47CC565C /* PBXContainerItemProxy */;
 		};
+		7AA0BDC5210AC1F9647DA4F6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66B373569183C7125334D491 /* PrefrontalCortex */;
+			targetProxy = 5045735E0480D438DFB4B6E6 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -758,6 +821,22 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.10;
+			};
+			name = Release;
+		};
+		1BD33441C01F181F7AEDC8F3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jlgao.PrefrontalCortexTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PrefrontalCortex.app/PrefrontalCortex";
 			};
 			name = Release;
 		};
@@ -861,6 +940,22 @@
 			};
 			name = Debug;
 		};
+		B32ECCCC0A4351DEC4238784 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jlgao.PrefrontalCortexTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PrefrontalCortex.app/PrefrontalCortex";
+			};
+			name = Debug;
+		};
 		CA9266B3626BDA5707246680 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -921,6 +1016,15 @@
 			buildConfigurations = (
 				30C93BA7F0994B77A07C7A17 /* Debug */,
 				121149E72E6B15DADBE15699 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F1476A98060AA6FEB0D76C59 /* Build configuration list for PBXNativeTarget "PrefrontalCortexTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B32ECCCC0A4351DEC4238784 /* Debug */,
+				1BD33441C01F181F7AEDC8F3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

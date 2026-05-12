@@ -95,6 +95,19 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.jlgao.PrefrontalCortex.PrefrontalCortexWidget
         SKIP_INSTALL: YES
 
+  PrefrontalCortexTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [PrefrontalCortexTests]
+    settings:
+      base:
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/PrefrontalCortex.app/PrefrontalCortex"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        PRODUCT_BUNDLE_IDENTIFIER: com.jlgao.PrefrontalCortexTests
+    dependencies:
+      - target: PrefrontalCortex
+
 # Both schemes launch the host app. Without this, the auto-generated widget
 # scheme tries to launch the extension binary directly — iOS can't do that
 # (extensions are loaded by the host or by the system), so Xcode reports
@@ -128,3 +141,12 @@ schemes:
       config: Debug
     archive:
       config: Release
+  PrefrontalCortexTests:
+    build:
+      targets:
+        PrefrontalCortex: all
+        PrefrontalCortexTests: [test]
+    test:
+      config: Debug
+      targets:
+        - PrefrontalCortexTests
