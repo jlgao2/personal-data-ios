@@ -90,6 +90,13 @@ struct WorkoutSessionView: View {
                     .buttonStyle(LivePressStyle())
             }
         }
+        .safeAreaInset(edge: .top) {
+            if #available(iOS 16.2, *) {
+                LiveActivityDisabledBanner()
+                    .padding(.horizontal, 16)
+                    .padding(.top, 4)
+            }
+        }
         .preferredColorScheme(.dark)
         .onAppear { loadState() }
         .alert("Custom weight (\(unit.label))",
@@ -669,6 +676,9 @@ struct WorkoutSessionView: View {
         guard let focused else {
             LockScreenWorkoutStore.clear()
             WidgetCenter.shared.reloadAllTimelines()
+            if #available(iOS 16.2, *) {
+                Task { await WorkoutLiveActivity.endAll(immediate: true) }
+            }
             return
         }
         let entries = sets[focused.exerciseKey] ?? []
@@ -684,6 +694,39 @@ struct WorkoutSessionView: View {
 
         let entry = entries[safe: focused.setIndex] ?? .init(weight: 0, reps: 0, completed: false)
 
+        // Queue of upcoming exercises so the lock-screen intent can advance
+        // past the current exercise's last set without falling off the end
+        // of the workout.
+        let allItems = allPrescribedItems()
+        let currentIdx = allItems.firstIndex { exerciseKey($0) == focused.exerciseKey } ?? -1
+        var queue: [LockScreenWorkoutState.QueuedExercise] = []
+        if currentIdx >= 0 {
+            for raw in allItems[(currentIdx + 1)...] {
+                let qKey = exerciseKey(raw)
+                let qParsed = parseExercise(raw)
+                let qEntries = sets[qKey] ?? []
+                guard let firstPending = qEntries.firstIndex(where: { !$0.completed }) else {
+                    continue   // already complete — skip
+                }
+                let qEntry = qEntries[firstPending]
+                let qMode: LockScreenWorkoutState.Mode = {
+                    if qParsed.isTime { return .time }
+                    if qParsed.isBand { return .band }
+                    if qParsed.isAMRAP { return .amrap }
+                    return .free
+                }()
+                queue.append(.init(
+                    exerciseKey: qKey,
+                    exerciseName: qParsed.name,
+                    totalSets: qParsed.sets,
+                    mode: qMode,
+                    lastWeight: qEntry.weight,
+                    lastReps: qEntry.reps,
+                    bandColor: qEntry.bandColor
+                ))
+            }
+        }
+
         let state = LockScreenWorkoutState(
             inProgress: true,
             exerciseKey: focused.exerciseKey,
@@ -696,10 +739,20 @@ struct WorkoutSessionView: View {
             stagedWeight: nil,
             mode: mode,
             bandColor: entry.bandColor,
-            unit: unit.label
+            unit: unit.label,
+            queue: queue
         )
         LockScreenWorkoutStore.save(state)
         WidgetCenter.shared.reloadAllTimelines()
+
+        // Live Activity: idempotent — start() refreshes if one already exists,
+        // requests a new one otherwise. Title combines the day key with the
+        // session label from the prescribed bundle when present.
+        if #available(iOS 16.2, *) {
+            let title = (prescribed?.session ?? dayKey)
+            WorkoutLiveActivity.start(state: state, title: title)
+            Task { await WorkoutLiveActivity.refresh() }
+        }
     }
 
     private func formattedWeight(_ w: Double) -> String {
@@ -812,14 +865,14 @@ struct WorkoutSessionView: View {
             return
         }
 
-        let row: [String: Any] = [
-            "client_id": "\(Self.todayDateString())_\(dayKey)",
-            "ts": ISO8601DateFormatter().string(from: Date()),
-            "sport": "STRENGTH_TRAINING",
-            "duration_min": max(15, total.count * 3),
-            "rpe": 6,
-            "note": "\(dayLabel) · \(note)",
-        ]
+        let row = SessionUpload(
+            client_id:    "\(Self.todayDateString())_\(dayKey)",
+            ts:           ISO8601DateFormatter().string(from: Date()),
+            sport:        "STRENGTH_TRAINING",
+            duration_min: max(15, total.count * 3),
+            rpe:          6,
+            note:         "\(dayLabel) · \(note)"
+        )
         do {
             _ = try await TransportClient.shared.uploadSessions([row])
             store.lastUploadResult = "Workout logged · \(total.count) sets"
@@ -830,6 +883,9 @@ struct WorkoutSessionView: View {
         _ = StreakState.refresh()
         _ = Achievements.refresh()
         LockScreenWorkoutStore.clear()
+        if #available(iOS 16.2, *) {
+            await WorkoutLiveActivity.endAll(immediate: true)
+        }
         WidgetCenter.shared.reloadAllTimelines()
         dismiss()
     }
@@ -994,6 +1050,15 @@ func warmupSuggestions(workingWeight: Double, unit: WorkoutUnit) -> [Double] {
 /// that becomes the new default. Bodyweight stays bodyweight; common lifts
 /// start at sane plate-friendly values rather than 0.
 func defaultWeight(for name: String) -> Double {
+    // Library lookup first — exact match by canonical key. Only honour the
+    // bundled default for free-weight entries; "band"/"time"/"amrap" modes
+    // don't carry a meaningful pound figure.
+    let key = exerciseKey(name)
+    if let e = ExerciseLibrary.shared[key], e.mode == "free",
+       let lb = e.default_weight_lb {
+        return lb
+    }
+
     let n = name.lowercased()
 
     // Bodyweight — explicit no-load

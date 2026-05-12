@@ -7,6 +7,7 @@ import SwiftUI
 struct MindfulEatingTodayView: View {
     @State private var todayChecked: Bool = false
     @State private var streakDays: Int = 0
+    @State private var showDeviationSheet: Bool = false
 
     private static let appGroup = "group.com.jlgao.PrefrontalCortex"
     private static var defaults: UserDefaults {
@@ -31,6 +32,10 @@ struct MindfulEatingTodayView: View {
                 Text("\(streakDays)/7 this week")
                     .font(.caption2.monospaced())
                     .foregroundStyle(streakDays >= 5 ? .green : .secondary)
+            }
+
+            if let entry = DeviationStore.entry(for: .mindfulEating) {
+                DeviationChip(entry: entry)
             }
 
             Button(action: toggle) {
@@ -60,8 +65,21 @@ struct MindfulEatingTodayView: View {
             .buttonStyle(LivePressStyle())
             .sensoryFeedback(.selection, trigger: todayChecked)
             .sensoryFeedback(.success, trigger: streakDays >= 5)
+            .onLongPressGesture(minimumDuration: 0.6) {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                showDeviationSheet = true
+            }
         }
         .onAppear { loadState() }
+        .sheet(isPresented: $showDeviationSheet) {
+            DeviationSheet(
+                surface:    .mindfulEating,
+                surfaceID:  nil,
+                prescribed: "Mindful eating",
+                defaultDirection: .didDifferent
+            )
+            .presentationDetents([.large])
+        }
     }
 
     // MARK: - State

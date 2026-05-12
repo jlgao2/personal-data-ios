@@ -10,7 +10,7 @@ settings:
     SWIFT_VERSION: "5.10"
     MARKETING_VERSION: "0.1"
     CURRENT_PROJECT_VERSION: "1"
-    DEVELOPMENT_TEAM: ""
+    DEVELOPMENT_TEAM: 7SK8MG8FY6
 
 targets:
   PrefrontalCortex:
@@ -42,6 +42,7 @@ targets:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
+        NSSupportsLiveActivities: true
     entitlements:
       path: PrefrontalCortex/Resources/PrefrontalCortex.entitlements
       properties:
@@ -55,6 +56,7 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     dependencies:
       - target: PrefrontalCortexWidget
+      - sdk: ActivityKit.framework
 
   PrefrontalCortexWidget:
     type: app-extension

@@ -7,6 +7,8 @@ struct ContentView: View {
     @State private var showTransportSettings = false
     @State private var showLogSession = false
     @State private var showWorkoutSession = false
+    /// User-controlled feature gates (see TransportSettingsView).
+    @AppStorage("med_alerts_enabled") private var medAlertsEnabled: Bool = false
 
     enum Tab: String, Hashable {
         case interventions, plan, profile, social
@@ -108,6 +110,10 @@ struct ContentView: View {
                             StackView(items: supps)
                         }
                         MindfulEatingTodayView()
+                        // Today's actual sessions sit next to today's
+                        // prescribed session so the user can compare what
+                        // they did vs what the engine suggested at a glance.
+                        TodaysWorkoutChip()
                         if let adapted = bundle.adapted_session {
                             let dayKey = adapted.program_day ?? ""
                             let prescribed = bundle.profile?.daily_protocol?[dayKey]
@@ -120,10 +126,12 @@ struct ContentView: View {
                         if let abst = bundle.profile?.abstinences, !abst.isEmpty {
                             AbstinenceBarView(abstinences: abst)
                         }
-                        MedAlertsView(
-                            alerts: bundle.med_alerts ?? [],
-                            avoidClasses: bundle.profile?.medications_to_avoid ?? []
-                        )
+                        if medAlertsEnabled {
+                            MedAlertsView(
+                                alerts: bundle.med_alerts ?? [],
+                                avoidClasses: bundle.profile?.medications_to_avoid ?? []
+                            )
+                        }
                         if !calStore.authorized {
                             UpcomingEventsView(
                                 bundleEvents: bundle.calendar ?? [],
@@ -248,7 +256,8 @@ struct ContentView: View {
                         if let p = bundle.profile {
                             HealthProfileView(profile: p)
                         }
-                        if let avoid = bundle.profile?.medications_to_avoid,
+                        if medAlertsEnabled,
+                           let avoid = bundle.profile?.medications_to_avoid,
                            !avoid.isEmpty {
                             MedReferenceView(classes: avoid)
                         }

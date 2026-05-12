@@ -114,14 +114,14 @@ struct LogSessionView: View {
 
     private func submit() async {
         status = .sending
-        let row: [String: Any] = [
-            "client_id": UUID().uuidString,
-            "ts": ISO8601DateFormatter().string(from: Date()),
-            "sport": sport.rawValue,
-            "duration_min": durationMin,
-            "rpe": Int(rpe),
-            "note": note,
-        ]
+        let row = SessionUpload(
+            client_id:    UUID().uuidString,
+            ts:           ISO8601DateFormatter().string(from: Date()),
+            sport:        sport.rawValue,
+            duration_min: durationMin,
+            rpe:          Int(rpe),
+            note:         note
+        )
         do {
             let resp = try await TransportClient.shared.uploadSessions([row])
             status = .ok("Logged (\(resp.written) row)")

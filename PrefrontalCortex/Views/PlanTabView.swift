@@ -378,6 +378,7 @@ private struct StreakRow: View {
                         .aspectRatio(1, contentMode: .fit)
                 }
             }
+            .frame(maxWidth: .infinity)
         }
     }
 }
