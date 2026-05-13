@@ -112,6 +112,11 @@ struct ContentView: View {
                     }
                     if let err = store.lastError { errorBanner(err) }
                     if let bundle = store.bundle {
+                        // Hero card at the very top — answers "what should
+                        // I think about right now?" based on time-of-day.
+                        // Subscribes to .dayDidRollOver so band edges
+                        // refresh in-place even with the app open.
+                        PresentFocusCard()
                         TimelineView(bundle: bundle, calStore: calStore)
                         DailyLockChip()
                         if let supps = bundle.profile?.supplement_stack, !supps.isEmpty {

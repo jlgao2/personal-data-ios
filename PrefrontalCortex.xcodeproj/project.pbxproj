@@ -47,6 +47,8 @@
 		80478231B3FF56CC81D9731B /* WorkoutLiveActivityRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97FA9237BBC0015E8109A9AE /* WorkoutLiveActivityRefresher.swift */; };
 		853D3DD8D11A848C33019AFC /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D7C3271B3F0795A38C496A8 /* Notifications.swift */; };
 		8609FE4D600799951626E833 /* DailyLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BFDAE622A44DF5B46A68467 /* DailyLock.swift */; };
+		AA11BB22CC33DD44EE55FF66 /* TimeBand.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF67 /* TimeBand.swift */; };
+		BB22CC33DD44EE55FF6677AA /* PresentFocusCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB22CC33DD44EE55FF6677BB /* PresentFocusCard.swift */; };
 		87A28208EA7EEE8D2234CB56 /* FlowFieldEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73226B207EFA94E63F0596F0 /* FlowFieldEngine.swift */; };
 		8B900A5894617B309551CB31 /* AchievementGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18202C69808A1D6591BB70A6 /* AchievementGrid.swift */; };
 		95AD68B2BF347C3CD2629AB6 /* WorkoutSetButtonRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AFA9489B82B6746184A1EA4 /* WorkoutSetButtonRow.swift */; };
@@ -148,6 +150,8 @@
 		431D549E8B4DB3874AC980CE /* WorkoutAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutAppIntents.swift; sourceTree = "<group>"; };
 		47E1E8B4C8CEBF4F91E20DC7 /* SampleExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleExporter.swift; sourceTree = "<group>"; };
 		4BFDAE622A44DF5B46A68467 /* DailyLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyLock.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF67 /* TimeBand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeBand.swift; sourceTree = "<group>"; };
+		BB22CC33DD44EE55FF6677BB /* PresentFocusCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentFocusCard.swift; sourceTree = "<group>"; };
 		51B603FEC1FEE012D1E97610 /* HealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
 		524F8D7C2732C9FF93D336A4 /* NodesBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodesBackground.swift; sourceTree = "<group>"; };
 		557DB433C84126FC75B2AF52 /* StackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackView.swift; sourceTree = "<group>"; };
@@ -254,6 +258,7 @@
 				C559BC519573C512391D4DE7 /* MindfulEatingTodayView.swift */,
 				25B6CECAC5F23E6EDED54107 /* PlanTabView.swift */,
 				1A5923EEFFB65C137A165223 /* PrepChecklistView.swift */,
+				BB22CC33DD44EE55FF6677BB /* PresentFocusCard.swift */,
 				9EB7C734F47BC9A65C683DF4 /* SkipReasonSheet.swift */,
 				14D52D330B8B679F4F233E48 /* SkipWorkoutButton.swift */,
 				E1A76360A24D8213529C18D9 /* SocialView.swift */,
@@ -393,6 +398,7 @@
 				4BFDAE622A44DF5B46A68467 /* DailyLock.swift */,
 				F17B4BF4234C06F58182B24E /* DeviationStore.swift */,
 				AAD7BB2CAFD1A54852624CF9 /* StreakState.swift */,
+				AA11BB22CC33DD44EE55FF67 /* TimeBand.swift */,
 			);
 			path = Game;
 			sourceTree = "<group>";
@@ -555,6 +561,8 @@
 				E7F9BBBD49E779CDA91C3ED7 /* CustomTabBar.swift in Sources */,
 				BE5AEEEDF724661BB1B75D5D /* DOWHeatmapView.swift in Sources */,
 				8609FE4D600799951626E833 /* DailyLock.swift in Sources */,
+				AA11BB22CC33DD44EE55FF66 /* TimeBand.swift in Sources */,
+				BB22CC33DD44EE55FF6677AA /* PresentFocusCard.swift in Sources */,
 				C6DBBBF5ACE5356A50867B84 /* DailyLockChip.swift in Sources */,
 				24D36ECC16F49C9A171B0ACA /* DataLoader.swift in Sources */,
 				4DC9B1D241E0C091A5DBF455 /* DeviationChip.swift in Sources */,
