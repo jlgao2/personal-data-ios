@@ -104,6 +104,19 @@ final class AppStore: ObservableObject {
     /// Reordering any of 4→5→6 will quietly break things. If you need to add a
     /// step, find the right slot using these dependency notes and update this
     /// block.
+    /// Force "today" to roll over from the user's perspective. Posts
+    /// `.dayDidRollOver` so views that cache date-derived state in @State
+    /// (DailyLockChip, AdaptedSessionView, TimelineView …) re-evaluate
+    /// from `Date()`, then re-runs the foreground refresh pipeline so the
+    /// bundle, HK workouts, and game state reflect the current day. Used
+    /// by the manual "Tick day over" button in TransportSettings — the
+    /// auto-rollover when the app simply foregrounds across midnight is
+    /// already handled by App.swift's scenePhase change.
+    func tickDayOver() {
+        NotificationCenter.default.post(name: .dayDidRollOver, object: nil)
+        Task { await refreshOnForeground() }
+    }
+
     func refreshOnForeground() async {
         await CalendarStore.shared.loadUpcoming()
         do {

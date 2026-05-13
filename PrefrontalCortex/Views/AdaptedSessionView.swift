@@ -84,30 +84,33 @@ struct AdaptedSessionView: View {
                 DeviationChip(entry: entry)
             }
 
-            // If the user did an HK-logged workout today, surface a
-            // prominent one-tap "Log <Sport>" button that opens the
-            // DeviationSheet pre-filled with the actual activity + its
-            // duration. Otherwise fall back to the small "hold to skip"
-            // link (long-press → skip, tap → did-different).
-            if !todaysSessions.isEmpty {
-                logActualButton
-                    .padding(.top, 4)
-            } else {
-                SkipWorkoutButton(onCommit: {
-                    deviationDefaultActual = ""
-                    deviationDefaultActualQuant = ""
-                    deviationDirection = .didSkip
-                    showDeviationSheet = true
-                })
-                .padding(.top, -2)
-                .simultaneousGesture(
-                    TapGesture().onEnded {
+            // Skip / log-actual dialogues only when today's session is still
+            // unresolved. Once `DailyLock.isWorkoutDone()` flips true (manual
+            // commit, HK-detected workout, or a logged skip/deviation), the
+            // status is final — don't keep showing the "what did you do?"
+            // prompts. The DeviationChip above already surfaces the user's
+            // resolution if there was a deviation, so nothing is lost.
+            if !DailyLock.isWorkoutDone() {
+                if !todaysSessions.isEmpty {
+                    logActualButton
+                        .padding(.top, 4)
+                } else {
+                    SkipWorkoutButton(onCommit: {
                         deviationDefaultActual = ""
                         deviationDefaultActualQuant = ""
-                        deviationDirection = .didDifferent
+                        deviationDirection = .didSkip
                         showDeviationSheet = true
-                    }
-                )
+                    })
+                    .padding(.top, -2)
+                    .simultaneousGesture(
+                        TapGesture().onEnded {
+                            deviationDefaultActual = ""
+                            deviationDefaultActualQuant = ""
+                            deviationDirection = .didDifferent
+                            showDeviationSheet = true
+                        }
+                    )
+                }
             }
 
             // Traffic light header card

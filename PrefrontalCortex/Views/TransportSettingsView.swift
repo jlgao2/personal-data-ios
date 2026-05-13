@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TransportSettingsView: View {
     @ObservedObject var settings: TransportSettings = .shared
+    @EnvironmentObject private var store: AppStore
     @Environment(\.dismiss) private var dismiss
 
     @State private var urlInput: String = ""
@@ -58,6 +59,15 @@ struct TransportSettingsView: View {
                 Section("Features") {
                     Toggle("Med watch", isOn: $medAlertsEnabled)
                     Text("Surface the MED WATCH card on the Now tab + drug-class reference on Profile. Only useful if you sync MyChart bundles to the laptop.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                Section("Day") {
+                    Button("Tick day over") {
+                        store.tickDayOver()
+                        dismiss()
+                    }
+                    Text("Force today's date-derived views (lock dots, session card, timeline) to re-evaluate from the current `Date()`. Useful when the app was left open across midnight and yesterday's state is still showing.")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }

@@ -31,6 +31,8 @@ enum DailyLock {
     private static func amSuppsKey(_ date: Date) -> String       { "stack_period_\(dateKey(date))_morning" }
     private static func pmSuppsKey(_ date: Date) -> String       { "stack_period_\(dateKey(date))_evening" }
     private static func mindfulKey(_ date: Date) -> String       { "mindful_eat_\(dateKey(date))" }
+    private static func skincareAMKey(_ date: Date) -> String    { "skincare_am_\(dateKey(date))" }
+    private static func skincarePMKey(_ date: Date) -> String    { "skincare_pm_\(dateKey(date))" }
 
     // MARK: - Source enum
 
@@ -61,6 +63,29 @@ enum DailyLock {
     static func isMindfulEatingDone(date: Date = Date()) -> Bool {
         defaults.bool(forKey: mindfulKey(date))
     }
+    static func isSkincareAMDone(date: Date = Date()) -> Bool {
+        defaults.bool(forKey: skincareAMKey(date))
+    }
+    static func isSkincarePMDone(date: Date = Date()) -> Bool {
+        defaults.bool(forKey: skincarePMKey(date))
+    }
+
+    // MARK: - Skincare mutators
+
+    static func setSkincareAMDone(_ done: Bool, date: Date = Date()) {
+        if done {
+            defaults.set(true, forKey: skincareAMKey(date))
+        } else {
+            defaults.removeObject(forKey: skincareAMKey(date))
+        }
+    }
+    static func setSkincarePMDone(_ done: Bool, date: Date = Date()) {
+        if done {
+            defaults.set(true, forKey: skincarePMKey(date))
+        } else {
+            defaults.removeObject(forKey: skincarePMKey(date))
+        }
+    }
 
     // MARK: - The unified gate
 
@@ -69,6 +94,8 @@ enum DailyLock {
             && isAMSuppsDone(date: date)
             && isPMSuppsDone(date: date)
             && isMindfulEatingDone(date: date)
+            && isSkincareAMDone(date: date)
+            && isSkincarePMDone(date: date)
     }
 
     // MARK: - Workout-slot mutators
@@ -86,4 +113,13 @@ enum DailyLock {
         defaults.removeObject(forKey: workoutSourceKey(date))
         defaults.removeObject(forKey: workoutSkipReasonKey(date))
     }
+}
+
+/// Broadcast when the user manually advances the day (via the "Tick day
+/// over" button in TransportSettings) or when scenePhase becomes active
+/// and the day-of-month changed while the app was backgrounded. Views
+/// that compute state from `Date()` and cache the result in @State can
+/// subscribe to bump their refresh tick.
+extension Notification.Name {
+    static let dayDidRollOver = Notification.Name("PrefrontalCortex.dayDidRollOver")
 }
