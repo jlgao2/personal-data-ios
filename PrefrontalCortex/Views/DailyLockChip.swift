@@ -27,14 +27,18 @@ struct DailyLockChip: View {
     }
 
     private var slots: [Slot] {
+        // Wrap each DailyLock query in a no-arg closure. Referencing
+        // `DailyLock.isWorkoutDone` directly produces (Date) -> Bool —
+        // Swift doesn't apply the default `date: Date = Date()` to a
+        // function value; defaults only resolve at call sites.
         [
-            Slot(label: "W",     surface: .workout,    done: DailyLock.isWorkoutDone,       toggle: nil),
-            Slot(label: "AM",    surface: .suppsAM,    done: DailyLock.isAMSuppsDone,       toggle: nil),
-            Slot(label: "PM",    surface: .suppsPM,    done: DailyLock.isPMSuppsDone,       toggle: nil),
-            Slot(label: "M",     surface: .mindful,    done: DailyLock.isMindfulEatingDone, toggle: nil),
-            Slot(label: "SK·AM", surface: .skincareAM, done: DailyLock.isSkincareAMDone,
+            Slot(label: "W",     surface: .workout,    done: { DailyLock.isWorkoutDone() },       toggle: nil),
+            Slot(label: "AM",    surface: .suppsAM,    done: { DailyLock.isAMSuppsDone() },       toggle: nil),
+            Slot(label: "PM",    surface: .suppsPM,    done: { DailyLock.isPMSuppsDone() },       toggle: nil),
+            Slot(label: "M",     surface: .mindful,    done: { DailyLock.isMindfulEatingDone() }, toggle: nil),
+            Slot(label: "SK·AM", surface: .skincareAM, done: { DailyLock.isSkincareAMDone() },
                  toggle: { DailyLock.setSkincareAMDone(!DailyLock.isSkincareAMDone()) }),
-            Slot(label: "SK·PM", surface: .skincarePM, done: DailyLock.isSkincarePMDone,
+            Slot(label: "SK·PM", surface: .skincarePM, done: { DailyLock.isSkincarePMDone() },
                  toggle: { DailyLock.setSkincarePMDone(!DailyLock.isSkincarePMDone()) }),
         ]
     }
