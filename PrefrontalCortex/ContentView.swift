@@ -117,15 +117,18 @@ struct ContentView: View {
                         // Subscribes to .dayDidRollOver so band edges
                         // refresh in-place even with the app open.
                         PresentFocusCard()
-                        TimelineView(bundle: bundle, calStore: calStore)
                         DailyLockChip()
+                        TimelineView(bundle: bundle, calStore: calStore)
+
+                        // ── MORNING / MIDDAY: mindful eating + AM/PM stack ──
+                        BandDivider(.morning)
                         if let supps = bundle.profile?.supplement_stack, !supps.isEmpty {
                             StackView(items: supps)
                         }
                         MindfulEatingTodayView()
-                        // Today's actual sessions sit next to today's
-                        // prescribed session so the user can compare what
-                        // they did vs what the engine suggested at a glance.
+
+                        // ── WORKOUT: today's prescribed + actual session ──
+                        BandDivider(.workout)
                         TodaysWorkoutChip()
                         if let adapted = bundle.adapted_session {
                             let dayKey = adapted.program_day ?? ""
@@ -136,6 +139,19 @@ struct ContentView: View {
                                 onStart: { showWorkoutSession = true }
                             )
                         }
+
+                        // ── EVENING: reach out + embodiment practice ──
+                        BandDivider(.reachOut)
+                        EmbodimentHintView()
+                        if !calStore.authorized {
+                            UpcomingEventsView(
+                                bundleEvents: bundle.calendar ?? [],
+                                store: calStore
+                            )
+                        }
+
+                        // ── ALL DAY: abstinence trackers + med alerts ──
+                        BandDivider(label: "ALL DAY")
                         if let abst = bundle.profile?.abstinences, !abst.isEmpty {
                             AbstinenceBarView(abstinences: abst)
                         }
@@ -143,12 +159,6 @@ struct ContentView: View {
                             MedAlertsView(
                                 alerts: bundle.med_alerts ?? [],
                                 avoidClasses: bundle.profile?.medications_to_avoid ?? []
-                            )
-                        }
-                        if !calStore.authorized {
-                            UpcomingEventsView(
-                                bundleEvents: bundle.calendar ?? [],
-                                store: calStore
                             )
                         }
                     }
