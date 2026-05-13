@@ -23,6 +23,13 @@ struct PrefrontalCortexApp: App {
                         // foreground — covers the "app left open across
                         // midnight" case where .onAppear doesn't re-fire.
                         NotificationCenter.default.post(name: .dayDidRollOver, object: nil)
+                        // Always-on band Live Activity: refresh content to
+                        // the current band on every foreground (covers
+                        // backgrounded-across-an-edge), making sure one is
+                        // running if iOS killed it.
+                        if #available(iOS 16.2, *) {
+                            BandLiveActivity.ensureRunning()
+                        }
                         if store.bundle != nil {
                             Task { await store.refreshOnForeground() }
                         }
@@ -56,6 +63,12 @@ struct PrefrontalCortexApp: App {
         }
         let t = Timer(fire: next, interval: 0, repeats: false) { _ in
             NotificationCenter.default.post(name: .dayDidRollOver, object: nil)
+            // Always-on band Live Activity update at the edge — the iOS
+            // lock screen / Dynamic Island flip to the new band's headline
+            // even when the app stays foregrounded.
+            if #available(iOS 16.2, *) {
+                Task { await BandLiveActivity.refresh() }
+            }
             // Re-arm for the band after this one. Hop to main since Timer
             // closures aren't @MainActor-isolated by default.
             DispatchQueue.main.async { scheduleNextBandEdge() }

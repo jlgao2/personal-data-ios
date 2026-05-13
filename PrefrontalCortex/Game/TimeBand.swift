@@ -88,6 +88,21 @@ enum TimeBand: String, CaseIterable {
         }
     }
 
+    /// String form of the accent — used to pipe color choice through the
+    /// Live Activity ContentState into the widget extension, which has
+    /// to decode back into a `Color` on its side without depending on the
+    /// `TimeBand` enum itself. Stable string keys (don't rename without
+    /// updating the widget decoder).
+    var accentName: String {
+        switch self {
+        case .morning:  return "orange"
+        case .midday:   return "yellow"
+        case .workout:  return "cyan"
+        case .reachOut: return "indigo"
+        case .night:    return "purple"
+        }
+    }
+
     /// The next band edge after `date` — used to schedule the rollover
     /// timer so the Now tab updates *exactly* on the boundary, not on
     /// the next foreground.

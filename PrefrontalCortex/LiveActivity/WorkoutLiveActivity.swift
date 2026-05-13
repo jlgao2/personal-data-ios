@@ -41,6 +41,12 @@ enum WorkoutLiveActivity {
             return
         }
 
+        // Handover from band activity → workout activity. Two stacked
+        // Live Activities clutter the lock screen; the workout one takes
+        // over for the duration of the session. Band activity restarts
+        // from `endAll(immediate:)` below when the workout ends.
+        Task { await BandLiveActivity.endAll() }
+
         // Single-activity invariant — ensure no leftover from a prior
         // session (or a crash mid-session) is still alive.
         if let existing = Activity<WorkoutLiveActivityAttributes>.activities.first {
@@ -79,10 +85,13 @@ enum WorkoutLiveActivity {
 
     /// End every active workout activity. `immediate=true` dismisses
     /// instantly; `false` schedules a 30s grace via `.after(...)` so the
-    /// user can read the completion banner.
+    /// user can read the completion banner. In either case the band
+    /// activity comes back online — once the workout exits, the lock
+    /// screen returns to showing the current TimeBand.
     static func endAll(immediate: Bool) async {
         if immediate {
             await WorkoutLiveActivityRefresher.endAllImmediate()
+            BandLiveActivity.ensureRunning()
             return
         }
         let content = WorkoutLiveActivityAttributes.ContentState.from(
@@ -94,6 +103,7 @@ enum WorkoutLiveActivity {
                 dismissalPolicy: .after(Date().addingTimeInterval(30))
             )
         }
+        BandLiveActivity.ensureRunning()
     }
 
     /// Defensive sweep on `AppStore.bootstrap`. If the user force-quit

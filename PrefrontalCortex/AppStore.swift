@@ -155,6 +155,11 @@ final class AppStore: ObservableObject {
         loading = true
         if #available(iOS 16.2, *) {
             WorkoutLiveActivity.cleanupOrphans()
+            // Bring the always-on band Live Activity up. Idempotent: if
+            // one is already alive (from a previous session that didn't
+            // tear down cleanly), this just refreshes its content with
+            // the current band.
+            BandLiveActivity.ensureRunning()
         }
         do {
             try await HealthStore.shared.authorize()
