@@ -1,47 +1,65 @@
 import SwiftUI
 
-/// Six-dot Now-tab indicator: workout · AM supps · PM supps · mindful eating
-/// · skincare AM · skincare PM. Each dot fills cyan when its slot is complete.
-/// Skincare slots tap-to-toggle directly here (no other UI marks them done);
-/// the other four are written by their respective surfaces (workout commit,
-/// stack check-off, mindful-eat acknowledge).
+/// Now-tab indicator. One dot per *self-authored* daily slot: workout,
+/// AM supps, PM supps, mindful eating, skincare AM, skincare PM. Slots
+/// tagged outside (via long-press on the corresponding obligation card)
+/// exit the chip entirely — both numerator and denominator shrink so
+/// the progress capsule reflects only what the user actually authored.
+/// Skincare slots tap-to-toggle directly here (no other UI marks them
+/// done); the rest are written by their respective surfaces.
 ///
-/// A thin progress line behind the dots fills 0→1 with the count of completed
-/// slots. If today's complete streak ≥ 7, a small "N days running" caption
-/// appears below.
+/// Refresh triggers:
+///   * `.onAppear` (cheap fresh read on tab open)
+///   * `.dayDidRollOver` (manual button + scenePhase + edge timer)
+///   * `.authorshipDidChange` (a slot was retagged self/outside)
 struct DailyLockChip: View {
 
     @State private var refreshTick: Int = 0
 
-    private var workoutDone:  Bool { DailyLock.isWorkoutDone() }
-    private var amDone:       Bool { DailyLock.isAMSuppsDone() }
-    private var pmDone:       Bool { DailyLock.isPMSuppsDone() }
-    private var mindfulDone:  Bool { DailyLock.isMindfulEatingDone() }
-    private var skinAMDone:   Bool { DailyLock.isSkincareAMDone() }
-    private var skinPMDone:   Bool { DailyLock.isSkincarePMDone() }
-    private var doneCount:    Int  {
-        [workoutDone, amDone, pmDone, mindfulDone, skinAMDone, skinPMDone].filter { $0 }.count
+    /// Pairs of (slot, surface). Slot is rendered only when the surface
+    /// isn't outside-tagged. Order is deliberate — the user's expected
+    /// reading flow across the day.
+    private struct Slot {
+        let label: String
+        let surface: AuthorshipSurface
+        let done: () -> Bool
+        let toggle: (() -> Void)?
     }
-    private static let slotTotal: CGFloat = 6
+
+    private var slots: [Slot] {
+        [
+            Slot(label: "W",     surface: .workout,    done: DailyLock.isWorkoutDone,       toggle: nil),
+            Slot(label: "AM",    surface: .suppsAM,    done: DailyLock.isAMSuppsDone,       toggle: nil),
+            Slot(label: "PM",    surface: .suppsPM,    done: DailyLock.isPMSuppsDone,       toggle: nil),
+            Slot(label: "M",     surface: .mindful,    done: DailyLock.isMindfulEatingDone, toggle: nil),
+            Slot(label: "SK·AM", surface: .skincareAM, done: DailyLock.isSkincareAMDone,
+                 toggle: { DailyLock.setSkincareAMDone(!DailyLock.isSkincareAMDone()) }),
+            Slot(label: "SK·PM", surface: .skincarePM, done: DailyLock.isSkincarePMDone,
+                 toggle: { DailyLock.setSkincarePMDone(!DailyLock.isSkincarePMDone()) }),
+        ]
+    }
+
+    private var visibleSlots: [Slot] {
+        slots.filter { AuthorshipStore.get($0.surface) != .outside }
+    }
+
+    private var doneCount: Int {
+        visibleSlots.filter { $0.done() }.count
+    }
+
     private var streak: Int { StreakState.load().current }
 
     var body: some View {
+        let visible = visibleSlots
+        let total = max(1, visible.count)  // avoid /0 if user tagged everything outside
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 12) {
-                slot(filled: workoutDone, label: "W")
-                slot(filled: amDone,      label: "AM")
-                slot(filled: pmDone,      label: "PM")
-                slot(filled: mindfulDone, label: "M")
-                slot(
-                    filled: skinAMDone,
-                    label: "SK·AM",
-                    toggle: { DailyLock.setSkincareAMDone(!skinAMDone); refreshTick += 1 }
-                )
-                slot(
-                    filled: skinPMDone,
-                    label: "SK·PM",
-                    toggle: { DailyLock.setSkincarePMDone(!skinPMDone); refreshTick += 1 }
-                )
+                ForEach(0..<visible.count, id: \.self) { i in
+                    let s = visible[i]
+                    slot(filled: s.done(), label: s.label, toggle: s.toggle.map { action in
+                        { action(); refreshTick += 1 }
+                    })
+                }
                 Spacer()
                 if streak >= 7 {
                     Text("\(streak)d running")
@@ -54,7 +72,7 @@ struct DailyLockChip: View {
                     Capsule().fill(Color.white.opacity(0.05)).frame(height: 2)
                     Capsule()
                         .fill(Color.cyan.opacity(0.5))
-                        .frame(width: geo.size.width * CGFloat(doneCount) / Self.slotTotal, height: 2)
+                        .frame(width: geo.size.width * CGFloat(doneCount) / CGFloat(total), height: 2)
                 }
             }
             .frame(height: 2)
@@ -62,6 +80,9 @@ struct DailyLockChip: View {
         .id(refreshTick)
         .onAppear { refreshTick += 1 }
         .onReceive(NotificationCenter.default.publisher(for: .dayDidRollOver)) { _ in
+            refreshTick += 1
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .authorshipDidChange)) { _ in
             refreshTick += 1
         }
     }

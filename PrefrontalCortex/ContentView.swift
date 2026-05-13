@@ -112,11 +112,23 @@ struct ContentView: View {
                     }
                     if let err = store.lastError { errorBanner(err) }
                     if let bundle = store.bundle {
-                        // Hero card at the very top — answers "what should
-                        // I think about right now?" based on time-of-day.
-                        // Subscribes to .dayDidRollOver so band edges
-                        // refresh in-place even with the app open.
-                        PresentFocusCard()
+                        let reachOut = bundle.social?.reach_out ?? []
+
+                        // Empty-hero gate: when nothing is staked and no
+                        // self-authored obligation is pending for the
+                        // current band, refuse to fill the screen with
+                        // charts — surface "Nothing to look at." with
+                        // the band headline and step out of the way.
+                        if EmptyHeroGate.shouldRender() {
+                            EmptyHero(band: TimeBand.current())
+                        } else {
+                            // Hero card — band headline + act-of-doing
+                            // affordances (StakeCard, TremblingButton,
+                            // EdgeNoteField). Subscribes to .dayDidRollOver
+                            // so band edges refresh in-place.
+                            PresentFocusCard(people: reachOut)
+                        }
+
                         DailyLockChip()
                         TimelineView(bundle: bundle, calStore: calStore)
 
@@ -124,8 +136,12 @@ struct ContentView: View {
                         BandDivider(.morning)
                         if let supps = bundle.profile?.supplement_stack, !supps.isEmpty {
                             StackView(items: supps)
+                                .authorshipMenu(.suppsAM)
+                                .authorshipHidden(.suppsAM)
                         }
                         MindfulEatingTodayView()
+                            .authorshipMenu(.mindful)
+                            .authorshipHidden(.mindful)
 
                         // ── WORKOUT: today's prescribed + actual session ──
                         BandDivider(.workout)
@@ -138,11 +154,15 @@ struct ContentView: View {
                                 prescribedSession: prescribed,
                                 onStart: { showWorkoutSession = true }
                             )
+                            .authorshipMenu(.workout)
+                            .authorshipHidden(.workout)
                         }
 
                         // ── EVENING: reach out + embodiment practice ──
                         BandDivider(.reachOut)
                         EmbodimentHintView()
+                            .authorshipMenu(.embodiment)
+                            .authorshipHidden(.embodiment)
                         if !calStore.authorized {
                             UpcomingEventsView(
                                 bundleEvents: bundle.calendar ?? [],

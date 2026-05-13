@@ -55,6 +55,12 @@
 		BB22CC33DD44EE55FF6677AA /* PresentFocusCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB22CC33DD44EE55FF6677BB /* PresentFocusCard.swift */; };
 		CC33DD44EE55FF6677AA1234 /* BandDivider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC33DD44EE55FF6677AA1235 /* BandDivider.swift */; };
 		DD44EE55FF6677AA12345678 /* EmbodimentHintView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD44EE55FF6677AA12345679 /* EmbodimentHintView.swift */; };
+		22334455AABBCC11DDEE5566 /* Stake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22334455AABBCC11DDEE5567 /* Stake.swift */; };
+		33445566AABBCC22DDEE5566 /* Authorship.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33445566AABBCC22DDEE5567 /* Authorship.swift */; };
+		44556677AABBCC33DDEE5566 /* StakeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44556677AABBCC33DDEE5567 /* StakeCard.swift */; };
+		55667788AABBCC44DDEE5566 /* StakeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55667788AABBCC44DDEE5567 /* StakeSheet.swift */; };
+		66778899AABBCC55DDEE5566 /* AuthorshipContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66778899AABBCC55DDEE5567 /* AuthorshipContextMenu.swift */; };
+		77889900AABBCC66DDEE5566 /* EmptyHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77889900AABBCC66DDEE5567 /* EmptyHero.swift */; };
 		87A28208EA7EEE8D2234CB56 /* FlowFieldEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73226B207EFA94E63F0596F0 /* FlowFieldEngine.swift */; };
 		8B900A5894617B309551CB31 /* AchievementGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18202C69808A1D6591BB70A6 /* AchievementGrid.swift */; };
 		95AD68B2BF347C3CD2629AB6 /* WorkoutSetButtonRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AFA9489B82B6746184A1EA4 /* WorkoutSetButtonRow.swift */; };
@@ -163,6 +169,12 @@
 		BB22CC33DD44EE55FF6677BB /* PresentFocusCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentFocusCard.swift; sourceTree = "<group>"; };
 		CC33DD44EE55FF6677AA1235 /* BandDivider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandDivider.swift; sourceTree = "<group>"; };
 		DD44EE55FF6677AA12345679 /* EmbodimentHintView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbodimentHintView.swift; sourceTree = "<group>"; };
+		22334455AABBCC11DDEE5567 /* Stake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stake.swift; sourceTree = "<group>"; };
+		33445566AABBCC22DDEE5567 /* Authorship.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Authorship.swift; sourceTree = "<group>"; };
+		44556677AABBCC33DDEE5567 /* StakeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakeCard.swift; sourceTree = "<group>"; };
+		55667788AABBCC44DDEE5567 /* StakeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakeSheet.swift; sourceTree = "<group>"; };
+		66778899AABBCC55DDEE5567 /* AuthorshipContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorshipContextMenu.swift; sourceTree = "<group>"; };
+		77889900AABBCC66DDEE5567 /* EmptyHero.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyHero.swift; sourceTree = "<group>"; };
 		51B603FEC1FEE012D1E97610 /* HealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
 		524F8D7C2732C9FF93D336A4 /* NodesBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodesBackground.swift; sourceTree = "<group>"; };
 		557DB433C84126FC75B2AF52 /* StackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackView.swift; sourceTree = "<group>"; };
@@ -255,6 +267,7 @@
 				94DF600C39513829392C28AA /* ActionLoopView.swift */,
 				55BE6EE78BCEA78C7FA8AA9F /* AdaptedSessionView.swift */,
 				83295A3F857518282CCA3A31 /* AnimatedAuraBackground.swift */,
+				66778899AABBCC55DDEE5567 /* AuthorshipContextMenu.swift */,
 				CC33DD44EE55FF6677AA1235 /* BandDivider.swift */,
 				2CAED2897A33FF5197B09BB1 /* CorrelationsView.swift */,
 				7385963EC643DCC8A9E08A28 /* CustomTabBar.swift */,
@@ -263,6 +276,7 @@
 				189AC30EA16A4ED953187B31 /* DeviationSheet.swift */,
 				FAB03DDF028F9C4D8D12EB92 /* DOWHeatmapView.swift */,
 				DD44EE55FF6677AA12345679 /* EmbodimentHintView.swift */,
+				77889900AABBCC66DDEE5567 /* EmptyHero.swift */,
 				0DA6BE7054D5CF649868F94F /* GenomicsView.swift */,
 				ECEA1D8862C5E08A3460C10D /* HealthProfileView.swift */,
 				811EB99A1E50FC654ADFA6DE /* LiveActivityDisabledBanner.swift */,
@@ -273,6 +287,8 @@
 				1A5923EEFFB65C137A165223 /* PrepChecklistView.swift */,
 				BB22CC33DD44EE55FF6677BB /* PresentFocusCard.swift */,
 				9EB7C734F47BC9A65C683DF4 /* SkipReasonSheet.swift */,
+				44556677AABBCC33DDEE5567 /* StakeCard.swift */,
+				55667788AABBCC44DDEE5567 /* StakeSheet.swift */,
 				14D52D330B8B679F4F233E48 /* SkipWorkoutButton.swift */,
 				E1A76360A24D8213529C18D9 /* SocialView.swift */,
 				557DB433C84126FC75B2AF52 /* StackView.swift */,
@@ -410,8 +426,10 @@
 			isa = PBXGroup;
 			children = (
 				775D0C30FD995189DCCE5936 /* Achievements.swift */,
+				33445566AABBCC22DDEE5567 /* Authorship.swift */,
 				4BFDAE622A44DF5B46A68467 /* DailyLock.swift */,
 				F17B4BF4234C06F58182B24E /* DeviationStore.swift */,
+				22334455AABBCC11DDEE5567 /* Stake.swift */,
 				AAD7BB2CAFD1A54852624CF9 /* StreakState.swift */,
 				AA11BB22CC33DD44EE55FF67 /* TimeBand.swift */,
 			);
@@ -583,6 +601,12 @@
 				BB22CC33DD44EE55FF6677AA /* PresentFocusCard.swift in Sources */,
 				CC33DD44EE55FF6677AA1234 /* BandDivider.swift in Sources */,
 				DD44EE55FF6677AA12345678 /* EmbodimentHintView.swift in Sources */,
+				22334455AABBCC11DDEE5566 /* Stake.swift in Sources */,
+				33445566AABBCC22DDEE5566 /* Authorship.swift in Sources */,
+				44556677AABBCC33DDEE5566 /* StakeCard.swift in Sources */,
+				55667788AABBCC44DDEE5566 /* StakeSheet.swift in Sources */,
+				66778899AABBCC55DDEE5566 /* AuthorshipContextMenu.swift in Sources */,
+				77889900AABBCC66DDEE5566 /* EmptyHero.swift in Sources */,
 				C6DBBBF5ACE5356A50867B84 /* DailyLockChip.swift in Sources */,
 				24D36ECC16F49C9A171B0ACA /* DataLoader.swift in Sources */,
 				4DC9B1D241E0C091A5DBF455 /* DeviationChip.swift in Sources */,
