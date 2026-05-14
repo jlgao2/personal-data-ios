@@ -59,17 +59,14 @@ struct EmptyHero: View {
 }
 
 /// Centralised decision: is the Now tab in "at rest" mode?
-/// Returns true when ALL of:
-///   * No stake committed today (or stake is resolved)
-///   * No pending self-authored obligation for the current band
+/// Returns true when no pending self-authored obligation exists for
+/// the current band. (Earlier versions also checked StakeStore; the
+/// Stake feature has been removed and that part of the gate is
+/// retired.)
 ///
 /// Otherwise the standard layout (PresentFocusCard) renders.
 enum EmptyHeroGate {
     static func shouldRender(now: Date = Date()) -> Bool {
-        if let s = StakeStore.load(date: now),
-           s.status != .completed, s.status != .missed {
-            return false
-        }
         if hasPendingSelfAuthored(for: TimeBand.current(at: now)) {
             return false
         }

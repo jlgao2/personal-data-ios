@@ -112,21 +112,18 @@ struct ContentView: View {
                     }
                     if let err = store.lastError { errorBanner(err) }
                     if let bundle = store.bundle {
-                        let reachOut = bundle.social?.reach_out ?? []
-
-                        // Empty-hero gate: when nothing is staked and no
-                        // self-authored obligation is pending for the
-                        // current band, refuse to fill the screen with
-                        // charts — surface "Nothing to look at." with
-                        // the band headline and step out of the way.
+                        // Empty-hero gate: when no self-authored obligation
+                        // is pending for the current band, refuse to fill
+                        // the screen with charts — surface "Nothing to
+                        // look at." with the band headline and step out of
+                        // the way.
                         if EmptyHeroGate.shouldRender() {
                             EmptyHero(band: TimeBand.current())
                         } else {
-                            // Hero card — band headline + act-of-doing
-                            // affordances (StakeCard, TremblingButton,
-                            // EdgeNoteField). Subscribes to .dayDidRollOver
-                            // so band edges refresh in-place.
-                            PresentFocusCard(people: reachOut)
+                            // Hero card — band headline + subtitle.
+                            // Subscribes to .dayDidRollOver so band edges
+                            // refresh in-place.
+                            PresentFocusCard()
                         }
 
                         DailyLockChip()

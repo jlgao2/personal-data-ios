@@ -5,20 +5,18 @@ import SwiftUI
 /// content shifts as the day moves: mindful eating in the morning,
 /// train at 6pm, reach out in the evening, wind down at night.
 ///
-/// Below the headline sits a single act-of-doing affordance: StakeCard.
-/// We considered an edge-note field and an "I'm in it" trembling button,
-/// and cut both. The edge-note becomes journaling-as-substitute; the
-/// trembling button performs presence rather than being presence
-/// (Aristotle's energeia doesn't need a UI affordance to register —
-/// the doing is the registration). Only the witnessed-commitment move
-/// belongs here, because its outcome is the one the app can't pre-secure.
+/// The hero card is the band headline, subtitle, and accent. Earlier
+/// iterations bolted on a "Stake" affordance (commit an act to a
+/// witness via share sheet) but that's been pulled — the structural
+/// commitment-to-a-witness pattern moved out to a separate app
+/// (Loosen) where the daily knot-rotation gives it the right home.
+/// What remains here is just the present-focus reminder: this band,
+/// this headline, this is what to think about right now.
 ///
 /// Re-renders when:
 ///   * The view appears (cheap fresh read).
 ///   * `Notification.Name.dayDidRollOver` fires (manual button + scenePhase + edge timer).
 struct PresentFocusCard: View {
-    let people: [SocialPerson]
-
     @State private var band: TimeBand = .current()
     @State private var refreshTick: Int = 0
 
@@ -49,12 +47,6 @@ struct PresentFocusCard: View {
                     .foregroundStyle(.white.opacity(0.72))
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            // The act-of-doing affordance. One — not three. The other
-            // two ("I'm in it" pulse, edge-note field) were considered
-            // and cut because they perform vigor rather than train it.
-            // The kettlebell stays singular: a witnessed stake, lifted
-            // through, the only thing in the room.
-            StakeCard(band: b, people: people)
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
