@@ -33,6 +33,15 @@ enum iCloudPaths {
     static var healthProfileURL:   URL? { configDir?.appendingPathComponent("health_profile.json") }
     static var exerciseLibraryURL: URL? { configDir?.appendingPathComponent("exercise_library.json") }
 
+    /// Path for a user-edited config file, e.g. "weekly_rhythm.json".
+    /// The laptop pipeline reads files in `config/` to influence its
+    /// bundle output, so iOS-side edits (rhythm, swaps, custom slots)
+    /// land here as `<name>.json` and the pipeline picks them up on
+    /// the next refresh.
+    static func configFile(name: String) -> URL? {
+        configDir?.appendingPathComponent("\(name).json")
+    }
+
     static func inboxFile(kind: String, date: Date) -> URL? {
         let f = DateFormatter()
         f.dateFormat = "yyyy-MM-dd"

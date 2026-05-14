@@ -130,6 +130,59 @@ extension iCloudTransport {
         try await uploadInbox(kind: "deviations", rows: rows, dedupeKey: { $0.client_id })
     }
 
+    // MARK: - User config (iOS-side edits the laptop pipeline reads)
+
+    /// Read a typed config file from `config/<name>.json`. Returns
+    /// `nil` if the file doesn't exist yet (first-time read; the user
+    /// hasn't configured this surface). Throws on container unavailable
+    /// or decode failure — caller decides whether to fall back to a
+    /// default or surface the error.
+    func readConfig<T: Codable>(name: String, as type: T.Type) async throws -> T? {
+        guard let url = iCloudPaths.configFile(name: name) else {
+            throw iCloudTransportError.containerUnavailable
+        }
+        do {
+            let data = try await coordinatedRead(url)
+            return try JSONDecoder().decode(T.self, from: data)
+        } catch iCloudTransportError.fileMissing {
+            return nil
+        }
+    }
+
+    /// Write a typed value to `config/<name>.json`, overwriting any
+    /// existing content. Coordinated write via the same atomic-replace
+    /// path the inbox writers use. The laptop pipeline picks up the
+    /// new content on its next refresh.
+    func writeConfig<T: Codable>(name: String, _ value: T) async throws {
+        guard let url = iCloudPaths.configFile(name: name) else {
+            throw iCloudTransportError.containerUnavailable
+        }
+        try? FileManager.default.createDirectory(
+            at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        let data = try JSONEncoder().encode(value)
+        try await coordinatedReadModifyWrite(url) { _ in data }
+    }
+
+    /// Read-merge-rewrite for a typed config file. The transform sees
+    /// the current value (nil if missing) and returns the next value.
+    /// Use this when the new content depends on what's already there
+    /// — e.g., "append this swap to the existing swap list" — so two
+    /// concurrent edits (phone + laptop) don't lose data.
+    func updateConfig<T: Codable>(name: String,
+                                  as type: T.Type,
+                                  _ transform: @escaping (T?) -> T) async throws {
+        guard let url = iCloudPaths.configFile(name: name) else {
+            throw iCloudTransportError.containerUnavailable
+        }
+        try? FileManager.default.createDirectory(
+            at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try await coordinatedReadModifyWrite(url) { existingData in
+            let current: T? = existingData.flatMap { try? JSONDecoder().decode(T.self, from: $0) }
+            let next = transform(current)
+            return try JSONEncoder().encode(next)
+        }
+    }
+
     // MARK: - Internals
 
     private func coordinatedReadModifyWrite(
