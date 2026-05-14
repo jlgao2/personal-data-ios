@@ -6,6 +6,7 @@ import Foundation
 enum Migrations {
     private static let flagKey = "did_migrate_to_icloud_v1"
 
+    @MainActor
     static func runIfNeeded(into store: AppStore) {
         let d = UserDefaults.standard
         guard !d.bool(forKey: flagKey) else { return }
