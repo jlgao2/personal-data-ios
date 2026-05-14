@@ -1,9 +1,19 @@
 import AppIntents
 import WidgetKit
 
+// All four workout intents conform to `LiveActivityIntent` rather than plain
+// `AppIntent`. `LiveActivityIntent` (iOS 17+) is the conformance that lets
+// `perform()` execute *in the widget extension process* when a button on a
+// Live Activity / lock-screen widget is tapped. Plain `AppIntent` with
+// `openAppWhenRun = false` is the inert combination — taps from widget
+// surfaces resolve to no-ops because plain AppIntents need the host app to
+// be foregrounded to run. This was the bug: lock-screen set/rep buttons
+// updated nothing because the intents weren't reaching the host. The
+// deployment target is iOS 17.0, so no availability guard is needed.
+
 /// Stage 1: pick a weight delta. Updates LockScreenWorkoutState.stagedWeight
 /// and advances stage to .reps. Lock-screen widget refreshes to show stage 2.
-struct StageWeightDeltaIntent: AppIntent {
+struct StageWeightDeltaIntent: LiveActivityIntent {
     static var openAppWhenRun: Bool { false }
     static var title: LocalizedStringResource = "Stage weight delta"
     static var description = IntentDescription("Stage a weight delta for the next set.")
@@ -27,7 +37,7 @@ struct StageWeightDeltaIntent: AppIntent {
 
 /// Stage 2: pick a rep delta. Commits the set via WorkoutProgress, advances
 /// to the next set's stage 1, and refreshes the widget + Live Activity.
-struct CommitRepDeltaIntent: AppIntent {
+struct CommitRepDeltaIntent: LiveActivityIntent {
     static var openAppWhenRun: Bool { false }
     static var title: LocalizedStringResource = "Commit rep delta"
     static var description = IntentDescription("Log this set with the given rep delta and advance.")
@@ -96,7 +106,7 @@ struct CommitRepDeltaIntent: AppIntent {
 
 /// For band exercises, stage 1 cycles through the 5 BandColor cases.
 /// `direction = -1` (prev) | 0 (same) | +1 (next).
-struct BandColorCycleIntent: AppIntent {
+struct BandColorCycleIntent: LiveActivityIntent {
     static var openAppWhenRun: Bool { false }
     static var title: LocalizedStringResource = "Cycle band color"
 
@@ -129,7 +139,7 @@ struct BandColorCycleIntent: AppIntent {
 /// reloads widget timelines so the rectangular widget reverts to NextUp.
 /// Intentionally NOT exposed on the lock-screen surface (per spec — too
 /// easy to fat-finger from a glanceable surface).
-struct EndWorkoutIntent: AppIntent {
+struct EndWorkoutIntent: LiveActivityIntent {
     static var openAppWhenRun: Bool { false }
     static var title: LocalizedStringResource = "End workout"
     static var description = IntentDescription("End the current workout session.")
