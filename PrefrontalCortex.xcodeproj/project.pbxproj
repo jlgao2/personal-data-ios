@@ -68,6 +68,9 @@
 		77889900AABBCC66DDEE5566 /* EmptyHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77889900AABBCC66DDEE5567 /* EmptyHero.swift */; };
 		88AA99BB00CC11DD22EE3344 /* CustomSlot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88AA99BB00CC11DD22EE3345 /* CustomSlot.swift */; };
 		99BB00CC11DD22EE33445566 /* CustomSlotEditorSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99BB00CC11DD22EE33445567 /* CustomSlotEditorSheet.swift */; };
+		AABBCCDD11223344EEFF5566 /* WeeklyRhythm.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCCDD11223344EEFF5567 /* WeeklyRhythm.swift */; };
+		BBCCDDEE22334455FFAA5566 /* WeeklyRhythmCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCCDDEE22334455FFAA5567 /* WeeklyRhythmCard.swift */; };
+		CCDDEEFF334455AA6677BBCC /* WeeklyRhythmEditorSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCDDEEFF334455AA6677BBCD /* WeeklyRhythmEditorSheet.swift */; };
 		87A28208EA7EEE8D2234CB56 /* FlowFieldEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73226B207EFA94E63F0596F0 /* FlowFieldEngine.swift */; };
 		8B900A5894617B309551CB31 /* AchievementGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18202C69808A1D6591BB70A6 /* AchievementGrid.swift */; };
 		8CA2BBB646A4DFF67A08FBCD /* ConfigRecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4C95132AB69E5D5CAAEA44 /* ConfigRecoveryView.swift */; };
@@ -193,6 +196,9 @@
 		33445566AABBCC22DDEE5567 /* Authorship.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Authorship.swift; sourceTree = "<group>"; };
 		88AA99BB00CC11DD22EE3345 /* CustomSlot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSlot.swift; sourceTree = "<group>"; };
 		99BB00CC11DD22EE33445567 /* CustomSlotEditorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSlotEditorSheet.swift; sourceTree = "<group>"; };
+		AABBCCDD11223344EEFF5567 /* WeeklyRhythm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyRhythm.swift; sourceTree = "<group>"; };
+		BBCCDDEE22334455FFAA5567 /* WeeklyRhythmCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyRhythmCard.swift; sourceTree = "<group>"; };
+		CCDDEEFF334455AA6677BBCD /* WeeklyRhythmEditorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyRhythmEditorSheet.swift; sourceTree = "<group>"; };
 		66778899AABBCC55DDEE5567 /* AuthorshipContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorshipContextMenu.swift; sourceTree = "<group>"; };
 		77889900AABBCC66DDEE5567 /* EmptyHero.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyHero.swift; sourceTree = "<group>"; };
 		5122F44CAC5CF738E772DCC7 /* iCloudTransportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iCloudTransportTests.swift; sourceTree = "<group>"; };
@@ -341,6 +347,8 @@
 				9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */,
 				7CCE7ED06BC81271F0ABADB1 /* VitalsView.swift */,
 				F5649DA3EFD054D4AA7AA70F /* WeeklyRecapView.swift */,
+				BBCCDDEE22334455FFAA5567 /* WeeklyRhythmCard.swift */,
+				CCDDEEFF334455AA6677BBCD /* WeeklyRhythmEditorSheet.swift */,
 				395D10B3699FF24CB00CDF30 /* WorkoutSessionView.swift */,
 				3BDA89289885460CF309A52B /* WorkoutsView.swift */,
 				CC418D205572FA0D81AC21AE /* Backgrounds */,
@@ -487,6 +495,7 @@
 				F17B4BF4234C06F58182B24E /* DeviationStore.swift */,
 				AAD7BB2CAFD1A54852624CF9 /* StreakState.swift */,
 				AA11BB22CC33DD44EE55FF67 /* TimeBand.swift */,
+				AABBCCDD11223344EEFF5567 /* WeeklyRhythm.swift */,
 			);
 			path = Game;
 			sourceTree = "<group>";
@@ -694,6 +703,9 @@
 				33445566AABBCC22DDEE5566 /* Authorship.swift in Sources */,
 				88AA99BB00CC11DD22EE3344 /* CustomSlot.swift in Sources */,
 				99BB00CC11DD22EE33445566 /* CustomSlotEditorSheet.swift in Sources */,
+				AABBCCDD11223344EEFF5566 /* WeeklyRhythm.swift in Sources */,
+				BBCCDDEE22334455FFAA5566 /* WeeklyRhythmCard.swift in Sources */,
+				CCDDEEFF334455AA6677BBCC /* WeeklyRhythmEditorSheet.swift in Sources */,
 				66778899AABBCC55DDEE5566 /* AuthorshipContextMenu.swift in Sources */,
 				77889900AABBCC66DDEE5566 /* EmptyHero.swift in Sources */,
 				C6DBBBF5ACE5356A50867B84 /* DailyLockChip.swift in Sources */,
