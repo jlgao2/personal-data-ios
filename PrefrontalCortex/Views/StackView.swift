@@ -174,18 +174,39 @@ struct StackDetailView: View {
         items.filter { StackView.isEvening($0.timing) }
     }
 
+    @State private var showEditor: Bool = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("STACK DETAIL")
-                .font(.caption2.monospaced())
-                .foregroundStyle(.cyan)
-                .tracking(2)
+            HStack {
+                Text("STACK DETAIL")
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.cyan)
+                    .tracking(2)
+                Spacer()
+                Button {
+                    showEditor = true
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "pencil")
+                        Text("Edit")
+                    }
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.cyan.opacity(0.85))
+                }
+                .buttonStyle(.plain)
+            }
             if !morning.isEmpty {
                 section("MORNING", supps: morning, glow: .yellow)
             }
             if !evening.isEmpty {
                 section("EVENING", supps: evening, glow: .indigo)
             }
+        }
+        .contentShape(Rectangle())
+        .onLongPressGesture(minimumDuration: 0.5) { showEditor = true }
+        .sheet(isPresented: $showEditor) {
+            SupplementEditorSheet(seedFromBundle: items)
         }
     }
 
