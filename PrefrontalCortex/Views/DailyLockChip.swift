@@ -1,65 +1,72 @@
 import SwiftUI
 
-/// Now-tab indicator. One dot per *self-authored* daily slot: workout,
-/// AM supps, PM supps, mindful eating, skincare AM, skincare PM. Slots
-/// tagged outside (via long-press on the corresponding obligation card)
-/// exit the chip entirely — both numerator and denominator shrink so
-/// the progress capsule reflects only what the user actually authored.
-/// Skincare slots tap-to-toggle directly here (no other UI marks them
-/// done); the rest are written by their respective surfaces.
+/// Now-tab indicator. Built-in slots first (workout, AM supps, PM supps,
+/// mindful eating, skincare AM, skincare PM), then any user-defined
+/// custom slots. Slots tagged outside (via long-press on the
+/// corresponding obligation card) exit the chip; the progress capsule
+/// reflects only what the user authored.
 ///
-/// Refresh triggers:
-///   * `.onAppear` (cheap fresh read on tab open)
-///   * `.dayDidRollOver` (manual button + scenePhase + edge timer)
-///   * `.authorshipDidChange` (a slot was retagged self/outside)
+/// Long-press the whole chip → CustomSlotEditorSheet (add/rename/remove
+/// custom slots). Tap a skincare or custom dot to toggle done state.
 struct DailyLockChip: View {
 
     @State private var refreshTick: Int = 0
+    @State private var showEditor: Bool = false
 
-    /// Pairs of (slot, surface). Slot is rendered only when the surface
-    /// isn't outside-tagged. Order is deliberate — the user's expected
-    /// reading flow across the day.
-    private struct Slot {
+    private struct Slot: Identifiable {
+        let id: String
         let label: String
-        let surface: AuthorshipSurface
+        let surface: AuthorshipSurface?  // nil for custom slots — no authorship gate
         let done: () -> Bool
         let toggle: (() -> Void)?
     }
 
-    private var slots: [Slot] {
-        // Wrap each DailyLock query in a no-arg closure. Referencing
-        // `DailyLock.isWorkoutDone` directly produces (Date) -> Bool —
-        // Swift doesn't apply the default `date: Date = Date()` to a
-        // function value; defaults only resolve at call sites.
+    private var builtInSlots: [Slot] {
+        // Wrap each DailyLock query in a no-arg closure — referencing
+        // `DailyLock.isWorkoutDone` directly produces (Date) -> Bool
+        // since Swift doesn't fold the `date: Date = Date()` default
+        // into the function value.
         [
-            Slot(label: "W",     surface: .workout,    done: { DailyLock.isWorkoutDone() },       toggle: nil),
-            Slot(label: "AM",    surface: .suppsAM,    done: { DailyLock.isAMSuppsDone() },       toggle: nil),
-            Slot(label: "PM",    surface: .suppsPM,    done: { DailyLock.isPMSuppsDone() },       toggle: nil),
-            Slot(label: "M",     surface: .mindful,    done: { DailyLock.isMindfulEatingDone() }, toggle: nil),
-            Slot(label: "SK·AM", surface: .skincareAM, done: { DailyLock.isSkincareAMDone() },
+            Slot(id: "workout",    label: "W",     surface: .workout,    done: { DailyLock.isWorkoutDone() },       toggle: nil),
+            Slot(id: "supps_am",   label: "AM",    surface: .suppsAM,    done: { DailyLock.isAMSuppsDone() },       toggle: nil),
+            Slot(id: "supps_pm",   label: "PM",    surface: .suppsPM,    done: { DailyLock.isPMSuppsDone() },       toggle: nil),
+            Slot(id: "mindful",    label: "M",     surface: .mindful,    done: { DailyLock.isMindfulEatingDone() }, toggle: nil),
+            Slot(id: "skincareAM", label: "SK·AM", surface: .skincareAM, done: { DailyLock.isSkincareAMDone() },
                  toggle: { DailyLock.setSkincareAMDone(!DailyLock.isSkincareAMDone()) }),
-            Slot(label: "SK·PM", surface: .skincarePM, done: { DailyLock.isSkincarePMDone() },
+            Slot(id: "skincarePM", label: "SK·PM", surface: .skincarePM, done: { DailyLock.isSkincarePMDone() },
                  toggle: { DailyLock.setSkincarePMDone(!DailyLock.isSkincarePMDone()) }),
         ]
     }
 
+    private var customSlots: [Slot] {
+        CustomSlotStore.load().map { c in
+            Slot(
+                id: "custom_\(c.id)",
+                label: c.label,
+                surface: nil,
+                done: { CustomSlotStore.isDone(slotID: c.id) },
+                toggle: { CustomSlotStore.toggle(slotID: c.id) }
+            )
+        }
+    }
+
     private var visibleSlots: [Slot] {
-        slots.filter { AuthorshipStore.get($0.surface) != .outside }
+        let built = builtInSlots.filter { slot in
+            guard let s = slot.surface else { return true }
+            return AuthorshipStore.get(s) != .outside
+        }
+        return built + customSlots
     }
 
-    private var doneCount: Int {
-        visibleSlots.filter { $0.done() }.count
-    }
-
+    private var doneCount: Int { visibleSlots.filter { $0.done() }.count }
     private var streak: Int { StreakState.load().current }
 
     var body: some View {
         let visible = visibleSlots
-        let total = max(1, visible.count)  // avoid /0 if user tagged everything outside
+        let total = max(1, visible.count)
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 12) {
-                ForEach(0..<visible.count, id: \.self) { i in
-                    let s = visible[i]
+                ForEach(visible) { s in
                     slot(filled: s.done(), label: s.label, toggle: s.toggle.map { action in
                         { action(); refreshTick += 1 }
                     })
@@ -81,6 +88,10 @@ struct DailyLockChip: View {
             }
             .frame(height: 2)
         }
+        .contentShape(Rectangle())   // make the empty area long-pressable too
+        .onLongPressGesture(minimumDuration: 0.5) {
+            showEditor = true
+        }
         .id(refreshTick)
         .onAppear { refreshTick += 1 }
         .onReceive(NotificationCenter.default.publisher(for: .dayDidRollOver)) { _ in
@@ -88,6 +99,12 @@ struct DailyLockChip: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .authorshipDidChange)) { _ in
             refreshTick += 1
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .customSlotsDidChange)) { _ in
+            refreshTick += 1
+        }
+        .sheet(isPresented: $showEditor) {
+            CustomSlotEditorSheet()
         }
     }
 

@@ -89,13 +89,26 @@ enum DailyLock {
 
     // MARK: - The unified gate
 
+    /// Everything required for a "complete day" — built-in slots that
+    /// aren't authorship-outside, plus every user-defined custom slot.
+    /// Built-in slots use AuthorshipStore to short-circuit (outside-
+    /// tagged slots don't gate). Custom slots are always self-authored
+    /// (the user defined them; if they don't want it counted they can
+    /// delete the slot via the editor) so they always gate.
     static func isComplete(date: Date = Date()) -> Bool {
-        isWorkoutDone(date: date)
-            && isAMSuppsDone(date: date)
-            && isPMSuppsDone(date: date)
-            && isMindfulEatingDone(date: date)
-            && isSkincareAMDone(date: date)
-            && isSkincarePMDone(date: date)
+        let builtIn =
+            (AuthorshipStore.get(.workout)    == .outside || isWorkoutDone(date: date))
+            && (AuthorshipStore.get(.suppsAM)    == .outside || isAMSuppsDone(date: date))
+            && (AuthorshipStore.get(.suppsPM)    == .outside || isPMSuppsDone(date: date))
+            && (AuthorshipStore.get(.mindful)    == .outside || isMindfulEatingDone(date: date))
+            && (AuthorshipStore.get(.skincareAM) == .outside || isSkincareAMDone(date: date))
+            && (AuthorshipStore.get(.skincarePM) == .outside || isSkincarePMDone(date: date))
+
+        let custom = CustomSlotStore.load().allSatisfy {
+            CustomSlotStore.isDone(slotID: $0.id, date: date)
+        }
+
+        return builtIn && custom
     }
 
     // MARK: - Workout-slot mutators
