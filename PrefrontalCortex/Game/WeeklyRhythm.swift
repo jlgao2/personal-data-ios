@@ -75,8 +75,12 @@ struct WeeklyRhythm: Codable, Equatable {
 /// card refreshes without a manual reload.
 enum WeeklyRhythmStore {
     static func load() async -> WeeklyRhythm {
+        // `try?` of a throwing function that returns `T?` flattens to `T?`
+        // under Swift 5+, so a single `if let` is the right unwrap here —
+        // a second shorthand `let r` would fail because r is already
+        // non-optional after the first binding.
         if let r = try? await iCloudTransport.shared
-            .readConfig(name: "weekly_rhythm", as: WeeklyRhythm.self), let r {
+            .readConfig(name: "weekly_rhythm", as: WeeklyRhythm.self) {
             return r
         }
         return WeeklyRhythm.empty()
