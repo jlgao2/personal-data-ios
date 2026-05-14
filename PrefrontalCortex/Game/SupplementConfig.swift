@@ -5,7 +5,11 @@ import Foundation
 /// can grow later — adding a `mode: "training" | "travel"` field for
 /// context-specific stacks, for example, doesn't require touching every
 /// existing caller.
-struct SupplementConfig: Codable, Equatable {
+// Note: not Equatable. Adding it would force Supplement (in Bundle.swift)
+// to be Equatable too, which is wider than this config needs. The store
+// doesn't compare configs by value; SwiftUI uses `@State` (not
+// `onChange(of:)`) at the editor call sites so no Equatable requirement.
+struct SupplementConfig: Codable {
     var supplements: [Supplement]
 
     static let empty = SupplementConfig(supplements: [])
@@ -18,7 +22,7 @@ struct SupplementConfig: Codable, Equatable {
 enum SupplementConfigStore {
     static func load() async -> SupplementConfig {
         if let c = try? await iCloudTransport.shared
-            .readConfig(name: "supplements", as: SupplementConfig.self), let c {
+            .readConfig(name: "supplements", as: SupplementConfig.self) {
             return c
         }
         return .empty
