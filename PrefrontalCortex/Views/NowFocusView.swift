@@ -37,6 +37,10 @@ struct NowFocusView: View {
         let eventTime: Date?      // non-nil ONLY for real calendar events
         let isDone: () -> Bool
         let action: Action
+        // When set, the card renders this supplement stack inline
+        // (StackView's check-off period buttons) instead of a generic
+        // title + "Open" — so the checkboxes are in the wheel itself.
+        var inlineSupps: [Supplement]? = nil
     }
 
     private enum Action {
@@ -87,14 +91,19 @@ struct NowFocusView: View {
                 ForEach(all) { m in
                     card(m)
                         .scrollTransition(.interactive, axis: .vertical) { view, phase in
-                            view
-                                .opacity(phase.isIdentity ? 1 : 0.35)
-                                .scaleEffect(phase.isIdentity ? 1 : 0.84)
-                                .blur(radius: phase.isIdentity ? 0 : 2)
+                            // Continuous, not binary: distance from the
+                            // centre line (0 at focus → ~1 at the edges)
+                            // drives a smooth scale-down + fade + blur as
+                            // a card scrolls away.
+                            let d = min(abs(phase.value), 1)
+                            return view
+                                .opacity(1 - 0.78 * d)        // 1.0 → 0.22
+                                .scaleEffect(1 - 0.24 * d)    // 1.0 → 0.76
+                                .blur(radius: 3.5 * d)        // 0   → 3.5
                                 .rotation3DEffect(
-                                    .degrees(phase.value * -18),
+                                    .degrees(phase.value * -20),
                                     axis: (x: 1, y: 0, z: 0),
-                                    perspective: 0.6
+                                    perspective: 0.5
                                 )
                         }
                         .id(m.id)
@@ -139,28 +148,37 @@ struct NowFocusView: View {
                 .foregroundStyle(.white)
                 .strikethrough(done, color: .white.opacity(0.5))
                 .frame(maxWidth: .infinity, alignment: .leading)
-            if !m.detail.isEmpty {
-                Text(m.detail)
-                    .font(.footnote.italic())
-                    .foregroundStyle(.white.opacity(0.72))
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            if let supps = m.inlineSupps {
+                // Checkboxes live in the wheel: StackView's own AM/PM
+                // period buttons, not a generic "Open".
+                StackView(items: supps)
+            } else {
+                if !m.detail.isEmpty {
+                    Text(m.detail)
+                        .font(.footnote.italic())
+                        .foregroundStyle(.white.opacity(0.72))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                if !done { actionControl(m) }
             }
-            if !done { actionControl(m) }
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.black.opacity(0.5))
+        // Translucent, not a heavy slab — the thematic flow-field
+        // reads through so the wheel stays delightful.
+        .background(.ultraThinMaterial.opacity(0.55))
+        .background(.black.opacity(done ? 0.18 : 0.26))
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .strokeBorder(accent.opacity(done ? 0.25 : 0.55), lineWidth: 1)
+                .strokeBorder(accent.opacity(done ? 0.22 : 0.5), lineWidth: 1)
         )
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(accent.opacity(done ? 0 : 0.10))
-                .blur(radius: 12)
+                .fill(accent.opacity(done ? 0 : 0.12))
+                .blur(radius: 14)
         )
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .opacity(done ? 0.55 : 1)
+        .opacity(done ? 0.6 : 1)
     }
 
     @ViewBuilder
@@ -240,17 +258,24 @@ struct NowFocusView: View {
         var out: [Moment] = []
         func add(_ id: String, _ band: TimeBand, slot: Int, _ title: String,
                  _ detail: String, eventTime: Date? = nil,
+                 inlineSupps: [Supplement]? = nil,
                  isDone: @escaping () -> Bool, _ action: Action) {
             out.append(Moment(id: id, band: band,
                                order: bandOrder(band) * 100 + slot,
                                title: title, detail: detail,
-                               eventTime: eventTime, isDone: isDone, action: action))
+                               eventTime: eventTime, isDone: isDone,
+                               action: action, inlineSupps: inlineSupps))
         }
 
-        if authored(.suppsAM) {
-            add("supps_am", .morning, slot: 0, "AM supplements",
-                "Take the morning stack.",
-                isDone: { DailyLock.isAMSuppsDone() }, .openSheet(.supplements))
+        // One Supplements card — renders StackView (the AM + PM
+        // check-off period buttons) inline in the wheel so the boxes
+        // are right there, not behind an "Open". Done = both periods.
+        if authored(.suppsAM),
+           let supps = bundle.profile?.supplement_stack, !supps.isEmpty {
+            add("supps", .morning, slot: 0, "Supplements",
+                "", inlineSupps: supps,
+                isDone: { DailyLock.isAMSuppsDone() && DailyLock.isPMSuppsDone() },
+                .passive)
         }
         if authored(.skincareAM) {
             add("skin_am", .morning, slot: 1, "Skincare — AM", "Morning routine.",
@@ -272,11 +297,8 @@ struct NowFocusView: View {
                 first.about_what ?? (first.days_since_last.map { "\($0)d since last" } ?? ""),
                 isDone: { false }, .openSheet(.reachOut))
         }
-        if authored(.suppsPM) {
-            add("supps_pm", .night, slot: 0, "PM supplements",
-                "Take the evening stack.",
-                isDone: { DailyLock.isPMSuppsDone() }, .openSheet(.supplements))
-        }
+        // (PM supplements are covered by the single Supplements card —
+        // StackView shows both AM + PM period toggles.)
         if authored(.skincarePM) {
             add("skin_pm", .night, slot: 1, "Skincare — PM", "Evening routine.",
                 isDone: { DailyLock.isSkincarePMDone() },
