@@ -112,72 +112,18 @@ struct ContentView: View {
                     }
                     if let err = store.lastError { errorBanner(err) }
                     if let bundle = store.bundle {
-                        // Empty-hero gate: when no self-authored obligation
-                        // is pending for the current band, refuse to fill
-                        // the screen with charts — surface "Nothing to
-                        // look at." with the band headline and step out of
-                        // the way.
-                        if EmptyHeroGate.shouldRender() {
-                            EmptyHero(band: TimeBand.current())
-                        } else {
-                            // Hero card — band headline + subtitle.
-                            // Subscribes to .dayDidRollOver so band edges
-                            // refresh in-place.
-                            PresentFocusCard()
-                        }
-
-                        DailyLockChip()
-                        TimelineView(bundle: bundle, calStore: calStore)
-
-                        // ── MORNING / MIDDAY: mindful eating + AM/PM stack ──
-                        BandDivider(.morning)
-                        if let supps = bundle.profile?.supplement_stack, !supps.isEmpty {
-                            StackView(items: supps)
-                                .authorshipMenu(.suppsAM)
-                                .authorshipHidden(.suppsAM)
-                        }
-                        MindfulEatingTodayView()
-                            .authorshipMenu(.mindful)
-                            .authorshipHidden(.mindful)
-
-                        // ── WORKOUT: today's prescribed + actual session ──
-                        BandDivider(.workout)
-                        TodaysWorkoutChip()
-                        if let adapted = bundle.adapted_session {
-                            let dayKey = adapted.program_day ?? ""
-                            let prescribed = bundle.profile?.daily_protocol?[dayKey]
-                            AdaptedSessionView(
-                                adapted: adapted,
-                                prescribedSession: prescribed,
-                                onStart: { showWorkoutSession = true }
-                            )
-                            .authorshipMenu(.workout)
-                            .authorshipHidden(.workout)
-                        }
-
-                        // ── EVENING: reach out + embodiment practice ──
-                        BandDivider(.reachOut)
-                        EmbodimentHintView()
-                            .authorshipMenu(.embodiment)
-                            .authorshipHidden(.embodiment)
-                        if !calStore.authorized {
-                            UpcomingEventsView(
-                                bundleEvents: bundle.calendar ?? [],
-                                store: calStore
-                            )
-                        }
-
-                        // ── ALL DAY: abstinence trackers + med alerts ──
-                        BandDivider(label: "ALL DAY")
-                        if let abst = bundle.profile?.abstinences, !abst.isEmpty {
-                            AbstinenceBarView(abstinences: abst)
-                        }
-                        if medAlertsEnabled {
-                            MedAlertsView(
-                                alerts: bundle.med_alerts ?? [],
-                                avoidClasses: bundle.profile?.medications_to_avoid ?? []
-                            )
-                        }
+                        // Radically focused Now: exactly one chronological
+                        // moment — the thing that is current or most
+                        // overdue right now. The old pile (PresentFocusCard
+                        // + DailyLockChip + full TimelineView list + the
+                        // BandDivider section cards) is gone from this tab;
+                        // those components still live on the Plan tab where
+                        // browsing the whole day is the point. Authorship-
+                        // outside surfaces are excluded inside NowFocusView.
+                        NowFocusView(
+                            bundle: bundle,
+                            onStartWorkout: { showWorkoutSession = true }
+                        )
                     } else if iCloudPaths.isAvailable {
                         ConfigOnboardingView()
                     }
