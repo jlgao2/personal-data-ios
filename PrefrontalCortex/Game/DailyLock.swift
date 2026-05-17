@@ -33,6 +33,7 @@ enum DailyLock {
     private static func mindfulKey(_ date: Date) -> String       { "mindful_eat_\(dateKey(date))" }
     private static func skincareAMKey(_ date: Date) -> String    { "skincare_am_\(dateKey(date))" }
     private static func skincarePMKey(_ date: Date) -> String    { "skincare_pm_\(dateKey(date))" }
+    private static func embodimentKey(_ date: Date) -> String    { "embodiment_done_\(dateKey(date))" }
 
     // MARK: - Source enum
 
@@ -69,6 +70,17 @@ enum DailyLock {
     static func isSkincarePMDone(date: Date = Date()) -> Bool {
         defaults.bool(forKey: skincarePMKey(date))
     }
+    static func isEmbodimentDone(date: Date = Date()) -> Bool {
+        defaults.bool(forKey: embodimentKey(date))
+    }
+
+    static func setEmbodimentDone(_ done: Bool, date: Date = Date()) {
+        if done {
+            defaults.set(true, forKey: embodimentKey(date))
+        } else {
+            defaults.removeObject(forKey: embodimentKey(date))
+        }
+    }
 
     // MARK: - Skincare mutators
 
@@ -103,6 +115,7 @@ enum DailyLock {
             && (AuthorshipStore.get(.mindful)    == .outside || isMindfulEatingDone(date: date))
             && (AuthorshipStore.get(.skincareAM) == .outside || isSkincareAMDone(date: date))
             && (AuthorshipStore.get(.skincarePM) == .outside || isSkincarePMDone(date: date))
+            && (AuthorshipStore.get(.embodiment) == .outside || isEmbodimentDone(date: date))
 
         let custom = CustomSlotStore.load().allSatisfy {
             CustomSlotStore.isDone(slotID: $0.id, date: date)

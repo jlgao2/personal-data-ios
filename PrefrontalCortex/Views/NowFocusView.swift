@@ -355,11 +355,28 @@ struct NowFocusView: View {
                 isDone: { DailyLock.isWorkoutDone() },
                 isRest ? .passive : .startWorkout)
         }
+        // EVENING band = "Reach out. Be in your body." (TimeBand
+        // intent: connect + embodiment). It must never collapse to
+        // nothing when social data is thin — so reach-out is always
+        // present (named + why when we have a suggestion, a plain
+        // prompt otherwise) and the embodiment half is always here.
         if let first = bundle.social?.reach_out?.first, let name = first.name {
             add("reach", .reachOut, slot: 0, "Reach out: \(name)",
                 first.about_what ?? (first.days_since_last.map { "\($0)d since last" } ?? ""),
                 isDone: { false }, .openSheet(.reachOut))
+        } else {
+            add("reach", .reachOut, slot: 0, "Reach out",
+                "One message or call to someone who matters.",
+                isDone: { false }, .openSheet(.reachOut))
         }
+        // Embodiment — the body half of the evening. The rotating
+        // prompt IS the act, so it's the title (toggle card → no
+        // subtext per the contract). State is shared with
+        // EmbodimentHintView through DailyLock.
+        add("embodiment", .reachOut, slot: 1, EmbodimentHintView.dayPrompt.text, "",
+            outside: isOutside(.embodiment),
+            isDone: { DailyLock.isEmbodimentDone() },
+            .toggle { DailyLock.setEmbodimentDone(!DailyLock.isEmbodimentDone()) })
         // (PM supplements are covered by the single Supplements card —
         // StackView shows both AM + PM period toggles.)
         add("skin_pm", .night, slot: 1, "Skincare — PM", "",

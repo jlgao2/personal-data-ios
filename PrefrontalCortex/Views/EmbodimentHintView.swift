@@ -22,11 +22,14 @@ struct EmbodimentHintView: View {
         ("hands.sparkles", "Wash your hands slowly. Feel the water temperature."),
     ]
 
-    private var prompt: (symbol: String, text: String) {
-        let cal = Calendar.current
-        let day = cal.component(.day, from: Date())
-        return Self.prompts[day % Self.prompts.count]
+    /// The day's prompt — deterministic by calendar day so the wheel's
+    /// embodiment card and this view always show the same one.
+    static var dayPrompt: (symbol: String, text: String) {
+        let day = Calendar.current.component(.day, from: Date())
+        return prompts[day % prompts.count]
     }
+
+    private var prompt: (symbol: String, text: String) { Self.dayPrompt }
 
     var body: some View {
         Button(action: toggle) {
@@ -71,20 +74,8 @@ struct EmbodimentHintView: View {
         Self.saveDone(done)
     }
 
-    private static func key() -> String {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        f.locale = Locale(identifier: "en_US_POSIX")
-        return "embodiment_done_\(f.string(from: Date()))"
-    }
-    private static func loadDone() -> Bool {
-        UserDefaults.standard.bool(forKey: key())
-    }
-    private static func saveDone(_ done: Bool) {
-        if done {
-            UserDefaults.standard.set(true, forKey: key())
-        } else {
-            UserDefaults.standard.removeObject(forKey: key())
-        }
-    }
+    // Done-state lives in DailyLock (app-group, day-keyed, authorship-
+    // aware) — one source of truth shared with the Now-wheel card.
+    private static func loadDone() -> Bool { DailyLock.isEmbodimentDone() }
+    private static func saveDone(_ done: Bool) { DailyLock.setEmbodimentDone(done) }
 }
