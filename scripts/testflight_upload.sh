@@ -68,6 +68,32 @@ echo "→ build number → $BUILD_NUMBER"
 grep -q "CURRENT_PROJECT_VERSION: \"$BUILD_NUMBER\"" project.yml \
   || { echo "build-number bump failed (project.yml unchanged)"; exit 1; }
 
+# Auto-increment the marketing version's last component every push
+# (0.1 → 0.2 → 0.3 …; the build NUMBER alone bumping isn't visible as
+# a new "Version" in App Store Connect — TestFlight groups builds
+# under MARKETING_VERSION). Stays on by default until told otherwise;
+# set MARKETING_VERSION=x.y to pin a specific value, or
+# SKIP_VERSION_BUMP=1 to leave it alone.
+if [ -z "${SKIP_VERSION_BUMP:-}" ]; then
+  if [ -n "${MARKETING_VERSION:-}" ]; then
+    NEW_MV="$MARKETING_VERSION"
+  else
+    CUR_MV="$(grep -E 'MARKETING_VERSION: "' project.yml | head -1 | sed -E 's/.*"([^"]+)".*/\1/')"
+    MV_HEAD="${CUR_MV%.*}"; MV_TAIL="${CUR_MV##*.}"
+    if [ "$MV_HEAD" = "$CUR_MV" ]; then     # single component, e.g. "1"
+      NEW_MV="$((CUR_MV + 1))"
+    else
+      NEW_MV="${MV_HEAD}.$((MV_TAIL + 1))"
+    fi
+  fi
+  echo "→ marketing version → $NEW_MV"
+  /usr/bin/sed -i '' \
+    "s/MARKETING_VERSION: \"[^\"]*\"/MARKETING_VERSION: \"$NEW_MV\"/" \
+    project.yml
+  grep -q "MARKETING_VERSION: \"$NEW_MV\"" project.yml \
+    || { echo "marketing-version bump failed (project.yml unchanged)"; exit 1; }
+fi
+
 echo "→ regenerating Xcode project"
 xcodegen generate
 
