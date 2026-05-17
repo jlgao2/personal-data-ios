@@ -39,17 +39,27 @@ struct NowFocusView: View {
         case startWorkout                // launch the session tracker
         case openSheet(MomentSheet)      // hand off to the surface that owns the state
         case passive                     // informational (calendar / reach-out)
+
+        var isPassive: Bool {
+            if case .passive = self { return true }
+            return false
+        }
     }
 
     var body: some View {
+        let all = moments()
         let chosen = pick()
-        VStack(alignment: .leading, spacing: 18) {
+        VStack(alignment: .leading, spacing: 20) {
             if let m = chosen {
                 momentCard(m)
             } else {
                 allClear
             }
-            progressFooter
+            // The whole day, chronological + scrollable, so the focused
+            // hero above has context (what's done, what's still coming)
+            // instead of reading as one frozen pane. Past/done dim,
+            // future faint, the hero's row carries the accent bar.
+            dayList(all: all, hero: chosen)
         }
         .id(tick)
         .onReceive(NotificationCenter.default.publisher(for: .dayDidRollOver)) { _ in tick += 1 }
@@ -72,6 +82,18 @@ struct NowFocusView: View {
     @ViewBuilder
     private func momentCard(_ m: Moment) -> some View {
         let band = TimeBand.current()
+        let now = Date()
+        // NOW vs NEXT vs OVERDUE so a not-yet-due focus reads as
+        // "coming up at 12:30" rather than looking stuck/broken.
+        let status: (String, Color) = {
+            if m.anchor > now {
+                return ("NEXT · \(clock(m.anchor))", .white.opacity(0.5))
+            }
+            if now.timeIntervalSince(m.anchor) > 3600 {
+                return ("OVERDUE", .orange)
+            }
+            return ("NOW", .green)
+        }()
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 8) {
                 Text(m.tag)
@@ -79,9 +101,10 @@ struct NowFocusView: View {
                     .tracking(2)
                     .foregroundStyle(band.accent)
                 Spacer()
-                Text(clock(m.anchor))
-                    .font(.caption.monospaced())
-                    .foregroundStyle(.white.opacity(0.5))
+                Text(status.0)
+                    .font(.caption2.monospaced().bold())
+                    .tracking(1.5)
+                    .foregroundStyle(status.1)
             }
             Text(m.title)
                 .font(.title2.weight(.semibold))
@@ -102,17 +125,24 @@ struct NowFocusView: View {
         .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 
+    /// Single action dispatch — shared by the hero button and the
+    /// chronological-list row taps so the whole day is actionable.
+    private func perform(_ m: Moment) {
+        switch m.action {
+        case .toggle(let flip):     flip(); tick += 1
+        case .startWorkout:         onStartWorkout()
+        case .openSheet(let which): sheet = which
+        case .passive:              break
+        }
+    }
+
     @ViewBuilder
     private func actionControl(_ m: Moment) -> some View {
         switch m.action {
-        case .toggle(let flip):
-            primaryButton("Mark done") { flip(); tick += 1 }
-        case .startWorkout:
-            primaryButton("Start →") { onStartWorkout() }
-        case .openSheet(let which):
-            primaryButton("Open") { sheet = which }
-        case .passive:
-            EmptyView()
+        case .toggle:     primaryButton("Mark done") { perform(m) }
+        case .startWorkout: primaryButton("Start →") { perform(m) }
+        case .openSheet:  primaryButton("Open") { perform(m) }
+        case .passive:    EmptyView()
         }
     }
 
@@ -150,26 +180,66 @@ struct NowFocusView: View {
         .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 
-    /// Minimal, non-interactive day progress. Replaces the old tappable
-    /// dot strip — progress is a read-out that falls out of the moments,
-    /// not a separate input surface.
-    private var progressFooter: some View {
-        let all = moments()
+    /// The full day, chronological + scrollable. The hero moment above
+    /// is the emphasized "do this now"; this gives the surrounding
+    /// context so the tab never reads as a single frozen pane. Every
+    /// row is tappable (same dispatch as the hero) so the whole day is
+    /// actionable, not just the focus.
+    @ViewBuilder
+    private func dayList(all: [Moment], hero: Moment?) -> some View {
         let done = all.filter { $0.isDone() }.count
-        return HStack(spacing: 6) {
-            ForEach(0..<max(all.count, 1), id: \.self) { i in
-                Rectangle()
-                    .fill(i < done ? Color.cyan.opacity(0.6) : Color.white.opacity(0.12))
-                    .frame(height: 2)
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text("TODAY")
+                    .font(.caption2.monospaced().bold())
+                    .tracking(2)
+                    .foregroundStyle(.white.opacity(0.4))
+                Spacer()
+                Text("\(done)/\(all.count)")
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.white.opacity(0.35))
+            }
+            .padding(.bottom, 8)
+            ForEach(all) { m in
+                dayRow(m, isHero: m.id == hero?.id)
+                if m.id != all.last?.id {
+                    Divider().background(Color.white.opacity(0.06))
+                }
             }
         }
-        .overlay(alignment: .trailing) {
-            Text("\(done)/\(all.count)")
-                .font(.caption2.monospaced())
-                .foregroundStyle(.white.opacity(0.35))
-                .padding(.top, 10)
+    }
+
+    @ViewBuilder
+    private func dayRow(_ m: Moment, isHero: Bool) -> some View {
+        let isDone = m.isDone()
+        let past = !isDone && m.anchor <= Date()
+        let opacity: Double = isDone ? 0.4 : (isHero ? 1.0 : (past ? 0.7 : 0.5))
+        Button { perform(m) } label: {
+            HStack(spacing: 10) {
+                Rectangle()
+                    .fill(isHero ? TimeBand.current().accent : Color.clear)
+                    .frame(width: 2)
+                Text(clock(m.anchor))
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.white.opacity(0.45))
+                    .frame(width: 64, alignment: .leading)
+                Text(m.title)
+                    .font(.callout)
+                    .foregroundStyle(.white)
+                    .strikethrough(isDone, color: .white.opacity(0.4))
+                    .lineLimit(1)
+                Spacer()
+                Image(systemName: isDone ? "checkmark.circle.fill"
+                        : (m.action.isPassive ? "circle.dotted" : "circle"))
+                    .font(.footnote)
+                    .foregroundStyle(isDone ? .green : .white.opacity(0.35))
+            }
+            .padding(.vertical, 11)
+            .contentShape(Rectangle())
+            .opacity(opacity)
         }
-        .padding(.top, 4)
+        .buttonStyle(.plain)
+        .disabled(m.action.isPassive && !isDone)
     }
 
     // MARK: - Moment construction + selection
