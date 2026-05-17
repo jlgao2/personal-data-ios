@@ -18,10 +18,10 @@ struct PlanTabView: View {
             if let goals = profile.goals, !goals.isEmpty {
                 GoalsView(goals: goals)
             }
-            // First interactive surface on the Plan tab — tap to edit
-            // the weekly cadence. Writes config/weekly_rhythm.json to
-            // iCloud; the laptop pipeline picks it up on next refresh.
+            // Interactive Plan surfaces — edits write config/*.json to
+            // iCloud; the laptop merges them on next refresh.
             WeeklyRhythmCard()
+            ExerciseEditorCard(dailyProtocol: profile.daily_protocol)
             ActionLoopView(cards: actionLoop, live: live)
             RoadmapView(profile: profile)
             StreakView(vitals: vitals, workouts: workouts)

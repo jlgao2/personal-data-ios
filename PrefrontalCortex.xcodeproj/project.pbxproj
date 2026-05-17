@@ -54,6 +54,8 @@
 		77485033548B1C8224708D98 /* BundleDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103A0887BBB9F9C09DEE2446 /* BundleDecodeTests.swift */; };
 		77889900AABBCC66DDEE5566 /* EmptyHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77889900AABBCC66DDEE5567 /* EmptyHero.swift */; };
 		1F2E3D4C5B6A79880011AABB /* NowFocusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2E3D4C5B6A79880011AABC /* NowFocusView.swift */; };
+		2A3B4C5D6E7F8091A2B3C4D5 /* ProtocolOverride.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A3B4C5D6E7F8091A2B3C4D6 /* ProtocolOverride.swift */; };
+		3B4C5D6E7F8091A2B3C4D5E6 /* ExerciseEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4C5D6E7F8091A2B3C4D5E7 /* ExerciseEditor.swift */; };
 		79EB35971D2A18BADCE9DE70 /* iCloudPaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79058244CC8254C72CE824A1 /* iCloudPaths.swift */; };
 		7A4C635333E2854D71DA3FB7 /* TransportStatusPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F14F8C03DE8FED59DE62CC /* TransportStatusPill.swift */; };
 		80478231B3FF56CC81D9731B /* WorkoutLiveActivityRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97FA9237BBC0015E8109A9AE /* WorkoutLiveActivityRefresher.swift */; };
@@ -214,6 +216,8 @@
 		775D0C30FD995189DCCE5936 /* Achievements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievements.swift; sourceTree = "<group>"; };
 		77889900AABBCC66DDEE5567 /* EmptyHero.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyHero.swift; sourceTree = "<group>"; };
 		1F2E3D4C5B6A79880011AABC /* NowFocusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowFocusView.swift; sourceTree = "<group>"; };
+		2A3B4C5D6E7F8091A2B3C4D6 /* ProtocolOverride.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtocolOverride.swift; sourceTree = "<group>"; };
+		3B4C5D6E7F8091A2B3C4D5E7 /* ExerciseEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseEditor.swift; sourceTree = "<group>"; };
 		77E4E8E7120A9943314812A1 /* PrefrontalCortex.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrefrontalCortex.entitlements; sourceTree = "<group>"; };
 		79058244CC8254C72CE824A1 /* iCloudPaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iCloudPaths.swift; sourceTree = "<group>"; };
 		7A4C95132AB69E5D5CAAEA44 /* ConfigRecoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigRecoveryView.swift; sourceTree = "<group>"; };
@@ -327,6 +331,7 @@
 				DD44EE55FF6677AA12345679 /* EmbodimentHintView.swift */,
 				77889900AABBCC66DDEE5567 /* EmptyHero.swift */,
 				1F2E3D4C5B6A79880011AABC /* NowFocusView.swift */,
+				3B4C5D6E7F8091A2B3C4D5E7 /* ExerciseEditor.swift */,
 				0DA6BE7054D5CF649868F94F /* GenomicsView.swift */,
 				ECEA1D8862C5E08A3460C10D /* HealthProfileView.swift */,
 				811EB99A1E50FC654ADFA6DE /* LiveActivityDisabledBanner.swift */,
@@ -498,6 +503,7 @@
 				AAD7BB2CAFD1A54852624CF9 /* StreakState.swift */,
 				AA11BB22CC33DD44EE55FF67 /* TimeBand.swift */,
 				DDEEFFAA445566BB7788CCDE /* SupplementConfig.swift */,
+				2A3B4C5D6E7F8091A2B3C4D6 /* ProtocolOverride.swift */,
 				AABBCCDD11223344EEFF5567 /* WeeklyRhythm.swift */,
 			);
 			path = Game;
@@ -710,6 +716,8 @@
 				66778899AABBCC55DDEE5566 /* AuthorshipContextMenu.swift in Sources */,
 				77889900AABBCC66DDEE5566 /* EmptyHero.swift in Sources */,
 				1F2E3D4C5B6A79880011AABB /* NowFocusView.swift in Sources */,
+				2A3B4C5D6E7F8091A2B3C4D5 /* ProtocolOverride.swift in Sources */,
+				3B4C5D6E7F8091A2B3C4D5E6 /* ExerciseEditor.swift in Sources */,
 				C6DBBBF5ACE5356A50867B84 /* DailyLockChip.swift in Sources */,
 				24D36ECC16F49C9A171B0ACA /* DataLoader.swift in Sources */,
 				4DC9B1D241E0C091A5DBF455 /* DeviationChip.swift in Sources */,
