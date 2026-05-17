@@ -853,7 +853,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jlgao.PrefrontalCortexTests;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PrefrontalCortex.app/PrefrontalCortex";
 			};
 			name = Release;
@@ -937,7 +937,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.jlgao.PrefrontalCortex.PrefrontalCortexWidget;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -955,7 +955,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jlgao.PrefrontalCortex;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -970,7 +970,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jlgao.PrefrontalCortexTests;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PrefrontalCortex.app/PrefrontalCortex";
 			};
 			name = Debug;
@@ -988,7 +988,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.jlgao.PrefrontalCortex.PrefrontalCortexWidget;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -1006,7 +1006,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jlgao.PrefrontalCortex;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
