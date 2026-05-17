@@ -43,6 +43,10 @@ struct NowFocusView: View {
         // (StackView's check-off period buttons) instead of a generic
         // title + "Open" — so the checkboxes are in the wheel itself.
         var inlineSupps: [Supplement]? = nil
+        // True when its authorship surface is tagged "from outside".
+        // Per Authorship.swift's design these stay VISIBLE (dim, and
+        // not auto-focused) rather than disappearing from the wheel.
+        var isOutside: Bool = false
     }
 
     private enum Action {
@@ -152,6 +156,12 @@ struct NowFocusView: View {
                         .font(.caption2.monospaced().bold())
                         .tracking(2)
                         .foregroundStyle(accent)
+                    if m.isOutside {
+                        Text("· FROM OUTSIDE")
+                            .font(.caption2.monospaced())
+                            .tracking(1)
+                            .foregroundStyle(.white.opacity(0.38))
+                    }
                     Spacer()
                     // Clock ONLY for real calendar events.
                     if let t = m.eventTime {
@@ -207,7 +217,7 @@ struct NowFocusView: View {
                 .blur(radius: focused ? 22 : 12)
         )
         .clipShape(RoundedRectangle(cornerRadius: corner, style: .continuous))
-        .opacity(done ? 0.62 : 1)
+        .opacity(done ? 0.62 : (m.isOutside ? 0.5 : 1))
     }
 
     @ViewBuilder
@@ -273,8 +283,8 @@ struct NowFocusView: View {
 
     // MARK: - Moment construction
 
-    private func authored(_ s: AuthorshipSurface) -> Bool {
-        AuthorshipStore.get(s) != .outside
+    private func isOutside(_ s: AuthorshipSurface) -> Bool {
+        AuthorshipStore.get(s) == .outside
     }
 
     private func bandOrder(_ b: TimeBand) -> Int {
@@ -292,38 +302,55 @@ struct NowFocusView: View {
         func add(_ id: String, _ band: TimeBand, slot: Int, _ title: String,
                  _ detail: String, eventTime: Date? = nil,
                  inlineSupps: [Supplement]? = nil,
+                 outside: Bool = false,
                  isDone: @escaping () -> Bool, _ action: Action) {
             out.append(Moment(id: id, band: band,
                                order: bandOrder(band) * 100 + slot,
                                title: title, detail: detail,
                                eventTime: eventTime, isDone: isDone,
-                               action: action, inlineSupps: inlineSupps))
+                               action: action, inlineSupps: inlineSupps,
+                               isOutside: outside))
         }
 
         // One Supplements card — renders StackView (the AM + PM
         // check-off period buttons) inline in the wheel so the boxes
         // are right there, not behind an "Open". Done = both periods.
-        if authored(.suppsAM),
-           let supps = bundle.profile?.supplement_stack, !supps.isEmpty {
+        // Authorship NEVER removes the card (that hid it for users who
+        // tagged it "from outside"); it only dims + un-focuses it.
+        if let supps = bundle.profile?.supplement_stack, !supps.isEmpty {
             add("supps", .morning, slot: 0, "Supplements",
                 "", inlineSupps: supps,
+                outside: isOutside(.suppsAM),
                 isDone: { DailyLock.isAMSuppsDone() && DailyLock.isPMSuppsDone() },
                 .passive)
         }
-        if authored(.skincareAM) {
-            add("skin_am", .morning, slot: 1, "Skincare — AM", "Morning routine.",
-                isDone: { DailyLock.isSkincareAMDone() },
-                .toggle { DailyLock.setSkincareAMDone(!DailyLock.isSkincareAMDone()) })
-        }
-        if authored(.mindful) {
-            add("mindful", .midday, slot: 0, "Eat mindfully",
-                "One meal, no screen, attention on the food.",
-                isDone: { DailyLock.isMindfulEatingDone() }, .openSheet(.mindful))
-        }
-        if authored(.workout) {
-            add("workout", .workout, slot: 0, workoutTitle(),
-                bundle.adapted_session?.prescribed ?? "Today's prescribed session.",
-                isDone: { DailyLock.isWorkoutDone() }, .startWorkout)
+        add("skin_am", .morning, slot: 1, "Skincare — AM", "Morning routine.",
+            outside: isOutside(.skincareAM),
+            isDone: { DailyLock.isSkincareAMDone() },
+            .toggle { DailyLock.setSkincareAMDone(!DailyLock.isSkincareAMDone()) })
+        add("mindful", .midday, slot: 0, "Eat mindfully",
+            "One meal, no screen, attention on the food.",
+            outside: isOutside(.mindful),
+            isDone: { DailyLock.isMindfulEatingDone() }, .openSheet(.mindful))
+        do {
+            // Honour the adaptive engine: on a programmed Rest day the
+            // card reads "Rest day · Day N" with the recovery note and
+            // NO misleading "Start →" — so "where's my workout?" is
+            // answered honestly instead of looking like it vanished.
+            let sess = bundle.adapted_session
+            let presc = (sess?.prescribed ?? "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            let isRest = presc.isEmpty || presc.lowercased() == "rest"
+            let title = isRest
+                ? "Rest day" + (sess?.program_day.map { " · \($0)" } ?? "")
+                : workoutTitle()
+            let detail = isRest
+                ? (sess?.notes?.first ?? "Recovery: walk, mobility, sleep ≥7h.")
+                : (presc.isEmpty ? "Today's prescribed session." : presc)
+            add("workout", .workout, slot: 0, title, detail,
+                outside: isOutside(.workout),
+                isDone: { DailyLock.isWorkoutDone() },
+                isRest ? .passive : .startWorkout)
         }
         if let first = bundle.social?.reach_out?.first, let name = first.name {
             add("reach", .reachOut, slot: 0, "Reach out: \(name)",
@@ -332,11 +359,10 @@ struct NowFocusView: View {
         }
         // (PM supplements are covered by the single Supplements card —
         // StackView shows both AM + PM period toggles.)
-        if authored(.skincarePM) {
-            add("skin_pm", .night, slot: 1, "Skincare — PM", "Evening routine.",
-                isDone: { DailyLock.isSkincarePMDone() },
-                .toggle { DailyLock.setSkincarePMDone(!DailyLock.isSkincarePMDone()) })
-        }
+        add("skin_pm", .night, slot: 1, "Skincare — PM", "Evening routine.",
+            outside: isOutside(.skincarePM),
+            isDone: { DailyLock.isSkincarePMDone() },
+            .toggle { DailyLock.setSkincarePMDone(!DailyLock.isSkincarePMDone()) })
         for (i, slot) in CustomSlotStore.load().enumerated() {
             let sid = slot.id
             add("custom_\(sid)", .night, slot: 2 + i, slot.fullName,
@@ -370,9 +396,10 @@ struct NowFocusView: View {
     /// band, else the first pending moment overall, else the first card.
     private func pick(_ all: [Moment]) -> Moment? {
         let cur = TimeBand.current()
-        let pending = all.filter { !$0.isDone() }
+        let pending = all.filter { !$0.isDone() && !$0.isOutside }
         return pending.first { $0.band == cur }
             ?? pending.first
+            ?? all.first { !$0.isOutside }
             ?? all.first
     }
 
