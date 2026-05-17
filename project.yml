@@ -9,7 +9,7 @@ settings:
   base:
     SWIFT_VERSION: "5.10"
     MARKETING_VERSION: "0.1"
-    CURRENT_PROJECT_VERSION: "1"
+    CURRENT_PROJECT_VERSION: "202605171105"
     DEVELOPMENT_TEAM: 7SK8MG8FY6
 
 targets:
@@ -20,6 +20,18 @@ targets:
       - path: PrefrontalCortex
         excludes:
           - "**/.DS_Store"
+          # seeds/ holds factory-reset copies whose filenames collide
+          # with the bundled config (exercise_library.json /
+          # health_profile.json). Excluded from the flat glob and
+          # re-added below as a folder reference so the directory
+          # structure is preserved in the .app (seeds/<file>) instead
+          # of flattening to the bundle root → "Multiple commands
+          # produce …/exercise_library.json". (Durable equivalent of
+          # the earlier pbxproj-only fix that xcodegen regenerate
+          # discarded.)
+          - "Resources/seeds"
+      - path: PrefrontalCortex/Resources/seeds
+        type: folder
       - path: PrefrontalCortexShared
         excludes:
           - "**/.keep"

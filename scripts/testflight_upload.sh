@@ -39,12 +39,16 @@ echo "→ regenerating Xcode project"
 xcodegen generate
 
 echo "→ archiving"
+# -allowProvisioningUpdates: first signed archive of this app — let
+# Xcode create the iCloud container + distribution provisioning
+# profiles headlessly instead of failing.
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
   -project PrefrontalCortex.xcodeproj \
   -scheme "$SCHEME" \
   -sdk iphoneos \
   -destination 'generic/platform=iOS' \
   -archivePath "$ARCHIVE_PATH" \
+  -allowProvisioningUpdates \
   archive
 
 echo "→ exporting IPA"
@@ -52,7 +56,8 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
   -exportArchive \
   -archivePath "$ARCHIVE_PATH" \
   -exportPath "$EXPORT_PATH" \
-  -exportOptionsPlist scripts/ExportOptions.plist
+  -exportOptionsPlist scripts/ExportOptions.plist \
+  -allowProvisioningUpdates
 
 echo "→ uploading to App Store Connect"
 xcrun altool --upload-app \
