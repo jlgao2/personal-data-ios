@@ -35,6 +35,21 @@ IPA_PATH="$EXPORT_PATH/$SCHEME.ipa"
 : "${ASC_API_KEY_ID:?Set ASC_API_KEY_ID before running}"
 : "${ASC_API_KEY_ISSUER:?Set ASC_API_KEY_ISSUER before running}"
 
+# xcodebuild needs the App Store Connect API key explicitly for both
+# archive and export: there is no signed-in Xcode account in this
+# headless context, so without it `-allowProvisioningUpdates` can't
+# mint the iOS Distribution certificate / App Store profile and export
+# dies with "No Accounts / No signing certificate iOS Distribution".
+# xcrun also auto-discovers the .p8 from ~/.appstoreconnect/private_keys.
+ASC_API_KEY_PATH="${ASC_API_KEY_PATH:-$HOME/.appstoreconnect/private_keys/AuthKey_${ASC_API_KEY_ID}.p8}"
+[ -f "$ASC_API_KEY_PATH" ] || { echo "API key .p8 not found: $ASC_API_KEY_PATH"; exit 1; }
+AUTH_FLAGS=(
+  -allowProvisioningUpdates
+  -authenticationKeyPath "$ASC_API_KEY_PATH"
+  -authenticationKeyID "$ASC_API_KEY_ID"
+  -authenticationKeyIssuerID "$ASC_API_KEY_ISSUER"
+)
+
 echo "→ regenerating Xcode project"
 xcodegen generate
 
@@ -48,7 +63,7 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
   -sdk iphoneos \
   -destination 'generic/platform=iOS' \
   -archivePath "$ARCHIVE_PATH" \
-  -allowProvisioningUpdates \
+  "${AUTH_FLAGS[@]}" \
   archive
 
 echo "→ exporting IPA"
@@ -57,7 +72,7 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild \
   -archivePath "$ARCHIVE_PATH" \
   -exportPath "$EXPORT_PATH" \
   -exportOptionsPlist scripts/ExportOptions.plist \
-  -allowProvisioningUpdates
+  "${AUTH_FLAGS[@]}"
 
 echo "→ uploading to App Store Connect"
 xcrun altool --upload-app \
