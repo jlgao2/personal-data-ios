@@ -14,8 +14,12 @@
 #      com.jlgao.PrefrontalCortex).
 #   6. App Store Connect API key — set the env vars below.
 #
-# Then bump CURRENT_PROJECT_VERSION in project.yml and run this script.
-# App Store Connect rejects duplicate build numbers.
+# Run this script — it auto-bumps the build number (UTC-minute
+# timestamp) so App Store Connect never sees a duplicate. Override
+# with BUILD_NUMBER=... if you need a specific value.
+#
+#   ASC_API_KEY_ID=<KeyID> ASC_API_KEY_ISSUER=<IssuerID> \
+#     bash scripts/testflight_upload.sh
 
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -49,6 +53,20 @@ AUTH_FLAGS=(
   -authenticationKeyID "$ASC_API_KEY_ID"
   -authenticationKeyIssuerID "$ASC_API_KEY_ISSUER"
 )
+
+# Auto-bump the build number. App Store Connect rejects duplicate
+# CFBundleVersion for a (bundle id, marketing version). A UTC minute
+# timestamp is monotonic, never collides, and is human-readable
+# (YYYYMMDDHHMM). Set in project.yml — the source of truth; xcodegen
+# regenerates project.pbxproj from it on the next line. Override with
+# BUILD_NUMBER=... if a specific value is needed.
+BUILD_NUMBER="${BUILD_NUMBER:-$(date -u +%Y%m%d%H%M)}"
+echo "→ build number → $BUILD_NUMBER"
+/usr/bin/sed -i '' \
+  "s/CURRENT_PROJECT_VERSION: \"[0-9]*\"/CURRENT_PROJECT_VERSION: \"$BUILD_NUMBER\"/" \
+  project.yml
+grep -q "CURRENT_PROJECT_VERSION: \"$BUILD_NUMBER\"" project.yml \
+  || { echo "build-number bump failed (project.yml unchanged)"; exit 1; }
 
 echo "→ regenerating Xcode project"
 xcodegen generate
