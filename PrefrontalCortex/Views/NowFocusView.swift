@@ -61,6 +61,10 @@ struct NowFocusView: View {
             // future faint, the hero's row carries the accent bar.
             dayList(all: all, hero: chosen)
         }
+        // Pin to viewport width so no child (a long title, a fixed
+        // frame) can drive intrinsic width past the screen and turn
+        // the vertical scroll into a sideways drift.
+        .frame(maxWidth: .infinity, alignment: .leading)
         .id(tick)
         .onReceive(NotificationCenter.default.publisher(for: .dayDidRollOver)) { _ in tick += 1 }
         .onReceive(NotificationCenter.default.publisher(for: .customSlotsDidChange)) { _ in tick += 1 }

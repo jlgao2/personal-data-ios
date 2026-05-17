@@ -105,7 +105,12 @@ struct ContentView: View {
         // make the whole pane drift sideways as one block.
         ZStack {
             ThematicBackground(tab: .interventions).ignoresSafeArea()
-            ScrollView {
+            // Explicit .vertical axis (SwiftUI's default, but stated so a
+            // nested modifier can't accidentally enable horizontal) +
+            // .clipped() defense-in-depth so a child that emits an
+            // intrinsic width > viewport is truncated, never scrolls the
+            // tab sideways. Same hardening as the Plan tab.
+            ScrollView(.vertical) {
                 VStack(alignment: .leading, spacing: 20) {
                     if store.loading {
                         ProgressView("Loading…").frame(maxWidth: .infinity, alignment: .center)
@@ -133,6 +138,10 @@ struct ContentView: View {
                 .padding(.top, 32)
                 .padding(.bottom, tabBarClearance)
             }
+            // Defense-in-depth: clip the Now-tab scroll so even if a
+            // child emits an out-of-bounds box it's visually truncated
+            // rather than expanding the scrollable area sideways.
+            .clipped()
             // Backdrop now lives behind the per-tab ZStack via `ThematicBackground`.
             // Use a clear scroll background so it shows through.
             .scrollContentBackground(.hidden)
