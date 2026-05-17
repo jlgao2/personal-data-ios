@@ -1,20 +1,26 @@
 import SwiftUI
 
-/// The Now tab, radically focused: exactly ONE thing — the chronological
-/// moment that is current or most overdue right now. Not a list, not a
-/// dot strip, not band sections. As you resolve the shown moment the
-/// next one surfaces. Future moments stay hidden until their time.
+/// The Now tab as a dynamic scrolling wheel.
 ///
-/// "What to think about in the present" made literal: the screen holds
-/// a single anchored obligation and its one action. Everything that used
-/// to pile onto this tab (DailyLockChip, the full TimelineView list,
-/// BandDividers, the section cards) is gone from here — those components
-/// still live on the Plan tab where browsing the whole day is the point.
+/// Design intent (per feedback): not a sterile hero + flat list — the
+/// delightful, band-coloured language back, the whole day as a vertical
+/// wheel you spin through. The card nearest screen-centre is full-size
+/// and bright (the focus); neighbours scale down, fade, blur and curve
+/// away in 3D. `.viewAligned` snap gives the resistance — it settles
+/// onto a card instead of free-scrolling.
+///
+/// Ordering is by TimeBand (morning → midday → workout → evening →
+/// night), NOT fabricated clock times. A moment shows a clock time
+/// ONLY when it is a real calendar event; everything else shows its
+/// band label. The workout is always a card in the wheel and always
+/// tappable to start — never buried behind a synthetic 6pm anchor.
 struct NowFocusView: View {
     let bundle: IOSBundle
     var onStartWorkout: () -> Void
+    var onRefresh: (() async -> Void)? = nil
 
-    @State private var tick: Int = 0
+    @State private var tick = 0
+    @State private var scrollID: String?
     @State private var sheet: MomentSheet?
 
     enum MomentSheet: Identifiable {
@@ -22,50 +28,38 @@ struct NowFocusView: View {
         var id: Int { hashValue }
     }
 
-    /// One anchored daily obligation. `anchor` is today's clock time the
-    /// moment belongs to (drives chronological ordering + "is it now").
     private struct Moment: Identifiable {
         let id: String
-        let anchor: Date
-        let tag: String
+        let band: TimeBand
+        let order: Int            // band index * 100 + within-band slot
         let title: String
         let detail: String
+        let eventTime: Date?      // non-nil ONLY for real calendar events
         let isDone: () -> Bool
         let action: Action
     }
 
     private enum Action {
-        case toggle(() -> Void)          // direct done flip (setter exists)
-        case startWorkout                // launch the session tracker
-        case openSheet(MomentSheet)      // hand off to the surface that owns the state
-        case passive                     // informational (calendar / reach-out)
+        case toggle(() -> Void)
+        case startWorkout
+        case openSheet(MomentSheet)
+        case passive
 
-        var isPassive: Bool {
-            if case .passive = self { return true }
-            return false
-        }
+        var isPassive: Bool { if case .passive = self { return true }; return false }
     }
 
     var body: some View {
         let all = moments()
-        let chosen = pick()
-        VStack(alignment: .leading, spacing: 20) {
-            if let m = chosen {
-                momentCard(m)
-            } else {
+        Group {
+            if all.isEmpty {
                 allClear
+            } else {
+                wheel(all)
             }
-            // The whole day, chronological + scrollable, so the focused
-            // hero above has context (what's done, what's still coming)
-            // instead of reading as one frozen pane. Past/done dim,
-            // future faint, the hero's row carries the accent bar.
-            dayList(all: all, hero: chosen)
         }
-        // Pin to viewport width so no child (a long title, a fixed
-        // frame) can drive intrinsic width past the screen and turn
-        // the vertical scroll into a sideways drift.
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity)
         .id(tick)
+        .onAppear { if scrollID == nil { scrollID = pick(all)?.id } }
         .onReceive(NotificationCenter.default.publisher(for: .dayDidRollOver)) { _ in tick += 1 }
         .onReceive(NotificationCenter.default.publisher(for: .customSlotsDidChange)) { _ in tick += 1 }
         .onReceive(NotificationCenter.default.publisher(for: .authorshipDidChange)) { _ in tick += 1 }
@@ -81,84 +75,114 @@ struct NowFocusView: View {
         }
     }
 
-    // MARK: - The single card
+    // MARK: - The wheel
 
     @ViewBuilder
-    private func momentCard(_ m: Moment) -> some View {
-        let band = TimeBand.current()
-        let now = Date()
-        // NOW vs NEXT vs OVERDUE so a not-yet-due focus reads as
-        // "coming up at 12:30" rather than looking stuck/broken.
-        let status: (String, Color) = {
-            if m.anchor > now {
-                return ("NEXT · \(clock(m.anchor))", .white.opacity(0.5))
+    private func wheel(_ all: [Moment]) -> some View {
+        ScrollView(.vertical) {
+            LazyVStack(spacing: 14) {
+                // Top/bottom spacers so the first and last card can
+                // reach screen-centre (the wheel's focal line).
+                Color.clear.frame(height: 120)
+                ForEach(all) { m in
+                    card(m)
+                        .scrollTransition(.interactive, axis: .vertical) { view, phase in
+                            view
+                                .opacity(phase.isIdentity ? 1 : 0.35)
+                                .scaleEffect(phase.isIdentity ? 1 : 0.84)
+                                .blur(radius: phase.isIdentity ? 0 : 2)
+                                .rotation3DEffect(
+                                    .degrees(phase.value * -18),
+                                    axis: (x: 1, y: 0, z: 0),
+                                    perspective: 0.6
+                                )
+                        }
+                        .id(m.id)
+                }
+                Color.clear.frame(height: 120)
             }
-            if now.timeIntervalSince(m.anchor) > 3600 {
-                return ("OVERDUE", .orange)
-            }
-            return ("NOW", .green)
-        }()
-        VStack(alignment: .leading, spacing: 14) {
+            .scrollTargetLayout()
+        }
+        .scrollTargetBehavior(.viewAligned)
+        .scrollPosition(id: $scrollID, anchor: .center)
+        .scrollIndicators(.hidden)
+        .scrollBounceBehavior(.basedOnSize)
+        .refreshable { await onRefresh?() }
+    }
+
+    // MARK: - A card
+
+    @ViewBuilder
+    private func card(_ m: Moment) -> some View {
+        let done = m.isDone()
+        let accent = m.band.accent
+        VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
-                Text(m.tag)
+                Text(m.band.tag)
                     .font(.caption2.monospaced().bold())
                     .tracking(2)
-                    .foregroundStyle(band.accent)
+                    .foregroundStyle(accent)
                 Spacer()
-                Text(status.0)
-                    .font(.caption2.monospaced().bold())
-                    .tracking(1.5)
-                    .foregroundStyle(status.1)
+                // Clock ONLY for real calendar events.
+                if let t = m.eventTime {
+                    Text(clock(t))
+                        .font(.caption.monospaced())
+                        .foregroundStyle(.white.opacity(0.6))
+                } else if done {
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.caption)
+                        .foregroundStyle(.green)
+                }
             }
             Text(m.title)
                 .font(.title2.weight(.semibold))
                 .foregroundStyle(.white)
+                .strikethrough(done, color: .white.opacity(0.5))
                 .frame(maxWidth: .infinity, alignment: .leading)
             if !m.detail.isEmpty {
                 Text(m.detail)
                     .font(.footnote.italic())
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(.white.opacity(0.72))
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            actionControl(m)
+            if !done { actionControl(m) }
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.black.opacity(0.5))
-        .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(band.accent.opacity(0.45), lineWidth: 1))
-        .clipShape(RoundedRectangle(cornerRadius: 6))
-    }
-
-    /// Single action dispatch — shared by the hero button and the
-    /// chronological-list row taps so the whole day is actionable.
-    private func perform(_ m: Moment) {
-        switch m.action {
-        case .toggle(let flip):     flip(); tick += 1
-        case .startWorkout:         onStartWorkout()
-        case .openSheet(let which): sheet = which
-        case .passive:              break
-        }
+        .background(.black.opacity(0.5))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .strokeBorder(accent.opacity(done ? 0.25 : 0.55), lineWidth: 1)
+        )
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(accent.opacity(done ? 0 : 0.10))
+                .blur(radius: 12)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .opacity(done ? 0.55 : 1)
     }
 
     @ViewBuilder
     private func actionControl(_ m: Moment) -> some View {
         switch m.action {
-        case .toggle:     primaryButton("Mark done") { perform(m) }
-        case .startWorkout: primaryButton("Start →") { perform(m) }
-        case .openSheet:  primaryButton("Open") { perform(m) }
-        case .passive:    EmptyView()
+        case .toggle:       primaryButton("Mark done", m)
+        case .startWorkout: primaryButton("Start →", m)
+        case .openSheet:    primaryButton("Open", m)
+        case .passive:      EmptyView()
         }
     }
 
-    private func primaryButton(_ label: String, _ act: @escaping () -> Void) -> some View {
-        Button(action: act) {
+    private func primaryButton(_ label: String, _ m: Moment) -> some View {
+        Button { perform(m) } label: {
             Text(label)
                 .font(.callout.monospaced().bold())
                 .tracking(1.5)
-                .foregroundStyle(.cyan)
+                .foregroundStyle(m.band.accent)
                 .padding(.vertical, 12)
                 .frame(maxWidth: .infinity)
-                .overlay(RoundedRectangle(cornerRadius: 4).strokeBorder(Color.cyan.opacity(0.5), lineWidth: 1))
+                .overlay(RoundedRectangle(cornerRadius: 4)
+                            .strokeBorder(m.band.accent.opacity(0.5), lineWidth: 1))
         }
         .buttonStyle(.plain)
         .padding(.top, 2)
@@ -173,161 +197,128 @@ struct NowFocusView: View {
             Text("Nothing right now.")
                 .font(.title2.weight(.semibold))
                 .foregroundStyle(.white)
-            Text("Everything due so far is done. Close the app.")
+            Text("Everything so far is done. Close the app.")
                 .font(.footnote.italic())
                 .foregroundStyle(.white.opacity(0.55))
         }
         .padding(20)
-        .frame(maxWidth: .infinity, minHeight: 180, alignment: .topLeading)
-        .background(Color.black.opacity(0.5))
-        .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(Color.white.opacity(0.1), lineWidth: 1))
-        .clipShape(RoundedRectangle(cornerRadius: 6))
+        .frame(maxWidth: .infinity, minHeight: 200, alignment: .topLeading)
+        .background(.black.opacity(0.5))
+        .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(.white.opacity(0.1), lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .padding()
     }
 
-    /// The full day, chronological + scrollable. The hero moment above
-    /// is the emphasized "do this now"; this gives the surrounding
-    /// context so the tab never reads as a single frozen pane. Every
-    /// row is tappable (same dispatch as the hero) so the whole day is
-    /// actionable, not just the focus.
-    @ViewBuilder
-    private func dayList(all: [Moment], hero: Moment?) -> some View {
-        let done = all.filter { $0.isDone() }.count
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Text("TODAY")
-                    .font(.caption2.monospaced().bold())
-                    .tracking(2)
-                    .foregroundStyle(.white.opacity(0.4))
-                Spacer()
-                Text("\(done)/\(all.count)")
-                    .font(.caption2.monospaced())
-                    .foregroundStyle(.white.opacity(0.35))
-            }
-            .padding(.bottom, 8)
-            ForEach(all) { m in
-                dayRow(m, isHero: m.id == hero?.id)
-                if m.id != all.last?.id {
-                    Divider().background(Color.white.opacity(0.06))
-                }
-            }
+    // MARK: - Actions
+
+    private func perform(_ m: Moment) {
+        switch m.action {
+        case .toggle(let flip):     flip(); tick += 1
+        case .startWorkout:         onStartWorkout()
+        case .openSheet(let which): sheet = which
+        case .passive:              break
         }
     }
 
-    @ViewBuilder
-    private func dayRow(_ m: Moment, isHero: Bool) -> some View {
-        let isDone = m.isDone()
-        let past = !isDone && m.anchor <= Date()
-        let opacity: Double = isDone ? 0.4 : (isHero ? 1.0 : (past ? 0.7 : 0.5))
-        Button { perform(m) } label: {
-            HStack(spacing: 10) {
-                Rectangle()
-                    .fill(isHero ? TimeBand.current().accent : Color.clear)
-                    .frame(width: 2)
-                Text(clock(m.anchor))
-                    .font(.caption2.monospaced())
-                    .foregroundStyle(.white.opacity(0.45))
-                    .frame(width: 64, alignment: .leading)
-                Text(m.title)
-                    .font(.callout)
-                    .foregroundStyle(.white)
-                    .strikethrough(isDone, color: .white.opacity(0.4))
-                    .lineLimit(1)
-                Spacer()
-                Image(systemName: isDone ? "checkmark.circle.fill"
-                        : (m.action.isPassive ? "circle.dotted" : "circle"))
-                    .font(.footnote)
-                    .foregroundStyle(isDone ? .green : .white.opacity(0.35))
-            }
-            .padding(.vertical, 11)
-            .contentShape(Rectangle())
-            .opacity(opacity)
-        }
-        .buttonStyle(.plain)
-        .disabled(m.action.isPassive && !isDone)
-    }
-
-    // MARK: - Moment construction + selection
-
-    private func at(_ h: Int, _ m: Int = 0) -> Date {
-        let cal = Calendar.current
-        return cal.date(bySettingHour: h, minute: m, second: 0, of: Date()) ?? Date()
-    }
+    // MARK: - Moment construction
 
     private func authored(_ s: AuthorshipSurface) -> Bool {
         AuthorshipStore.get(s) != .outside
     }
 
-    private func moments() -> [Moment] {
-        var out: [Moment] = []
-
-        if authored(.suppsAM) {
-            out.append(Moment(id: "supps_am", anchor: at(7), tag: "MORNING",
-                title: "AM supplements",
-                detail: "Take the morning stack.",
-                isDone: { DailyLock.isAMSuppsDone() },
-                action: .openSheet(.supplements)))
+    private func bandOrder(_ b: TimeBand) -> Int {
+        switch b {
+        case .morning:  return 0
+        case .midday:   return 1
+        case .workout:  return 2
+        case .reachOut: return 3
+        case .night:    return 4
         }
-        if authored(.skincareAM) {
-            out.append(Moment(id: "skin_am", anchor: at(8), tag: "MORNING",
-                title: "Skincare — AM",
-                detail: "Morning routine.",
-                isDone: { DailyLock.isSkincareAMDone() },
-                action: .toggle { DailyLock.setSkincareAMDone(!DailyLock.isSkincareAMDone()) }))
-        }
-        if authored(.mindful) {
-            out.append(Moment(id: "mindful", anchor: at(12, 30), tag: "MIDDAY",
-                title: "Eat mindfully",
-                detail: "One meal, no screen, attention on the food.",
-                isDone: { DailyLock.isMindfulEatingDone() },
-                action: .openSheet(.mindful)))
-        }
-        if authored(.workout) {
-            out.append(Moment(id: "workout", anchor: at(18), tag: "WORKOUT",
-                title: workoutTitle(),
-                detail: bundle.adapted_session?.prescribed ?? "Today's prescribed session.",
-                isDone: { DailyLock.isWorkoutDone() },
-                action: .startWorkout))
-        }
-        if let first = bundle.social?.reach_out?.first, let name = first.name {
-            out.append(Moment(id: "reach", anchor: at(20), tag: "EVENING",
-                title: "Reach out: \(name)",
-                detail: first.about_what ?? (first.days_since_last.map { "\($0)d since last" } ?? ""),
-                isDone: { false },
-                action: .openSheet(.reachOut)))
-        }
-        if authored(.suppsPM) {
-            out.append(Moment(id: "supps_pm", anchor: at(21, 30), tag: "NIGHT",
-                title: "PM supplements",
-                detail: "Take the evening stack.",
-                isDone: { DailyLock.isPMSuppsDone() },
-                action: .openSheet(.supplements)))
-        }
-        if authored(.skincarePM) {
-            out.append(Moment(id: "skin_pm", anchor: at(22), tag: "NIGHT",
-                title: "Skincare — PM",
-                detail: "Evening routine.",
-                isDone: { DailyLock.isSkincarePMDone() },
-                action: .toggle { DailyLock.setSkincarePMDone(!DailyLock.isSkincarePMDone()) }))
-        }
-        for (i, slot) in CustomSlotStore.load().enumerated() {
-            out.append(Moment(id: "custom_\(slot.id)", anchor: at(21, 30 + i + 1),
-                tag: "NIGHT", title: slot.fullName, detail: "Custom daily slot.",
-                isDone: { CustomSlotStore.isDone(slotID: slot.id) },
-                action: .toggle { CustomSlotStore.toggle(slotID: slot.id) }))
-        }
-        return out.sorted { $0.anchor < $1.anchor }
     }
 
-    /// The single moment to surface: the latest pending moment whose
-    /// anchor time has arrived (you're at/past it — current or overdue).
-    /// If nothing is due yet, the earliest upcoming pending moment. If
-    /// every pending moment is resolved, nil → "Nothing right now."
-    private func pick() -> Moment? {
-        let now = Date()
-        let pending = moments().filter { !$0.isDone() }
-        guard !pending.isEmpty else { return nil }
-        let due = pending.filter { $0.anchor <= now.addingTimeInterval(15 * 60) }
-        return due.last ?? pending.first
+    private func moments() -> [Moment] {
+        var out: [Moment] = []
+        func add(_ id: String, _ band: TimeBand, slot: Int, _ title: String,
+                 _ detail: String, eventTime: Date? = nil,
+                 isDone: @escaping () -> Bool, _ action: Action) {
+            out.append(Moment(id: id, band: band,
+                               order: bandOrder(band) * 100 + slot,
+                               title: title, detail: detail,
+                               eventTime: eventTime, isDone: isDone, action: action))
+        }
+
+        if authored(.suppsAM) {
+            add("supps_am", .morning, slot: 0, "AM supplements",
+                "Take the morning stack.",
+                isDone: { DailyLock.isAMSuppsDone() }, .openSheet(.supplements))
+        }
+        if authored(.skincareAM) {
+            add("skin_am", .morning, slot: 1, "Skincare — AM", "Morning routine.",
+                isDone: { DailyLock.isSkincareAMDone() },
+                .toggle { DailyLock.setSkincareAMDone(!DailyLock.isSkincareAMDone()) })
+        }
+        if authored(.mindful) {
+            add("mindful", .midday, slot: 0, "Eat mindfully",
+                "One meal, no screen, attention on the food.",
+                isDone: { DailyLock.isMindfulEatingDone() }, .openSheet(.mindful))
+        }
+        if authored(.workout) {
+            add("workout", .workout, slot: 0, workoutTitle(),
+                bundle.adapted_session?.prescribed ?? "Today's prescribed session.",
+                isDone: { DailyLock.isWorkoutDone() }, .startWorkout)
+        }
+        if let first = bundle.social?.reach_out?.first, let name = first.name {
+            add("reach", .reachOut, slot: 0, "Reach out: \(name)",
+                first.about_what ?? (first.days_since_last.map { "\($0)d since last" } ?? ""),
+                isDone: { false }, .openSheet(.reachOut))
+        }
+        if authored(.suppsPM) {
+            add("supps_pm", .night, slot: 0, "PM supplements",
+                "Take the evening stack.",
+                isDone: { DailyLock.isPMSuppsDone() }, .openSheet(.supplements))
+        }
+        if authored(.skincarePM) {
+            add("skin_pm", .night, slot: 1, "Skincare — PM", "Evening routine.",
+                isDone: { DailyLock.isSkincarePMDone() },
+                .toggle { DailyLock.setSkincarePMDone(!DailyLock.isSkincarePMDone()) })
+        }
+        for (i, slot) in CustomSlotStore.load().enumerated() {
+            let sid = slot.id
+            add("custom_\(sid)", .night, slot: 2 + i, slot.fullName,
+                "Custom daily slot.",
+                isDone: { CustomSlotStore.isDone(slotID: sid) },
+                .toggle { CustomSlotStore.toggle(slotID: sid) })
+        }
+
+        // Real calendar events — the ONLY moments that carry a clock
+        // time. Slotted into whichever band their start hour falls in.
+        let iso = ISO8601DateFormatter()
+        let isoFrac = ISO8601DateFormatter()
+        isoFrac.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        for (i, ev) in (bundle.calendar ?? []).enumerated() {
+            guard let s = ev.start,
+                  let when = iso.date(from: s) ?? isoFrac.date(from: s) else { continue }
+            if !Calendar.current.isDateInToday(when) { continue }
+            let b = TimeBand.current(at: when)
+            add("cal_\(i)", b, slot: 50 + i,
+                ev.summary ?? "(event)", ev.location ?? "",
+                eventTime: when, isDone: { false }, .passive)
+        }
+
+        return out.sorted {
+            if $0.order != $1.order { return $0.order < $1.order }
+            return ($0.eventTime ?? .distantPast) < ($1.eventTime ?? .distantPast)
+        }
+    }
+
+    /// Initial wheel position: the first pending moment in the current
+    /// band, else the first pending moment overall, else the first card.
+    private func pick(_ all: [Moment]) -> Moment? {
+        let cur = TimeBand.current()
+        let pending = all.filter { !$0.isDone() }
+        return pending.first { $0.band == cur }
+            ?? pending.first
+            ?? all.first
     }
 
     private func workoutTitle() -> String {

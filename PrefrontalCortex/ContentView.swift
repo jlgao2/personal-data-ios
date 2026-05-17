@@ -105,56 +105,37 @@ struct ContentView: View {
         // make the whole pane drift sideways as one block.
         ZStack {
             ThematicBackground(tab: .interventions).ignoresSafeArea()
-            // Explicit .vertical axis (SwiftUI's default, but stated so a
-            // nested modifier can't accidentally enable horizontal) +
-            // .clipped() defense-in-depth so a child that emits an
-            // intrinsic width > viewport is truncated, never scrolls the
-            // tab sideways. Same hardening as the Plan tab.
-            ScrollView(.vertical) {
-                VStack(alignment: .leading, spacing: 20) {
-                    if store.loading {
-                        ProgressView("Loading…").frame(maxWidth: .infinity, alignment: .center)
-                    }
-                    if let err = store.lastError { errorBanner(err) }
-                    if let bundle = store.bundle {
-                        // Radically focused Now: exactly one chronological
-                        // moment — the thing that is current or most
-                        // overdue right now. The old pile (PresentFocusCard
-                        // + DailyLockChip + full TimelineView list + the
-                        // BandDivider section cards) is gone from this tab;
-                        // those components still live on the Plan tab where
-                        // browsing the whole day is the point. Authorship-
-                        // outside surfaces are excluded inside NowFocusView.
-                        NowFocusView(
-                            bundle: bundle,
-                            onStartWorkout: { showWorkoutSession = true }
-                        )
-                    } else if iCloudPaths.isAvailable {
-                        ConfigOnboardingView()
-                    }
-                    // else: rely on the noiCloud pill / existing UI to indicate sign-in needed
+            // NowFocusView owns its OWN vertical wheel scroll (snap +
+            // scroll-transition). It must NOT be nested inside another
+            // ScrollView or the two vertical scrolls fight and the snap
+            // breaks — so loading / onboarding are siblings here, and
+            // the wheel is the scroll surface (pull-to-refresh lives on
+            // it via onRefresh).
+            Group {
+                if store.loading && store.bundle == nil {
+                    ProgressView("Loading…")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if let bundle = store.bundle {
+                    NowFocusView(
+                        bundle: bundle,
+                        onStartWorkout: { showWorkoutSession = true },
+                        onRefresh: {
+                            await store.bootstrap()
+                            await store.uploadTodaySamples()
+                        }
+                    )
+                } else if iCloudPaths.isAvailable {
+                    ConfigOnboardingView()
                 }
-                .padding()
-                .padding(.top, 32)
-                .padding(.bottom, tabBarClearance)
             }
-            // Defense-in-depth: clip the Now-tab scroll so even if a
-            // child emits an out-of-bounds box it's visually truncated
-            // rather than expanding the scrollable area sideways.
-            .clipped()
-            // Backdrop now lives behind the per-tab ZStack via `ThematicBackground`.
-            // Use a clear scroll background so it shows through.
-            .scrollContentBackground(.hidden)
-            .background(Color.clear)
-            .refreshable {
-                await store.bootstrap()
-                await store.uploadTodaySamples()
+            if let err = store.lastError {
+                VStack { Spacer(); errorBanner(err).padding(.bottom, tabBarClearance) }
             }
-            .overlay(alignment: .topTrailing) {
-                TransportStatusPill()
-                    .padding(.top, 8)
-                    .padding(.trailing, 16)
-            }
+        }
+        .overlay(alignment: .topTrailing) {
+            TransportStatusPill()
+                .padding(.top, 8)
+                .padding(.trailing, 16)
         }
     }
 
