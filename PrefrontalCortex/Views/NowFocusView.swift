@@ -324,7 +324,10 @@ struct NowFocusView: View {
                 isDone: { DailyLock.isAMSuppsDone() && DailyLock.isPMSuppsDone() },
                 .passive)
         }
-        add("skin_am", .morning, slot: 1, "Skincare — AM", "Morning routine.",
+        // Toggle cards carry NO subtext (hybrid contract): a clear act
+        // + the toggle, nothing to read. Filler like "Morning routine."
+        // restated the title and earned no decision.
+        add("skin_am", .morning, slot: 1, "Skincare — AM", "",
             outside: isOutside(.skincareAM),
             isDone: { DailyLock.isSkincareAMDone() },
             .toggle { DailyLock.setSkincareAMDone(!DailyLock.isSkincareAMDone()) })
@@ -333,20 +336,20 @@ struct NowFocusView: View {
             outside: isOutside(.mindful),
             isDone: { DailyLock.isMindfulEatingDone() }, .openSheet(.mindful))
         do {
-            // Honour the adaptive engine: on a programmed Rest day the
-            // card reads "Rest day · Day N" with the recovery note and
-            // NO misleading "Start →" — so "where's my workout?" is
-            // answered honestly instead of looking like it vanished.
+            // The workout is the one card sitting on adaptive data
+            // (traffic light, intensity Δ, swaps). Title = the session
+            // identity ("Improv", "Yoga", "Push + core", "Rest day") —
+            // the ACT, not "Train · Day N". Subtext = the adaptive
+            // headline: how to show up at your limit today. On a Rest
+            // day: the recovery note + no misleading "Start →".
             let sess = bundle.adapted_session
             let presc = (sess?.prescribed ?? "")
                 .trimmingCharacters(in: .whitespacesAndNewlines)
             let isRest = presc.isEmpty || presc.lowercased() == "rest"
-            let title = isRest
-                ? "Rest day" + (sess?.program_day.map { " · \($0)" } ?? "")
-                : workoutTitle()
+            let title = isRest ? "Rest day" : sessionIdentity(presc)
             let detail = isRest
                 ? (sess?.notes?.first ?? "Recovery: walk, mobility, sleep ≥7h.")
-                : (presc.isEmpty ? "Today's prescribed session." : presc)
+                : adaptiveHeadline(sess)
             add("workout", .workout, slot: 0, title, detail,
                 outside: isOutside(.workout),
                 isDone: { DailyLock.isWorkoutDone() },
@@ -359,14 +362,13 @@ struct NowFocusView: View {
         }
         // (PM supplements are covered by the single Supplements card —
         // StackView shows both AM + PM period toggles.)
-        add("skin_pm", .night, slot: 1, "Skincare — PM", "Evening routine.",
+        add("skin_pm", .night, slot: 1, "Skincare — PM", "",
             outside: isOutside(.skincarePM),
             isDone: { DailyLock.isSkincarePMDone() },
             .toggle { DailyLock.setSkincarePMDone(!DailyLock.isSkincarePMDone()) })
         for (i, slot) in CustomSlotStore.load().enumerated() {
             let sid = slot.id
-            add("custom_\(sid)", .night, slot: 2 + i, slot.fullName,
-                "Custom daily slot.",
+            add("custom_\(sid)", .night, slot: 2 + i, slot.fullName, "",
                 isDone: { CustomSlotStore.isDone(slotID: sid) },
                 .toggle { CustomSlotStore.toggle(slotID: sid) })
         }
@@ -403,9 +405,50 @@ struct NowFocusView: View {
             ?? all.first
     }
 
-    private func workoutTitle() -> String {
-        if let day = bundle.adapted_session?.program_day { return "Train · \(day)" }
-        return "Train"
+    /// The act, named concretely from the prescribed string: the lead
+    /// segment before the first separator. "Yoga · hip openers…" →
+    /// "Yoga"; "Sport / outdoor (no running)" → "Sport"; "Push + core"
+    /// (no separator) stays whole; "Improv" → "Improv".
+    private func sessionIdentity(_ presc: String) -> String {
+        guard !presc.isEmpty else { return "Train" }
+        for sep in [" · ", " / ", " — ", ", "] {
+            if let r = presc.range(of: sep) {
+                let head = presc[..<r.lowerBound]
+                    .trimmingCharacters(in: .whitespaces)
+                if !head.isEmpty { return head }
+            }
+        }
+        return presc
+    }
+
+    /// The one decision-relevant line for the workout card: how to show
+    /// up today. Traffic light + intensity delta + swap count — the
+    /// adaptive layer that was invisible on the Now tab until now.
+    private func adaptiveHeadline(_ s: AdaptedSession?) -> String {
+        guard let s else { return "Today's prescribed session." }
+        var parts: [String] = []
+        switch (s.traffic_light ?? "").lowercased() {
+        case "green": parts.append("Green")
+        case "amber": parts.append("Amber")
+        case "red":   parts.append("Red")
+        default: break
+        }
+        if let m = s.intensity_modifier {
+            if abs(m - 1.0) < 0.001 {
+                if !parts.isEmpty { parts.append("full intensity") }
+            } else if m < 1.0 {
+                parts.append("−\(Int((1.0 - m) * 100 + 0.5))%")
+            } else {
+                parts.append("+\(Int((m - 1.0) * 100 + 0.5))%")
+            }
+        }
+        if let n = s.swaps?.count, n > 0 {
+            parts.append("\(n) swap\(n == 1 ? "" : "s")")
+        }
+        if parts.isEmpty {
+            return s.notes?.first ?? "Today's prescribed session."
+        }
+        return parts.joined(separator: " · ")
     }
 
     private func clock(_ d: Date) -> String {
