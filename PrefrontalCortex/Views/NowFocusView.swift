@@ -22,6 +22,8 @@ struct NowFocusView: View {
     @State private var tick = 0
     @State private var scrollID: String?
     @State private var sheet: MomentSheet?
+    /// Bumped when a moment is marked done — drives the success haptic.
+    @State private var completedPulse = 0
 
     enum MomentSheet: Identifiable {
         case supplements, mindful, reachOut
@@ -117,6 +119,13 @@ struct NowFocusView: View {
         .scrollIndicators(.hidden)
         .scrollBounceBehavior(.basedOnSize)
         .refreshable { await onRefresh?() }
+        // Delight: a crisp selection tick every time a new card snaps
+        // to the focal line (the wheel's "resistance" you can feel),
+        // and a success thunk when a moment is marked done.
+        .sensoryFeedback(.selection, trigger: scrollID)
+        .sensoryFeedback(.success, trigger: completedPulse)
+        .animation(.spring(response: 0.42, dampingFraction: 0.74),
+                   value: scrollID)
     }
 
     // MARK: - A card
@@ -125,60 +134,80 @@ struct NowFocusView: View {
     private func card(_ m: Moment) -> some View {
         let done = m.isDone()
         let accent = m.band.accent
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
-                Text(m.band.tag)
-                    .font(.caption2.monospaced().bold())
-                    .tracking(2)
-                    .foregroundStyle(accent)
-                Spacer()
-                // Clock ONLY for real calendar events.
-                if let t = m.eventTime {
-                    Text(clock(t))
-                        .font(.caption.monospaced())
-                        .foregroundStyle(.white.opacity(0.6))
-                } else if done {
-                    Image(systemName: "checkmark.seal.fill")
-                        .font(.caption)
-                        .foregroundStyle(.green)
+        let focused = (m.id == scrollID)
+        let corner: CGFloat = 18
+        ZStack(alignment: .topTrailing) {
+            // Soft per-band SF Symbol watermark — instant identity +
+            // richness behind the content; brightens when focused.
+            Image(systemName: m.band.symbol)
+                .font(.system(size: 92, weight: .semibold))
+                .foregroundStyle(accent.opacity(done ? 0.05 : (focused ? 0.18 : 0.11)))
+                .rotationEffect(.degrees(-8))
+                .offset(x: 24, y: -16)
+                .allowsHitTesting(false)
+
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 8) {
+                    Text(m.band.tag)
+                        .font(.caption2.monospaced().bold())
+                        .tracking(2)
+                        .foregroundStyle(accent)
+                    Spacer()
+                    // Clock ONLY for real calendar events.
+                    if let t = m.eventTime {
+                        Text(clock(t))
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.white.opacity(0.6))
+                    } else if done {
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.callout)
+                            .foregroundStyle(.green)
+                            .symbolEffect(.bounce, value: done)
+                    }
+                }
+                Text(m.title)
+                    .font(.system(.title2, design: .rounded).weight(.semibold))
+                    .foregroundStyle(.white)
+                    .strikethrough(done, color: .white.opacity(0.5))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                if let supps = m.inlineSupps {
+                    // Checkboxes live in the wheel: StackView's own AM/PM
+                    // period buttons, not a generic "Open".
+                    StackView(items: supps)
+                } else {
+                    if !m.detail.isEmpty {
+                        Text(m.detail)
+                            .font(.footnote.italic())
+                            .foregroundStyle(.white.opacity(0.72))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    if !done { actionControl(m) }
                 }
             }
-            Text(m.title)
-                .font(.title2.weight(.semibold))
-                .foregroundStyle(.white)
-                .strikethrough(done, color: .white.opacity(0.5))
-                .frame(maxWidth: .infinity, alignment: .leading)
-            if let supps = m.inlineSupps {
-                // Checkboxes live in the wheel: StackView's own AM/PM
-                // period buttons, not a generic "Open".
-                StackView(items: supps)
-            } else {
-                if !m.detail.isEmpty {
-                    Text(m.detail)
-                        .font(.footnote.italic())
-                        .foregroundStyle(.white.opacity(0.72))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                if !done { actionControl(m) }
-            }
+            .padding(18)
         }
-        .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        // Translucent, not a heavy slab — the thematic flow-field
-        // reads through so the wheel stays delightful.
-        .background(.ultraThinMaterial.opacity(0.55))
-        .background(.black.opacity(done ? 0.18 : 0.26))
+        // Translucent so the thematic flow-field reads through; the
+        // focused card sits a touch more solid + glows brighter so it
+        // visibly "sings" at the centre of the wheel.
+        .background(.ultraThinMaterial.opacity(focused ? 0.7 : 0.5))
+        .background(.black.opacity(done ? 0.16 : (focused ? 0.30 : 0.24)))
         .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .strokeBorder(accent.opacity(done ? 0.22 : 0.5), lineWidth: 1)
+            RoundedRectangle(cornerRadius: corner, style: .continuous)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [accent.opacity(focused ? 0.9 : 0.42),
+                                 accent.opacity(focused ? 0.35 : 0.14)],
+                        startPoint: .topLeading, endPoint: .bottomTrailing),
+                    lineWidth: focused ? 1.5 : 1)
         )
         .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(accent.opacity(done ? 0 : 0.12))
-                .blur(radius: 14)
+            RoundedRectangle(cornerRadius: corner, style: .continuous)
+                .fill(accent.opacity(done ? 0 : (focused ? 0.22 : 0.09)))
+                .blur(radius: focused ? 22 : 12)
         )
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .opacity(done ? 0.6 : 1)
+        .clipShape(RoundedRectangle(cornerRadius: corner, style: .continuous))
+        .opacity(done ? 0.62 : 1)
     }
 
     @ViewBuilder
@@ -231,7 +260,11 @@ struct NowFocusView: View {
 
     private func perform(_ m: Moment) {
         switch m.action {
-        case .toggle(let flip):     flip(); tick += 1
+        case .toggle(let flip):
+            let wasDone = m.isDone()
+            flip()
+            tick += 1
+            if !wasDone { completedPulse += 1 }   // success haptic on complete
         case .startWorkout:         onStartWorkout()
         case .openSheet(let which): sheet = which
         case .passive:              break
