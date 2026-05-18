@@ -172,12 +172,29 @@ struct AdaptedSession: Codable {
     // workout card show what you did against the prescription instead
     // of only ever showing the plan.
     let completed_today: [CompletedWorkout]?
+    // Skip-driven weekly rebalance (pipeline rule_skip_rebalance).
+    // nil when there's no open workout skip this week.
+    let week_makeup: WeekMakeup?
 }
 
 struct CompletedWorkout: Codable {
     let label: String?
     let sport: String?
     let duration_min: Int?
+}
+
+struct WeekMakeup: Codable {
+    let skipped: [MakeupItem]?
+    let recipients: [String]?
+    let today_is_recipient: Bool?
+    let dropped: Bool?
+    let next_rest: String?
+}
+
+struct MakeupItem: Codable {
+    let session: String?
+    let weekday: String?
+    let primary_tag: String?
 }
 
 /// Single source of truth for how the workout reads — used by the Now
