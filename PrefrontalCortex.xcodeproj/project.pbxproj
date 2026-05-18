@@ -54,6 +54,7 @@
 		728E277E373171F79C95A46C /* Migrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478343174E61BA19BA70025F /* Migrations.swift */; };
 		7319F7561F8A5DB47F9D99BD /* VitalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCE7ED06BC81271F0ABADB1 /* VitalsView.swift */; };
 		7343D34926F03AE8AF097838 /* WidgetSnapshotWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0A65C7B78D5885DE143AA0 /* WidgetSnapshotWriter.swift */; };
+		74156A0DA9A0AE5554134FE7 /* WeekMakeupBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73BB89CA030D6FC923D566B /* WeekMakeupBanner.swift */; };
 		745766DC65277A58544E36C8 /* SampleExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E1E8B4C8CEBF4F91E20DC7 /* SampleExporter.swift */; };
 		74FF728E96F1EB6620090A28 /* WorkoutUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3BFED9D38B1C9E08BF83F2 /* WorkoutUnit.swift */; };
 		75DC93C53F3D4FC1CF103D64 /* WeeklyRhythmCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8771AABD9211E49BF64AC2CB /* WeeklyRhythmCard.swift */; };
@@ -258,6 +259,7 @@
 		C99B79924D1BB4B49FDF5F30 /* ExerciseEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseEditor.swift; sourceTree = "<group>"; };
 		C9A71F62A979B4C2DF7ACFFC /* RiverOfGlowBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiverOfGlowBackground.swift; sourceTree = "<group>"; };
 		D2F135FF57EF665F0E7E623A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D73BB89CA030D6FC923D566B /* WeekMakeupBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekMakeupBanner.swift; sourceTree = "<group>"; };
 		D802A4C77F5681263A0B9F0D /* CustomSlotEditorSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSlotEditorSheet.swift; sourceTree = "<group>"; };
 		D8F14F8C03DE8FED59DE62CC /* TransportStatusPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportStatusPill.swift; sourceTree = "<group>"; };
 		D902D74491F834FBB32F2A7A /* UploadModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadModels.swift; sourceTree = "<group>"; };
@@ -353,6 +355,7 @@
 				F5649DA3EFD054D4AA7AA70F /* WeeklyRecapView.swift */,
 				8771AABD9211E49BF64AC2CB /* WeeklyRhythmCard.swift */,
 				EBE7CD7CC35DE676602E27A3 /* WeeklyRhythmEditorSheet.swift */,
+				D73BB89CA030D6FC923D566B /* WeekMakeupBanner.swift */,
 				395D10B3699FF24CB00CDF30 /* WorkoutSessionView.swift */,
 				3BDA89289885460CF309A52B /* WorkoutsView.swift */,
 				CC418D205572FA0D81AC21AE /* Backgrounds */,
@@ -762,6 +765,7 @@
 				9C9BEC0E6DB6B55B12B7FCEA /* UpcomingEventsView.swift in Sources */,
 				C582BD6D72FDF1C89514EB29 /* UploadModels.swift in Sources */,
 				7319F7561F8A5DB47F9D99BD /* VitalsView.swift in Sources */,
+				74156A0DA9A0AE5554134FE7 /* WeekMakeupBanner.swift in Sources */,
 				0E1038C8C4C2E62EB41B979F /* WeeklyRecapView.swift in Sources */,
 				87F2A36E0E501784C637BF56 /* WeeklyRhythm.swift in Sources */,
 				75DC93C53F3D4FC1CF103D64 /* WeeklyRhythmCard.swift in Sources */,
@@ -831,7 +835,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 202605171717;
+				CURRENT_PROJECT_VERSION = 202605180036;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 7SK8MG8FY6;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -845,7 +849,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 0.2;
+				MARKETING_VERSION = 0.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -906,7 +910,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 202605171717;
+				CURRENT_PROJECT_VERSION = 202605180036;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 7SK8MG8FY6;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -926,7 +930,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 0.2;
+				MARKETING_VERSION = 0.5;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
