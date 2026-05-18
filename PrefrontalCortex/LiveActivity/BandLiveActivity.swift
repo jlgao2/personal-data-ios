@@ -89,13 +89,35 @@ enum BandLiveActivity {
     }
 
     private static func contentState(for band: TimeBand) -> BandLiveActivityAttributes.ContentState {
-        BandLiveActivityAttributes.ContentState(
+        // The workout band's static headline is "Train." — but the Now
+        // card shows the actual session ("Rest day", "Push + core",
+        // "Did: Cycling · 190 min"). Read the widget snapshot the app
+        // writes after every bundle refresh so the lock screen matches
+        // the card instead of always saying "Train".
+        var headline = band.headline
+        if band == .workout, let label = workoutSessionLabel() {
+            headline = label
+        }
+        return BandLiveActivityAttributes.ContentState(
             bandRaw: band.rawValue,
             tag: band.tag,
-            headline: band.headline,
+            headline: headline,
             subtitle: band.subtitle,
             symbol: band.symbol,
             accent: band.accentName
         )
+    }
+
+    /// Latest session label from the App Group widget snapshot, or nil
+    /// if it's missing / placeholder (fall back to the band headline).
+    private static func workoutSessionLabel() -> String? {
+        guard let url = FileManager.default
+                .containerURL(forSecurityApplicationGroupIdentifier: appGroup)?
+                .appendingPathComponent("widget_snapshot.json"),
+              let data = try? Data(contentsOf: url),
+              let snap = try? JSONDecoder().decode(WidgetSnapshotShape.self, from: data)
+        else { return nil }
+        let s = snap.session_label.trimmingCharacters(in: .whitespaces)
+        return (s.isEmpty || s == "—") ? nil : s
     }
 }

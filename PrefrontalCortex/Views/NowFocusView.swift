@@ -343,19 +343,9 @@ struct NowFocusView: View {
             // headline: how to show up at your limit today. On a Rest
             // day: the recovery note + no misleading "Start →".
             let sess = bundle.adapted_session
-            let presc = (sess?.prescribed ?? "")
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            let isRest = presc.isEmpty || presc.lowercased() == "rest"
-            let title = isRest ? "Rest day" : sessionIdentity(presc)
-            // What you actually did wins the subtext — the title still
-            // shows the plan, so "Rest day / Did: Cycling · 190 min"
-            // reads as the contrast it is. Falls back to the rest note
-            // or the adaptive headline when nothing's logged yet.
-            let did = completedText(sess)
-            let detail = !did.isEmpty ? did
-                : (isRest
-                   ? (sess?.notes?.first ?? "Recovery: walk, mobility, sleep ≥7h.")
-                   : adaptiveHeadline(sess))
+            let isRest = sess?.isRestDay ?? true
+            let title = sess?.workoutTitle ?? "Train"
+            let detail = sess?.workoutDetail ?? "Today's prescribed session."
             add("workout", .workout, slot: 0, title, detail,
                 outside: isOutside(.workout),
                 isDone: { DailyLock.isWorkoutDone() },
@@ -426,66 +416,6 @@ struct NowFocusView: View {
             ?? pending.first
             ?? all.first { !$0.isOutside }
             ?? all.first
-    }
-
-    /// The act, named concretely from the prescribed string: the lead
-    /// segment before the first separator. "Yoga · hip openers…" →
-    /// "Yoga"; "Sport / outdoor (no running)" → "Sport"; "Push + core"
-    /// (no separator) stays whole; "Improv" → "Improv".
-    private func sessionIdentity(_ presc: String) -> String {
-        guard !presc.isEmpty else { return "Train" }
-        for sep in [" · ", " / ", " — ", ", "] {
-            if let r = presc.range(of: sep) {
-                let head = presc[..<r.lowerBound]
-                    .trimmingCharacters(in: .whitespaces)
-                if !head.isEmpty { return head }
-            }
-        }
-        return presc
-    }
-
-    /// What you actually did today, from HealthKit/Garmin sessions —
-    /// "Did: Cycling · 190 min". Empty when nothing's logged yet.
-    private func completedText(_ s: AdaptedSession?) -> String {
-        guard let done = s?.completed_today, !done.isEmpty else { return "" }
-        let parts = done.map { w -> String in
-            let name = w.sport.map {
-                $0.replacingOccurrences(of: "_", with: " ").capitalized
-            } ?? w.label ?? "Workout"
-            if let m = w.duration_min, m > 0 { return "\(name) · \(m) min" }
-            return name
-        }
-        return "Did: " + parts.joined(separator: ", ")
-    }
-
-    /// The one decision-relevant line for the workout card: how to show
-    /// up today. Traffic light + intensity delta + swap count — the
-    /// adaptive layer that was invisible on the Now tab until now.
-    private func adaptiveHeadline(_ s: AdaptedSession?) -> String {
-        guard let s else { return "Today's prescribed session." }
-        var parts: [String] = []
-        switch (s.traffic_light ?? "").lowercased() {
-        case "green": parts.append("Green")
-        case "amber": parts.append("Amber")
-        case "red":   parts.append("Red")
-        default: break
-        }
-        if let m = s.intensity_modifier {
-            if abs(m - 1.0) < 0.001 {
-                if !parts.isEmpty { parts.append("full intensity") }
-            } else if m < 1.0 {
-                parts.append("−\(Int((1.0 - m) * 100 + 0.5))%")
-            } else {
-                parts.append("+\(Int((m - 1.0) * 100 + 0.5))%")
-            }
-        }
-        if let n = s.swaps?.count, n > 0 {
-            parts.append("\(n) swap\(n == 1 ? "" : "s")")
-        }
-        if parts.isEmpty {
-            return s.notes?.first ?? "Today's prescribed session."
-        }
-        return parts.joined(separator: " · ")
     }
 
     private func clock(_ d: Date) -> String {

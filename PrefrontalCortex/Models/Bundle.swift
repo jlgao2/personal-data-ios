@@ -180,6 +180,90 @@ struct CompletedWorkout: Codable {
     let duration_min: Int?
 }
 
+/// Single source of truth for how the workout reads — used by the Now
+/// card AND the band Live Activity (via the widget snapshot) so they
+/// can never diverge ("Train" on the lock screen while the card says
+/// "Rest day" was exactly that drift).
+extension AdaptedSession {
+    var isRestDay: Bool {
+        let p = (prescribed ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        return p.isEmpty || p.lowercased() == "rest"
+    }
+
+    /// The act, named concretely from the prescribed string: the lead
+    /// segment before the first separator. "Yoga · hip openers…" →
+    /// "Yoga"; "Sport / outdoor (no running)" → "Sport"; "Push + core"
+    /// stays whole; rest → "Rest day".
+    var workoutTitle: String {
+        if isRestDay { return "Rest day" }
+        let presc = (prescribed ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !presc.isEmpty else { return "Train" }
+        for sep in [" · ", " / ", " — ", ", "] {
+            if let r = presc.range(of: sep) {
+                let head = presc[..<r.lowerBound]
+                    .trimmingCharacters(in: .whitespaces)
+                if !head.isEmpty { return head }
+            }
+        }
+        return presc
+    }
+
+    /// Subtext: what you actually did wins (the title still shows the
+    /// plan, so "Rest day / Did: Cycling · 190 min" reads as the
+    /// contrast it is), else the rest note, else the adaptive headline.
+    var workoutDetail: String {
+        let did = completedSummary
+        if !did.isEmpty { return did }
+        if isRestDay {
+            return notes?.first ?? "Recovery: walk, mobility, sleep ≥7h."
+        }
+        return adaptiveHeadline
+    }
+
+    /// "Did: Cycling · 190 min" from HealthKit/Garmin sessions. Empty
+    /// when nothing's logged yet.
+    var completedSummary: String {
+        guard let done = completed_today, !done.isEmpty else { return "" }
+        let parts = done.map { w -> String in
+            let name = w.sport.map {
+                $0.replacingOccurrences(of: "_", with: " ").capitalized
+            } ?? w.label ?? "Workout"
+            if let m = w.duration_min, m > 0 { return "\(name) · \(m) min" }
+            return name
+        }
+        return "Did: " + parts.joined(separator: ", ")
+    }
+
+    /// Traffic light + intensity delta + swap count — the adaptive
+    /// layer ("Green · full intensity", "Amber · −20% · 1 swap").
+    var adaptiveHeadline: String {
+        var parts: [String] = []
+        switch (traffic_light ?? "").lowercased() {
+        case "green": parts.append("Green")
+        case "amber": parts.append("Amber")
+        case "red":   parts.append("Red")
+        default: break
+        }
+        if let m = intensity_modifier {
+            if abs(m - 1.0) < 0.001 {
+                if !parts.isEmpty { parts.append("full intensity") }
+            } else if m < 1.0 {
+                parts.append("−\(Int((1.0 - m) * 100 + 0.5))%")
+            } else {
+                parts.append("+\(Int((m - 1.0) * 100 + 0.5))%")
+            }
+        }
+        if let n = swaps?.count, n > 0 {
+            parts.append("\(n) swap\(n == 1 ? "" : "s")")
+        }
+        if parts.isEmpty {
+            return notes?.first ?? "Today's prescribed session."
+        }
+        return parts.joined(separator: " · ")
+    }
+}
+
 /// Sidecar suggestion for cardio days — the engine emphasizes which
 /// curated modality fits this week's spread without rewriting the
 /// prescribed list. `from_prescribed` is true when `modality` already

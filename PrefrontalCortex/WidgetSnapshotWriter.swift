@@ -30,7 +30,13 @@ struct WidgetSnapshotWriter {
         let adapted = bundle.adapted_session
         let trafficLight = adapted?.traffic_light ?? "green"
         let intensity = Int(((adapted?.intensity_modifier ?? 1.0) * 100).rounded())
-        let sessionLabel = adapted?.prescribed ?? "—"
+        // Same label the Now card shows ("Rest day" / "Push + core" /
+        // "Did: …"), not raw prescribed — the band Live Activity reads
+        // this back so the lock screen can't say "Train" while the
+        // card says "Rest day".
+        let sessionLabel = adapted.map {
+            $0.completedSummary.isEmpty ? $0.workoutTitle : $0.completedSummary
+        } ?? "—"
 
         let eyebrow: String
         let sentence: String
