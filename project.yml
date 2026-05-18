@@ -39,6 +39,8 @@ targets:
       path: PrefrontalCortex/Resources/Info.plist
       properties:
         CFBundleDisplayName: Prefrontal Cortex
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         UILaunchScreen:
           UIColorName: ""
         NSHealthShareUsageDescription: Reads heart rate, sleep, weight, and other vitals to surface daily targets vs your genome and lab profile.
@@ -95,6 +97,8 @@ targets:
       path: PrefrontalCortexWidget/Info.plist
       properties:
         CFBundleDisplayName: Prefrontal Cortex
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     entitlements:
