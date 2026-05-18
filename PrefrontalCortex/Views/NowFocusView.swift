@@ -347,9 +347,15 @@ struct NowFocusView: View {
                 .trimmingCharacters(in: .whitespacesAndNewlines)
             let isRest = presc.isEmpty || presc.lowercased() == "rest"
             let title = isRest ? "Rest day" : sessionIdentity(presc)
-            let detail = isRest
-                ? (sess?.notes?.first ?? "Recovery: walk, mobility, sleep ≥7h.")
-                : adaptiveHeadline(sess)
+            // What you actually did wins the subtext — the title still
+            // shows the plan, so "Rest day / Did: Cycling · 190 min"
+            // reads as the contrast it is. Falls back to the rest note
+            // or the adaptive headline when nothing's logged yet.
+            let did = completedText(sess)
+            let detail = !did.isEmpty ? did
+                : (isRest
+                   ? (sess?.notes?.first ?? "Recovery: walk, mobility, sleep ≥7h.")
+                   : adaptiveHeadline(sess))
             add("workout", .workout, slot: 0, title, detail,
                 outside: isOutside(.workout),
                 isDone: { DailyLock.isWorkoutDone() },
@@ -436,6 +442,20 @@ struct NowFocusView: View {
             }
         }
         return presc
+    }
+
+    /// What you actually did today, from HealthKit/Garmin sessions —
+    /// "Did: Cycling · 190 min". Empty when nothing's logged yet.
+    private func completedText(_ s: AdaptedSession?) -> String {
+        guard let done = s?.completed_today, !done.isEmpty else { return "" }
+        let parts = done.map { w -> String in
+            let name = w.sport.map {
+                $0.replacingOccurrences(of: "_", with: " ").capitalized
+            } ?? w.label ?? "Workout"
+            if let m = w.duration_min, m > 0 { return "\(name) · \(m) min" }
+            return name
+        }
+        return "Did: " + parts.joined(separator: ", ")
     }
 
     /// The one decision-relevant line for the workout card: how to show

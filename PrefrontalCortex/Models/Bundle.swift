@@ -168,6 +168,16 @@ struct AdaptedSession: Codable {
     // pressure or the day isn't cardio. AdaptedSessionView renders a
     // cyan-stroked banner above the prescribed `main[]` when present.
     let cardio_suggestion: CardioSuggestion?
+    // What you ACTUALLY did today (HealthKit/Garmin sessions). Lets the
+    // workout card show what you did against the prescription instead
+    // of only ever showing the plan.
+    let completed_today: [CompletedWorkout]?
+}
+
+struct CompletedWorkout: Codable {
+    let label: String?
+    let sport: String?
+    let duration_min: Int?
 }
 
 /// Sidecar suggestion for cardio days — the engine emphasizes which
