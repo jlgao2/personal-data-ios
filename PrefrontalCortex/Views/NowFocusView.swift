@@ -60,11 +60,25 @@ struct NowFocusView: View {
 
     var body: some View {
         let all = moments()
-        Group {
-            if all.isEmpty {
-                allClear
-            } else {
-                wheel(all)
+        let mk = bundle.adapted_session?.week_makeup
+        // dropped renders as an info line (no buttons) inside the
+        // banner, so it does NOT gate showBanner. Authorship is iOS-only
+        // (pipeline has no such signal) — suppress when workout=outside.
+        let showBanner = mk != nil
+            && !makeupAckStore.bool(forKey: makeupAckKey)
+            && !isOutside(.workout)
+        VStack(spacing: 12) {
+            if let mk, showBanner {
+                WeekMakeupBanner(makeup: mk,
+                                 onKeep: { keepMakeup() },
+                                 onUndo: { undoMakeup(mk) })
+            }
+            Group {
+                if all.isEmpty {
+                    allClear
+                } else {
+                    wheel(all)
+                }
             }
         }
         .frame(maxWidth: .infinity)
@@ -416,6 +430,23 @@ struct NowFocusView: View {
             ?? pending.first
             ?? all.first { !$0.isOutside }
             ?? all.first
+    }
+
+    private var makeupAckKey: String {
+        let f = DateFormatter()
+        f.dateFormat = "yyyyMMdd"; f.locale = Locale(identifier: "en_US_POSIX")
+        return "week_makeup_ack_\(f.string(from: Date()))"
+    }
+    private var makeupAckStore: UserDefaults {
+        UserDefaults(suiteName: "group.com.jlgao.PrefrontalCortex") ?? .standard
+    }
+    private func keepMakeup() {
+        makeupAckStore.set(true, forKey: makeupAckKey)
+        tick += 1
+    }
+    private func undoMakeup(_ mk: WeekMakeup) {
+        DeviationUndo.submitSkipLockIn(weekday: mk.skipped?.first?.weekday)
+        tick += 1
     }
 
     private func clock(_ d: Date) -> String {

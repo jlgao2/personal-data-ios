@@ -70,6 +70,7 @@
 		87F2A36E0E501784C637BF56 /* WeeklyRhythm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F2C5FCA3829E89A1306CC0 /* WeeklyRhythm.swift */; };
 		8B900A5894617B309551CB31 /* AchievementGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18202C69808A1D6591BB70A6 /* AchievementGrid.swift */; };
 		8CA2BBB646A4DFF67A08FBCD /* ConfigRecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4C95132AB69E5D5CAAEA44 /* ConfigRecoveryView.swift */; };
+		953E8AAB73430659745984CD /* DeviationUndo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D62ACE46BD398D823E214F /* DeviationUndo.swift */; };
 		95AD68B2BF347C3CD2629AB6 /* WorkoutSetButtonRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AFA9489B82B6746184A1EA4 /* WorkoutSetButtonRow.swift */; };
 		9C9BEC0E6DB6B55B12B7FCEA /* UpcomingEventsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */; };
 		9EF376AF32294DC9E17FEEA2 /* ExerciseEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99B79924D1BB4B49FDF5F30 /* ExerciseEditor.swift */; };
@@ -247,6 +248,7 @@
 		ACC3B31BEDE3F3924B9ED913 /* DeviationStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviationStoreTests.swift; sourceTree = "<group>"; };
 		AD8B527DA8380933E8F6CA9A /* CalendarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStore.swift; sourceTree = "<group>"; };
 		AE1DBFF025F3858AADA1B0D0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B2D62ACE46BD398D823E214F /* DeviationUndo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviationUndo.swift; sourceTree = "<group>"; };
 		B460BE72524EB3C56F569BA0 /* RootsBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootsBackground.swift; sourceTree = "<group>"; };
 		B6BD088CD1C8749096E90D11 /* WorkoutLockWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutLockWidget.swift; sourceTree = "<group>"; };
 		BB2842548A19A1ACCD285443 /* CustomSlot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSlot.swift; sourceTree = "<group>"; };
@@ -501,6 +503,7 @@
 				BB2842548A19A1ACCD285443 /* CustomSlot.swift */,
 				4BFDAE622A44DF5B46A68467 /* DailyLock.swift */,
 				F17B4BF4234C06F58182B24E /* DeviationStore.swift */,
+				B2D62ACE46BD398D823E214F /* DeviationUndo.swift */,
 				F8179422CA5CC40CEBB03FF6 /* ProtocolOverride.swift */,
 				AAD7BB2CAFD1A54852624CF9 /* StreakState.swift */,
 				C01483CE5583741664365DB6 /* SupplementConfig.swift */,
@@ -718,6 +721,7 @@
 				4DC9B1D241E0C091A5DBF455 /* DeviationChip.swift in Sources */,
 				541D77E37AFB66648AA37EC7 /* DeviationSheet.swift in Sources */,
 				5E9DA7525997CB6A94A257F0 /* DeviationStore.swift in Sources */,
+				953E8AAB73430659745984CD /* DeviationUndo.swift in Sources */,
 				FE749B21003DAF4F8B409D6E /* EmbodimentHintView.swift in Sources */,
 				F08495A86E8F6C739C026719 /* EmptyHero.swift in Sources */,
 				9EF376AF32294DC9E17FEEA2 /* ExerciseEditor.swift in Sources */,
