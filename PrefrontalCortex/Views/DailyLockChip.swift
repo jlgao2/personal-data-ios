@@ -13,61 +13,16 @@ struct DailyLockChip: View {
     @State private var refreshTick: Int = 0
     @State private var showEditor: Bool = false
 
-    private struct Slot: Identifiable {
-        let id: String
-        let label: String
-        let surface: AuthorshipSurface?  // nil for custom slots — no authorship gate
-        let done: () -> Bool
-        let toggle: (() -> Void)?
-    }
-
-    private var builtInSlots: [Slot] {
-        // Wrap each DailyLock query in a no-arg closure — referencing
-        // `DailyLock.isWorkoutDone` directly produces (Date) -> Bool
-        // since Swift doesn't fold the `date: Date = Date()` default
-        // into the function value.
-        [
-            Slot(id: "workout",    label: "W",     surface: .workout,    done: { DailyLock.isWorkoutDone() },       toggle: nil),
-            Slot(id: "supps_am",   label: "AM",    surface: .suppsAM,    done: { DailyLock.isAMSuppsDone() },       toggle: nil),
-            Slot(id: "supps_pm",   label: "PM",    surface: .suppsPM,    done: { DailyLock.isPMSuppsDone() },       toggle: nil),
-            Slot(id: "mindful",    label: "M",     surface: .mindful,    done: { DailyLock.isMindfulEatingDone() }, toggle: nil),
-            Slot(id: "skincareAM", label: "SK·AM", surface: .skincareAM, done: { DailyLock.isSkincareAMDone() },
-                 toggle: { DailyLock.setSkincareAMDone(!DailyLock.isSkincareAMDone()) }),
-            Slot(id: "skincarePM", label: "SK·PM", surface: .skincarePM, done: { DailyLock.isSkincarePMDone() },
-                 toggle: { DailyLock.setSkincarePMDone(!DailyLock.isSkincarePMDone()) }),
-        ]
-    }
-
-    private var customSlots: [Slot] {
-        CustomSlotStore.load().map { c in
-            Slot(
-                id: "custom_\(c.id)",
-                label: c.label,
-                surface: nil,
-                done: { CustomSlotStore.isDone(slotID: c.id) },
-                toggle: { CustomSlotStore.toggle(slotID: c.id) }
-            )
-        }
-    }
-
-    private var visibleSlots: [Slot] {
-        let built = builtInSlots.filter { slot in
-            guard let s = slot.surface else { return true }
-            return AuthorshipStore.get(s) != .outside
-        }
-        return built + customSlots
-    }
-
-    private var doneCount: Int { visibleSlots.filter { $0.done() }.count }
+    private var doneCount: Int { DailyLockSlots.visible().filter { $0.done }.count }
     private var streak: Int { StreakState.load().current }
 
     var body: some View {
-        let visible = visibleSlots
+        let visible = DailyLockSlots.visible()
         let total = max(1, visible.count)
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 12) {
                 ForEach(visible) { s in
-                    slot(filled: s.done(), label: s.label, toggle: s.toggle.map { action in
+                    slot(filled: s.done, label: s.label, toggle: s.toggle.map { action in
                         { action(); refreshTick += 1 }
                     })
                 }

@@ -122,6 +122,7 @@
 		EB9F700A0D535ABE7DC4322F /* MedAlertsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B5ED653FA19D4E97A0FFDB /* MedAlertsView.swift */; };
 		ECDB9BCA74A4097BA79A68C9 /* BandLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586185ED85F4535BF7F8F736 /* BandLiveActivity.swift */; };
 		F08495A86E8F6C739C026719 /* EmptyHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1C7412D661364D2B62C7B2 /* EmptyHero.swift */; };
+		F107114FEB7C396CC99AAAFF /* DailyLockSlots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B7B8B21DCA2676FD094C71 /* DailyLockSlots.swift */; };
 		F18E420171D9D5D4879F1560 /* LockScreenWorkoutState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ECBF6B1C16F87595783AC /* LockScreenWorkoutState.swift */; };
 		F82FDC67462EB46BDB15F17D /* BandLiveActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DEC0E88A78240014A28FDD8 /* BandLiveActivityView.swift */; };
 		F87336E98889727B383EB7A0 /* HeroWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F866D5118D26371A1E50CA4C /* HeroWidget.swift */; };
@@ -186,6 +187,7 @@
 		2F821BFAB9FCC767583C2884 /* DailyLockChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyLockChip.swift; sourceTree = "<group>"; };
 		318E4861F4BDDB8438347982 /* PrefrontalCortex.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PrefrontalCortex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3528157226FF2B1EB42A0BC1 /* Manifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Manifest.swift; sourceTree = "<group>"; };
+		37B7B8B21DCA2676FD094C71 /* DailyLockSlots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyLockSlots.swift; sourceTree = "<group>"; };
 		395D10B3699FF24CB00CDF30 /* WorkoutSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSessionView.swift; sourceTree = "<group>"; };
 		3BDA89289885460CF309A52B /* WorkoutsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutsView.swift; sourceTree = "<group>"; };
 		3DEC0E88A78240014A28FDD8 /* BandLiveActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandLiveActivityView.swift; sourceTree = "<group>"; };
@@ -502,6 +504,7 @@
 				E8266CD920A499D3B85D876B /* Authorship.swift */,
 				BB2842548A19A1ACCD285443 /* CustomSlot.swift */,
 				4BFDAE622A44DF5B46A68467 /* DailyLock.swift */,
+				37B7B8B21DCA2676FD094C71 /* DailyLockSlots.swift */,
 				F17B4BF4234C06F58182B24E /* DeviationStore.swift */,
 				B2D62ACE46BD398D823E214F /* DeviationUndo.swift */,
 				F8179422CA5CC40CEBB03FF6 /* ProtocolOverride.swift */,
@@ -717,6 +720,7 @@
 				BE5AEEEDF724661BB1B75D5D /* DOWHeatmapView.swift in Sources */,
 				8609FE4D600799951626E833 /* DailyLock.swift in Sources */,
 				C6DBBBF5ACE5356A50867B84 /* DailyLockChip.swift in Sources */,
+				F107114FEB7C396CC99AAAFF /* DailyLockSlots.swift in Sources */,
 				24D36ECC16F49C9A171B0ACA /* DataLoader.swift in Sources */,
 				4DC9B1D241E0C091A5DBF455 /* DeviationChip.swift in Sources */,
 				541D77E37AFB66648AA37EC7 /* DeviationSheet.swift in Sources */,
