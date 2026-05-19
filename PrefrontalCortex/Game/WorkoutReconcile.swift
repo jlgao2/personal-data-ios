@@ -7,14 +7,17 @@ enum WorkoutReconcile {
 
     static func didIt(date: Date = Date()) {
         DailyLock.setWorkoutDone(source: .manual, date: date)
+        Task { @MainActor in NotificationManager.shared.cancelWorkoutNudge() }
     }
 
     static func didRest(date: Date = Date()) {
         DailyLock.setWorkoutDone(source: .rest_ack, date: date)
+        Task { @MainActor in NotificationManager.shared.cancelWorkoutNudge() }
     }
 
     static func skip(reason: String, date: Date = Date()) {
         DailyLock.setWorkoutDone(source: .skip, reason: reason, date: date)
+        Task { @MainActor in NotificationManager.shared.cancelWorkoutNudge() }
     }
 
     /// Logged an off-plan workout. Marks the slot done AND records a
@@ -35,6 +38,7 @@ enum WorkoutReconcile {
         )
         _ = DeviationStore.record(entry, date: date)
         WorkoutReconcileBridge.upload(sport: sport, date: date)
+        Task { @MainActor in NotificationManager.shared.cancelWorkoutNudge() }
     }
 }
 
