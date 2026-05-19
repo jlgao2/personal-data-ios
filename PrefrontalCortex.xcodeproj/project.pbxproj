@@ -24,6 +24,7 @@
 		2B4D12FCD105FF1B61E5288E /* NextUpWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43041A3F451E0F87B0314EB3 /* NextUpWidget.swift */; };
 		302AB971A16966508FC9258B /* SkipWorkoutButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14D52D330B8B679F4F233E48 /* SkipWorkoutButton.swift */; };
 		3217C20C092DAED8ADAB538E /* CustomSlotEditorSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D802A4C77F5681263A0B9F0D /* CustomSlotEditorSheet.swift */; };
+		35E6BE7E0F282AD8242793BD /* DayRhythm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0039E072E4756D117E203164 /* DayRhythm.swift */; };
 		3648793088A6D0C167B8D65A /* AchievementUnlockToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909ABB88111C9071D9D0D7E0 /* AchievementUnlockToast.swift */; };
 		38811677B5A066C364997490 /* Manifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3528157226FF2B1EB42A0BC1 /* Manifest.swift */; };
 		3E5EB1BD37E297641D02F70D /* Achievements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 775D0C30FD995189DCCE5936 /* Achievements.swift */; };
@@ -162,6 +163,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0039E072E4756D117E203164 /* DayRhythm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayRhythm.swift; sourceTree = "<group>"; };
 		01314D648185C065F23DFC9F /* WorkoutLiveActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutLiveActivityView.swift; sourceTree = "<group>"; };
 		0600827102ADAF309F9B0E5D /* StreakChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakChip.swift; sourceTree = "<group>"; };
 		06A95A0809E4577DA3EC2AAF /* ReachOutWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReachOutWidget.swift; sourceTree = "<group>"; };
@@ -505,6 +507,7 @@
 				BB2842548A19A1ACCD285443 /* CustomSlot.swift */,
 				4BFDAE622A44DF5B46A68467 /* DailyLock.swift */,
 				37B7B8B21DCA2676FD094C71 /* DailyLockSlots.swift */,
+				0039E072E4756D117E203164 /* DayRhythm.swift */,
 				F17B4BF4234C06F58182B24E /* DeviationStore.swift */,
 				B2D62ACE46BD398D823E214F /* DeviationUndo.swift */,
 				F8179422CA5CC40CEBB03FF6 /* ProtocolOverride.swift */,
@@ -722,6 +725,7 @@
 				C6DBBBF5ACE5356A50867B84 /* DailyLockChip.swift in Sources */,
 				F107114FEB7C396CC99AAAFF /* DailyLockSlots.swift in Sources */,
 				24D36ECC16F49C9A171B0ACA /* DataLoader.swift in Sources */,
+				35E6BE7E0F282AD8242793BD /* DayRhythm.swift in Sources */,
 				4DC9B1D241E0C091A5DBF455 /* DeviationChip.swift in Sources */,
 				541D77E37AFB66648AA37EC7 /* DeviationSheet.swift in Sources */,
 				5E9DA7525997CB6A94A257F0 /* DeviationStore.swift in Sources */,
