@@ -71,6 +71,7 @@
 		87F2A36E0E501784C637BF56 /* WeeklyRhythm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F2C5FCA3829E89A1306CC0 /* WeeklyRhythm.swift */; };
 		8B900A5894617B309551CB31 /* AchievementGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18202C69808A1D6591BB70A6 /* AchievementGrid.swift */; };
 		8CA2BBB646A4DFF67A08FBCD /* ConfigRecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4C95132AB69E5D5CAAEA44 /* ConfigRecoveryView.swift */; };
+		90D5F0AD9C55FCBD7BAF9E2F /* WorkoutReconcile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D05A97AB0E0A571E9F4D068 /* WorkoutReconcile.swift */; };
 		953E8AAB73430659745984CD /* DeviationUndo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D62ACE46BD398D823E214F /* DeviationUndo.swift */; };
 		95AD68B2BF347C3CD2629AB6 /* WorkoutSetButtonRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AFA9489B82B6746184A1EA4 /* WorkoutSetButtonRow.swift */; };
 		9C9BEC0E6DB6B55B12B7FCEA /* UpcomingEventsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9292DE6982F612BCF08CEA68 /* UpcomingEventsView.swift */; };
@@ -180,6 +181,7 @@
 		18202C69808A1D6591BB70A6 /* AchievementGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementGrid.swift; sourceTree = "<group>"; };
 		189AC30EA16A4ED953187B31 /* DeviationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviationSheet.swift; sourceTree = "<group>"; };
 		1A5923EEFFB65C137A165223 /* PrepChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepChecklistView.swift; sourceTree = "<group>"; };
+		1D05A97AB0E0A571E9F4D068 /* WorkoutReconcile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutReconcile.swift; sourceTree = "<group>"; };
 		223B0F3615A71EACA7580B47 /* TodaysWorkoutChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodaysWorkoutChip.swift; sourceTree = "<group>"; };
 		25B6CECAC5F23E6EDED54107 /* PlanTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanTabView.swift; sourceTree = "<group>"; };
 		29DEE146B7D16CC46B5AF670 /* PendingInbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingInbox.swift; sourceTree = "<group>"; };
@@ -515,6 +517,7 @@
 				C01483CE5583741664365DB6 /* SupplementConfig.swift */,
 				A88C68F5468BD1A54B10E2CE /* TimeBand.swift */,
 				75F2C5FCA3829E89A1306CC0 /* WeeklyRhythm.swift */,
+				1D05A97AB0E0A571E9F4D068 /* WorkoutReconcile.swift */,
 			);
 			path = Game;
 			sourceTree = "<group>";
@@ -788,6 +791,7 @@
 				5294CFD2CD1E8CC1AE387086 /* WorkoutLiveActivityAttributes.swift in Sources */,
 				D74903BAD4A86E004D2C0DC3 /* WorkoutLiveActivityRefresher.swift in Sources */,
 				B05C079A3A5AAAC162F7C057 /* WorkoutProgress.swift in Sources */,
+				90D5F0AD9C55FCBD7BAF9E2F /* WorkoutReconcile.swift in Sources */,
 				B66BA02EFC3537C4E19767E5 /* WorkoutSessionView.swift in Sources */,
 				95AD68B2BF347C3CD2629AB6 /* WorkoutSetButtonRow.swift in Sources */,
 				74FF728E96F1EB6620090A28 /* WorkoutUnit.swift in Sources */,
