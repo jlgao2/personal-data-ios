@@ -58,15 +58,35 @@ struct DayCloseView: View {
     }
 }
 
-/// Minimal stub — replaced/expanded in a later task (the card reuses
-/// the same row). Kept here so this task builds independently.
+/// Inline workout reconcile — shared by the Now-tab workout card and
+/// DayCloseView. One tap each; "Else" reveals a compact sport pick.
 struct WorkoutReconcileRow: View {
     var onResolved: () -> Void
+    @State private var picking = false
+
+    private let sports = ["Cycling","Running","Strength","Yoga","Swimming","Walk"]
+
     var body: some View {
-        HStack(spacing: 10) {
-            recBtn("✓ Did it") { WorkoutReconcile.didIt(); onResolved() }
-            recBtn("○ Rest")   { WorkoutReconcile.didRest(); onResolved() }
-            recBtn("⊘ Skip")   { WorkoutReconcile.skip(reason: "busy"); onResolved() }
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 10) {
+                recBtn("✓ Did it") { WorkoutReconcile.didIt(); onResolved() }
+                recBtn("⤴ Else")   { picking.toggle() }
+                recBtn("○ Rest")   { WorkoutReconcile.didRest(); onResolved() }
+                recBtn("⊘ Skip")   { WorkoutReconcile.skip(reason: "busy"); onResolved() }
+            }
+            if picking {
+                HStack(spacing: 8) {
+                    ForEach(sports, id: \.self) { sp in
+                        Button(sp) { WorkoutReconcile.didElse(sport: sp); onResolved() }
+                            .font(.caption2.monospaced())
+                            .foregroundStyle(.cyan)
+                            .padding(.vertical, 6).padding(.horizontal, 8)
+                            .overlay(RoundedRectangle(cornerRadius: 4)
+                                .strokeBorder(.cyan.opacity(0.4), lineWidth: 1))
+                            .buttonStyle(.plain)
+                    }
+                }
+            }
         }
     }
     @ViewBuilder private func recBtn(_ t: String, _ a: @escaping () -> Void) -> some View {

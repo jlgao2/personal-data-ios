@@ -47,6 +47,11 @@ struct NowFocusView: View {
         // Per Authorship.swift's design these stay VISIBLE (dim, and
         // not auto-focused) rather than disappearing from the wheel.
         var isOutside: Bool = false
+        // Quiet-scaffold: dim + shrink the card until it's resolved
+        // (workout card only — defaults keep every other card intact).
+        var scaffolded: Bool = false
+        // Render the inline WorkoutReconcileRow under the title/detail.
+        var reconcile: Bool = false
     }
 
     private enum Action {
@@ -189,23 +194,36 @@ struct NowFocusView: View {
                             .symbolEffect(.bounce, value: done)
                     }
                 }
-                Text(m.title)
-                    .font(.system(.title2, design: .rounded).weight(.semibold))
-                    .foregroundStyle(.white)
-                    .strikethrough(done, color: .white.opacity(0.5))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                if let supps = m.inlineSupps {
-                    // Checkboxes live in the wheel: StackView's own AM/PM
-                    // period buttons, not a generic "Open".
-                    StackView(items: supps)
-                } else {
-                    if !m.detail.isEmpty {
-                        Text(m.detail)
-                            .font(.footnote.italic())
-                            .foregroundStyle(.white.opacity(0.72))
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(m.title)
+                        .font(.system(.title2, design: .rounded).weight(.semibold))
+                        .foregroundStyle(.white)
+                        .strikethrough(done, color: .white.opacity(0.5))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    if let supps = m.inlineSupps {
+                        // Checkboxes live in the wheel: StackView's own AM/PM
+                        // period buttons, not a generic "Open".
+                        StackView(items: supps)
+                    } else {
+                        if !m.detail.isEmpty {
+                            Text(m.detail)
+                                .font(.footnote.italic())
+                                .foregroundStyle(.white.opacity(0.72))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        if !done { actionControl(m) }
                     }
-                    if !done { actionControl(m) }
+                }
+                // Quiet-scaffold: dim + shrink the (workout) card until
+                // it's reconciled. Every other moment has scaffolded ==
+                // false → opacity 1.0, full scale: untouched.
+                .opacity(m.scaffolded ? 0.5 : 1.0)
+                .scaleEffect(m.scaffolded ? 0.92 : 1.0, anchor: .leading)
+                if m.reconcile {
+                    Text("What did you do today?")
+                        .font(.callout.weight(.semibold))
+                        .foregroundStyle(.white)
+                    WorkoutReconcileRow(onResolved: { tick += 1 })
                 }
             }
             .padding(18)
@@ -317,13 +335,15 @@ struct NowFocusView: View {
                  _ detail: String, eventTime: Date? = nil,
                  inlineSupps: [Supplement]? = nil,
                  outside: Bool = false,
+                 scaffolded: Bool = false, reconcile: Bool = false,
                  isDone: @escaping () -> Bool, _ action: Action) {
             out.append(Moment(id: id, band: band,
                                order: bandOrder(band) * 100 + slot,
                                title: title, detail: detail,
                                eventTime: eventTime, isDone: isDone,
                                action: action, inlineSupps: inlineSupps,
-                               isOutside: outside))
+                               isOutside: outside,
+                               scaffolded: scaffolded, reconcile: reconcile))
         }
 
         // One Supplements card — renders StackView (the AM + PM
@@ -360,8 +380,14 @@ struct NowFocusView: View {
             let isRest = sess?.isRestDay ?? true
             let title = sess?.workoutTitle ?? "Train"
             let detail = sess?.workoutDetail ?? "Today's prescribed session."
-            add("workout", .workout, slot: 0, title, detail,
+            let rhythm = DayRhythm()
+            let unresolved = !rhythm.workoutResolved && !isOutside(.workout)
+            let scaffold = unresolved
+            let slotIdx = (rhythm.escalation == .pressing) ? -1 : 0
+            add("workout", .workout, slot: slotIdx, title, detail,
                 outside: isOutside(.workout),
+                scaffolded: scaffold,
+                reconcile: unresolved,
                 isDone: { DailyLock.isWorkoutDone() },
                 isRest ? .passive : .startWorkout)
         }
@@ -424,6 +450,10 @@ struct NowFocusView: View {
     /// Initial wheel position: the first pending moment in the current
     /// band, else the first pending moment overall, else the first card.
     private func pick(_ all: [Moment]) -> Moment? {
+        if DayRhythm().escalation == .pressing,
+           let w = all.first(where: { $0.id == "workout" }) {
+            return w
+        }
         let cur = TimeBand.current()
         let pending = all.filter { !$0.isDone() && !$0.isOutside }
         return pending.first { $0.band == cur }
