@@ -66,6 +66,7 @@ targets:
       path: PrefrontalCortex/Resources/PrefrontalCortex.entitlements
       properties:
         com.apple.developer.healthkit: true
+        com.apple.developer.usernotifications.time-sensitive: true
         com.apple.security.application-groups:
           - group.com.jlgao.PrefrontalCortex
         com.apple.developer.icloud-container-identifiers:

@@ -102,4 +102,45 @@ final class NotificationManager {
             UserDefaults.standard.set(data, forKey: stateKey)
         }
     }
+
+    private static let group = "group.com.jlgao.PrefrontalCortex"
+    private static func nudgeKey(_ d: Date = Date()) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "yyyyMMdd"; f.locale = Locale(identifier: "en_US_POSIX")
+        return "workout_nudge_\(f.string(from: d))"
+    }
+    private let nudgeID = "workout-nudge"
+
+    /// Schedule ONE "what did you do?" notification at the night-band
+    /// start (22:00) if the workout is still unresolved. Idempotent per
+    /// day (a dated app-group flag). Cancels if already resolved.
+    /// .timeSensitive interruption pierces Focus / Do Not Disturb.
+    func syncWorkoutNudge() {
+        let ud = UserDefaults(suiteName: Self.group) ?? .standard
+        let rhythm = DayRhythm()
+        if rhythm.workoutResolved {
+            center.removePendingNotificationRequests(withIdentifiers: [nudgeID])
+            return
+        }
+        let key = Self.nudgeKey()
+        if ud.bool(forKey: key) { return }
+        let cal = Calendar.current
+        var c = cal.dateComponents([.year,.month,.day], from: Date())
+        c.hour = 22; c.minute = 0
+        guard let fire = cal.date(from: c), fire > Date() else { return }
+        ud.set(true, forKey: key)
+        let content = UNMutableNotificationContent()
+        content.title = "What did you do today?"
+        content.body  = "Tap to log your workout — or mark rest."
+        content.sound = .default
+        content.interruptionLevel = .timeSensitive
+        let trig = UNCalendarNotificationTrigger(
+            dateMatching: cal.dateComponents([.year,.month,.day,.hour,.minute], from: fire),
+            repeats: false)
+        center.add(UNNotificationRequest(identifier: nudgeID, content: content, trigger: trig))
+    }
+
+    func cancelWorkoutNudge() {
+        center.removePendingNotificationRequests(withIdentifiers: [nudgeID])
+    }
 }
