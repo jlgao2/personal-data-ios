@@ -120,6 +120,7 @@
 		E62D90EA2080592A48B57E34 /* TransportSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBEA6452022D4422ED78891D /* TransportSettings.swift */; };
 		E7F9BBBD49E779CDA91C3ED7 /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7385963EC643DCC8A9E08A28 /* CustomTabBar.swift */; };
 		E8B32E5020582A3A06E2EE83 /* Authorship.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8266CD920A499D3B85D876B /* Authorship.swift */; };
+		EAD96C2B3A7EF71709CC38D2 /* DayCloseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519A7F7CB5A022EF4345E06F /* DayCloseView.swift */; };
 		EB4A08C8C796334D1FF917F8 /* LogSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8D2C3F808A75C620760CD12 /* LogSessionView.swift */; };
 		EB9F700A0D535ABE7DC4322F /* MedAlertsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B5ED653FA19D4E97A0FFDB /* MedAlertsView.swift */; };
 		ECDB9BCA74A4097BA79A68C9 /* BandLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586185ED85F4535BF7F8F736 /* BandLiveActivity.swift */; };
@@ -203,6 +204,7 @@
 		4D307F812AB2990ECC089949 /* NowFocusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowFocusView.swift; sourceTree = "<group>"; };
 		50268DCFCB3BBA0D8573F026 /* seeds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = seeds; path = PrefrontalCortex/Resources/seeds; sourceTree = SOURCE_ROOT; };
 		5122F44CAC5CF738E772DCC7 /* iCloudTransportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iCloudTransportTests.swift; sourceTree = "<group>"; };
+		519A7F7CB5A022EF4345E06F /* DayCloseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayCloseView.swift; sourceTree = "<group>"; };
 		51B603FEC1FEE012D1E97610 /* HealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
 		524F8D7C2732C9FF93D336A4 /* NodesBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodesBackground.swift; sourceTree = "<group>"; };
 		557DB433C84126FC75B2AF52 /* StackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackView.swift; sourceTree = "<group>"; };
@@ -332,6 +334,7 @@
 				D802A4C77F5681263A0B9F0D /* CustomSlotEditorSheet.swift */,
 				7385963EC643DCC8A9E08A28 /* CustomTabBar.swift */,
 				2F821BFAB9FCC767583C2884 /* DailyLockChip.swift */,
+				519A7F7CB5A022EF4345E06F /* DayCloseView.swift */,
 				0C0656A1BA4B87D154358C89 /* DeviationChip.swift */,
 				189AC30EA16A4ED953187B31 /* DeviationSheet.swift */,
 				FAB03DDF028F9C4D8D12EB92 /* DOWHeatmapView.swift */,
@@ -728,6 +731,7 @@
 				C6DBBBF5ACE5356A50867B84 /* DailyLockChip.swift in Sources */,
 				F107114FEB7C396CC99AAAFF /* DailyLockSlots.swift in Sources */,
 				24D36ECC16F49C9A171B0ACA /* DataLoader.swift in Sources */,
+				EAD96C2B3A7EF71709CC38D2 /* DayCloseView.swift in Sources */,
 				35E6BE7E0F282AD8242793BD /* DayRhythm.swift in Sources */,
 				4DC9B1D241E0C091A5DBF455 /* DeviationChip.swift in Sources */,
 				541D77E37AFB66648AA37EC7 /* DeviationSheet.swift in Sources */,
