@@ -20,6 +20,7 @@ struct NowFocusView: View {
     var onRefresh: (() async -> Void)? = nil
 
     @State private var tick = 0
+    @State private var showingClose = false
     @State private var scrollID: String?
     @State private var sheet: MomentSheet?
     /// Bumped when a moment is marked done — drives the success haptic.
@@ -72,24 +73,38 @@ struct NowFocusView: View {
         let showBanner = mk != nil
             && !makeupAckStore.bool(forKey: makeupAckKey)
             && !isOutside(.workout)
-        VStack(spacing: 12) {
-            if let mk, showBanner {
-                WeekMakeupBanner(makeup: mk,
-                                 onKeep: { keepMakeup() },
-                                 onUndo: { undoMakeup(mk) })
-            }
-            Group {
-                if all.isEmpty {
-                    allClear
-                } else {
-                    wheel(all)
+        ZStack {
+            VStack(spacing: 12) {
+                if let mk, showBanner {
+                    WeekMakeupBanner(makeup: mk,
+                                     onKeep: { keepMakeup() },
+                                     onUndo: { undoMakeup(mk) })
+                }
+                Group {
+                    if all.isEmpty {
+                        allClear
+                    } else {
+                        wheel(all)
+                    }
                 }
             }
+            .frame(maxWidth: .infinity)
+
+            if showingClose {
+                DayCloseView(
+                    rhythm: DayRhythm(now: Date(), closing: true),
+                    onDismiss: {
+                        withAnimation(.easeInOut(duration: 0.4)) { showingClose = false }
+                        tick += 1
+                    }
+                )
+                .zIndex(1)
+            }
         }
-        .frame(maxWidth: .infinity)
-        .id(tick)
         .onAppear { if scrollID == nil { scrollID = pick(all)?.id } }
-        .onReceive(NotificationCenter.default.publisher(for: .dayDidRollOver)) { _ in tick += 1 }
+        .onReceive(NotificationCenter.default.publisher(for: .dayDidRollOver)) { _ in
+            withAnimation(.easeInOut(duration: 0.45)) { showingClose = true }
+        }
         .onReceive(NotificationCenter.default.publisher(for: .customSlotsDidChange)) { _ in tick += 1 }
         .onReceive(NotificationCenter.default.publisher(for: .authorshipDidChange)) { _ in tick += 1 }
         .sheet(item: $sheet, onDismiss: { tick += 1 }) { which in
