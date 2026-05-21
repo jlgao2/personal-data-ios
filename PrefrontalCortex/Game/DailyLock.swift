@@ -141,11 +141,19 @@ enum DailyLock {
     }
 }
 
-/// Broadcast when the user manually advances the day (via the "Tick day
-/// over" button in TransportSettings) or when scenePhase becomes active
-/// and the day-of-month changed while the app was backgrounded. Views
-/// that compute state from `Date()` and cache the result in @State can
-/// subscribe to bump their refresh tick.
+/// `.dayDidRollOver` — refresh-now signal. Fires on every scenePhase
+/// .active, every TimeBand edge, and every midnight. Views that compute
+/// state from `Date()` and cache it in @State subscribe to bump their
+/// refresh tick. Cheap to fire often; subscribers must be idempotent.
+///
+/// `.calendarDayChanged` — actual-rollover signal. Fires ONLY when the
+/// calendar date crossed (midnight while the app was open, or the first
+/// scenePhase.active after the date changed). Distinct from
+/// `.dayDidRollOver` because once-per-day handlers (DayCloseView,
+/// "yesterday's summary" surfaces) MUST NOT trigger on band edges or
+/// every foreground — that was the bug where DayCloseView popped open
+/// on every band crossing.
 extension Notification.Name {
-    static let dayDidRollOver = Notification.Name("PrefrontalCortex.dayDidRollOver")
+    static let dayDidRollOver     = Notification.Name("PrefrontalCortex.dayDidRollOver")
+    static let calendarDayChanged = Notification.Name("PrefrontalCortex.calendarDayChanged")
 }

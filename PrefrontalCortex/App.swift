@@ -30,6 +30,12 @@ struct PrefrontalCortexApp: App {
                         // foreground — covers the "app left open across
                         // midnight" case where .onAppear doesn't re-fire.
                         NotificationCenter.default.post(name: .dayDidRollOver, object: nil)
+                        // .calendarDayChanged is the stricter "actual day
+                        // crossed" signal — only fire it when the calendar
+                        // date is new since the last foreground. Without
+                        // this guard, once-per-day handlers (DayCloseView
+                        // rollover overlay) trigger on every foreground.
+                        PrefrontalCortexApp.postCalendarDayChangedIfNeeded()
                         Task { @MainActor in NotificationManager.shared.syncWorkoutNudge() }
                         // Always-on band Live Activity: refresh content to
                         // the current band on every foreground (covers
@@ -76,6 +82,12 @@ struct PrefrontalCortexApp: App {
         ) else { return }
         let t = Timer(fire: next, interval: 0, repeats: false) { _ in
             NotificationCenter.default.post(name: .dayDidRollOver, object: nil)
+            // Midnight always means the calendar day actually changed —
+            // stamp the new date and post the stricter signal so the
+            // DayCloseView overlay opens here (and only here, alongside
+            // the scenePhase.active guard above for the
+            // backgrounded-across-midnight case).
+            PrefrontalCortexApp.postCalendarDayChangedIfNeeded()
             if #available(iOS 16.2, *) {
                 BandLiveActivity.ensureRunning()
             }
@@ -83,6 +95,32 @@ struct PrefrontalCortexApp: App {
         }
         RunLoop.main.add(t, forMode: .common)
         dayRolloverTimer = t
+    }
+
+    /// UserDefaults key for the last calendar date we posted
+    /// `.calendarDayChanged` for. Stored as a `yyyy-MM-dd` string in the
+    /// app's default suite so it survives backgrounding + relaunch but
+    /// is intentionally NOT shared with the widget app group (the
+    /// rollover overlay is foreground-only).
+    private static let _lastCalDateKey = "PrefrontalCortex.lastCalendarDay"
+
+    /// Post `.calendarDayChanged` iff today's date differs from the
+    /// last date we stamped. Idempotent — calling it many times within
+    /// the same day fires the notification at most once. Used by both
+    /// the midnight timer (always a new day) and scenePhase.active
+    /// (only a new day after backgrounding across midnight).
+    fileprivate static func postCalendarDayChangedIfNeeded() {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        let today = f.string(from: Date())
+        let last = UserDefaults.standard.string(forKey: _lastCalDateKey)
+        guard last != today else { return }
+        UserDefaults.standard.set(today, forKey: _lastCalDateKey)
+        // Don't fire on the very first run after install — there's no
+        // "previous day" to close. The stamp gets written either way so
+        // subsequent runs gate correctly.
+        guard last != nil else { return }
+        NotificationCenter.default.post(name: .calendarDayChanged, object: nil)
     }
 
     /// Arm a single-shot Timer that fires precisely at the next TimeBand

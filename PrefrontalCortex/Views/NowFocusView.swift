@@ -108,7 +108,14 @@ struct NowFocusView: View {
             }
         }
         .onAppear { if scrollID == nil { scrollID = pick(all)?.id } }
-        .onReceive(NotificationCenter.default.publisher(for: .dayDidRollOver)) { _ in
+        // ONCE per actual calendar-day rollover — not on every band edge,
+        // not on every scenePhase.active. The strict `.calendarDayChanged`
+        // signal is posted by App.swift only when the date actually
+        // changes (midnight while open, or first foreground after a date
+        // change). The earlier wiring used `.dayDidRollOver`, which also
+        // fires on band edges + every foreground, popping the close
+        // overlay on every TimeBand transition.
+        .onReceive(NotificationCenter.default.publisher(for: .calendarDayChanged)) { _ in
             withAnimation(.easeInOut(duration: 0.45)) { showingClose = true }
         }
         .onReceive(NotificationCenter.default.publisher(for: .customSlotsDidChange)) { _ in tick += 1 }
