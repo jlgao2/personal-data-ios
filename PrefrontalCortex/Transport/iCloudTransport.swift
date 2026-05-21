@@ -130,6 +130,24 @@ extension iCloudTransport {
         try await uploadInbox(kind: "deviations", rows: rows, dedupeKey: { $0.client_id })
     }
 
+    /// One Signal per local day, overwritten on every fresh detection.
+    /// Different shape from the time-series uploaders (`uploadInbox`)
+    /// because there's exactly one calendar interpretation per day —
+    /// no dedup, no append. The pipeline reads the file whole.
+    /// Filename: `inbox/calendar_signal_<YYYY-MM-DD>.json`.
+    func uploadCalendarSignal(_ signal: CalendarLoadDetector.Signal) async throws {
+        guard iCloudPaths.isAvailable else {
+            throw iCloudTransportError.containerUnavailable
+        }
+        guard let url = iCloudPaths.inboxFile(kind: "calendar_signal", date: Date()) else {
+            throw iCloudTransportError.containerUnavailable
+        }
+        try? FileManager.default.createDirectory(
+            at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        let data = try JSONEncoder().encode(signal)
+        try await coordinatedReadModifyWrite(url) { _ in data }
+    }
+
     // MARK: - User config (iOS-side edits the laptop pipeline reads)
 
     /// Read a typed config file from `config/<name>.json`. Returns

@@ -5,6 +5,12 @@ struct PrefrontalCortexApp: App {
     @StateObject private var store = AppStore()
     @Environment(\.scenePhase) private var scenePhase
     @State private var bandEdgeTimer: Timer?
+    // Separate from bandEdgeTimer. Band edges land at 6/12/17/19/22 and
+    // 06 next-day — none at 00:00 — so the night band straddles midnight.
+    // Without a dedicated midnight tick, an app left open across midnight
+    // would keep rendering yesterday's program_day in date-derived views
+    // until the 6am band edge finally fired.
+    @State private var dayRolloverTimer: Timer?
 
     var body: some Scene {
         WindowGroup {
@@ -14,6 +20,7 @@ struct PrefrontalCortexApp: App {
                 .task {
                     await store.bootstrap()
                     scheduleNextBandEdge()
+                    scheduleNextMidnight()
                 }
                 .onChange(of: scenePhase) { _, newPhase in
                     if newPhase == .active {
@@ -38,12 +45,44 @@ struct PrefrontalCortexApp: App {
                         // re-arm it for the next band edge now that we're
                         // foregrounded again.
                         scheduleNextBandEdge()
+                        scheduleNextMidnight()
                     } else if newPhase == .background {
                         bandEdgeTimer?.invalidate()
                         bandEdgeTimer = nil
+                        dayRolloverTimer?.invalidate()
+                        dayRolloverTimer = nil
                     }
                 }
         }
+    }
+
+    /// Force a calendar-day rollover at 00:00 local. Independent of the
+    /// band-edge timer because TimeBand.nextEdge doesn't put an edge at
+    /// midnight (the "night" band is 22 → 06 next-day in one stretch).
+    /// Posts .dayDidRollOver so NowFocusView re-derives todayKey, then
+    /// re-arms for the next midnight. Live Activity gets re-instantiated
+    /// here too so the lock screen flips to the new day's content even
+    /// when the app stays foregrounded.
+    private func scheduleNextMidnight() {
+        dayRolloverTimer?.invalidate()
+        var cal = Calendar.current
+        cal.timeZone = .current
+        // +1s past midnight so Date() definitely lands on the new day
+        // when the closure reads it (avoids "fires at 23:59:59.9").
+        guard let next = cal.nextDate(
+            after: Date(),
+            matching: DateComponents(hour: 0, minute: 0, second: 1),
+            matchingPolicy: .nextTime
+        ) else { return }
+        let t = Timer(fire: next, interval: 0, repeats: false) { _ in
+            NotificationCenter.default.post(name: .dayDidRollOver, object: nil)
+            if #available(iOS 16.2, *) {
+                BandLiveActivity.ensureRunning()
+            }
+            DispatchQueue.main.async { scheduleNextMidnight() }
+        }
+        RunLoop.main.add(t, forMode: .common)
+        dayRolloverTimer = t
     }
 
     /// Arm a single-shot Timer that fires precisely at the next TimeBand
@@ -67,9 +106,13 @@ struct PrefrontalCortexApp: App {
             DispatchQueue.main.async { NotificationManager.shared.syncWorkoutNudge() }
             // Always-on band Live Activity update at the edge — the iOS
             // lock screen / Dynamic Island flip to the new band's headline
-            // even when the app stays foregrounded.
+            // even when the app stays foregrounded. Use ensureRunning (not
+            // bare refresh) so a band edge ALSO re-instantiates the
+            // activity if iOS ended it past the 8-hour ActivityKit limit
+            // while the app was foregrounded; refresh() alone would no-op
+            // and the lock screen would stay empty until next foreground.
             if #available(iOS 16.2, *) {
-                Task { await BandLiveActivity.refresh() }
+                BandLiveActivity.ensureRunning()
             }
             // Re-arm for the band after this one. Hop to main since Timer
             // closures aren't @MainActor-isolated by default.

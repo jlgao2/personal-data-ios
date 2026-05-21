@@ -82,13 +82,25 @@ struct ContentView: View {
                 .environmentObject(store)
         }
         .fullScreenCover(isPresented: $showWorkoutSession) {
-            if let bundle = store.bundle, let adapted = bundle.adapted_session {
-                let dayKey = adapted.program_day ?? ""
+            if let bundle = store.bundle {
+                // Always key the session off TODAY's weekday, not the
+                // pipeline's pinned `adapted_session.program_day` — the
+                // bundle can be a day stale and we don't want yesterday's
+                // prescription to open under "Start →". When the pin
+                // disagrees with today, the adapted layer (traffic light,
+                // intensity Δ) doesn't apply to today's session anyway, so
+                // we collapse it to defaults rather than carry a mismatched
+                // signal forward.
+                let todayKey = ContentView.todayProgramDayKey()
+                let adapted = bundle.adapted_session
+                let fresh = (adapted?.program_day ?? "") == todayKey
                 WorkoutSessionView(
-                    dayKey: dayKey,
-                    prescribed: bundle.profile?.daily_protocol?[dayKey],
-                    trafficLight: adapted.traffic_light,
-                    intensityPct: Int(((adapted.intensity_modifier ?? 1.0) * 100).rounded())
+                    dayKey: todayKey,
+                    prescribed: bundle.profile?.daily_protocol?[todayKey],
+                    trafficLight: fresh ? adapted?.traffic_light : nil,
+                    intensityPct: fresh
+                        ? Int(((adapted?.intensity_modifier ?? 1.0) * 100).rounded())
+                        : 100
                 )
                 .environmentObject(store)
             }
@@ -294,5 +306,14 @@ struct ContentView: View {
             .padding(8)
             .background(Color.orange.opacity(0.1))
             .cornerRadius(4)
+    }
+
+    /// ISO-weekday-keyed protocol slot for today: "Day 1" = Monday …
+    /// "Day 7" = Sunday. Matches `daily_protocol` keys and the laptop's
+    /// `adaptive.todays_program_day()`.
+    fileprivate static func todayProgramDayKey() -> String {
+        let w = Calendar.current.component(.weekday, from: Date())
+        // Calendar returns Sun=1 … Sat=7; rotate to Mon=1 … Sun=7.
+        return "Day \(((w + 5) % 7) + 1)"
     }
 }

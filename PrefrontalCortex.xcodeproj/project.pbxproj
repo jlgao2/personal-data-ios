@@ -47,6 +47,7 @@
 		59EAC5A452EFEAAB4697D94A /* AdaptedSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BE6EE78BCEA78C7FA8AA9F /* AdaptedSessionView.swift */; };
 		5A6082858F09751373258FB1 /* PresentFocusCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09A5E5F1F3F3231E8EECDDA /* PresentFocusCard.swift */; };
 		5AECEE170CC49677E2116618 /* TransportSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620539A39D5D3A8FC3B28392 /* TransportSettingsView.swift */; };
+		5D42F72834A108A7BF3A96FE /* CalendarLoadDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8455E85CA71FA7DFCDA5DF0A /* CalendarLoadDetector.swift */; };
 		5E9DA7525997CB6A94A257F0 /* DeviationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17B4BF4234C06F58182B24E /* DeviationStore.swift */; };
 		668EDC57AE37EAA8D7E29BA9 /* LockScreenWorkoutState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ECBF6B1C16F87595783AC /* LockScreenWorkoutState.swift */; };
 		6C71BEF25BDB39325C68C8C0 /* PlanTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B6CECAC5F23E6EDED54107 /* PlanTabView.swift */; };
@@ -235,6 +236,7 @@
 		7EF815A7496F1F0972A2D6ED /* sample_bundle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = sample_bundle.json; sourceTree = "<group>"; };
 		811EB99A1E50FC654ADFA6DE /* LiveActivityDisabledBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityDisabledBanner.swift; sourceTree = "<group>"; };
 		83295A3F857518282CCA3A31 /* AnimatedAuraBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedAuraBackground.swift; sourceTree = "<group>"; };
+		8455E85CA71FA7DFCDA5DF0A /* CalendarLoadDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarLoadDetector.swift; sourceTree = "<group>"; };
 		84CF188BA52DBC5EF817B2DF /* BandDivider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandDivider.swift; sourceTree = "<group>"; };
 		85B5ED653FA19D4E97A0FFDB /* MedAlertsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedAlertsView.swift; sourceTree = "<group>"; };
 		8771AABD9211E49BF64AC2CB /* WeeklyRhythmCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyRhythmCard.swift; sourceTree = "<group>"; };
@@ -405,6 +407,7 @@
 			children = (
 				5F4B45A3F87E88F76B4C774B /* App.swift */,
 				C711E0E3A2EBFEA645C0E763 /* AppStore.swift */,
+				8455E85CA71FA7DFCDA5DF0A /* CalendarLoadDetector.swift */,
 				AE1DBFF025F3858AADA1B0D0 /* ContentView.swift */,
 				6C9E20F1413ED37D4F33F289 /* DataLoader.swift */,
 				478343174E61BA19BA70025F /* Migrations.swift */,
@@ -718,6 +721,7 @@
 				ECDB9BCA74A4097BA79A68C9 /* BandLiveActivity.swift in Sources */,
 				2209AC2B30DF4ABAA52B7398 /* BandLiveActivityAttributes.swift in Sources */,
 				CB75433BC4B91CECB6D97424 /* Bundle.swift in Sources */,
+				5D42F72834A108A7BF3A96FE /* CalendarLoadDetector.swift in Sources */,
 				4BC742CDBF46C79B53F5D51F /* CalendarStore.swift in Sources */,
 				1404B8DAA2C8A047F35A41A3 /* ConfigOnboardingView.swift in Sources */,
 				8CA2BBB646A4DFF67A08FBCD /* ConfigRecoveryView.swift in Sources */,

@@ -45,18 +45,71 @@ enum BandLiveActivity {
             Task { await refresh() }
             return
         }
+        // Wire the .dayDidRollOver observer the first time we start one.
+        // The doc comment up top has always claimed "Listens to
+        // .dayDidRollOver → refresh()" but the subscriber never existed —
+        // App.swift's midnight + band-edge timers are the actual callers.
+        // This adds belt-and-braces so any future poster of .dayDidRollOver
+        // (a manual "tick over" button, a background fetch) also keeps
+        // the activity alive.
+        installDayRolloverObserverOnce()
         let band = TimeBand.current()
         let state = contentState(for: band)
         let attrs = BandLiveActivityAttributes(startedAt: Date())
         do {
-            _ = try Activity.request(
+            // pushType: nil → the activity lives within the 8h-active +
+            // 4h-stale ActivityKit ceiling for non-push activities. App
+            // foreground / band-edge / midnight timers re-instantiate
+            // after iOS ends it. For true always-on (no ceiling), we'd
+            // need pushType: .token + an APNs backend; see the comment at
+            // capturePushTokenIfAvailable() below for the gap.
+            let activity = try Activity.request(
                 attributes: attrs,
                 content: ActivityContent(state: state, staleDate: TimeBand.nextEdge()),
                 pushType: nil
             )
+            capturePushTokenIfAvailable(activity)
         } catch {
             print("BandLiveActivity.ensureRunning failed: \(error)")
         }
+    }
+
+    private static var dayRolloverObserverInstalled = false
+    private static func installDayRolloverObserverOnce() {
+        guard !dayRolloverObserverInstalled else { return }
+        dayRolloverObserverInstalled = true
+        NotificationCenter.default.addObserver(
+            forName: .dayDidRollOver,
+            object: nil,
+            queue: .main
+        ) { _ in
+            if #available(iOS 16.2, *) { ensureRunning() }
+        }
+    }
+
+    /// No-op until the app gains an APNs path. Today we request the
+    /// activity with `pushType: nil`, which means ActivityKit doesn't
+    /// hand us a push token at all — but the moment we flip pushType
+    /// to `.token` (which itself requires the `aps-environment`
+    /// entitlement + Push Notifications capability on the App ID in
+    /// Apple Developer + an APNs auth key + a server that sends the
+    /// updates), this is where the token capture would live:
+    ///
+    ///   Task {
+    ///       for await tokenData in activity.pushTokenUpdates {
+    ///           let hex = tokenData.map { String(format: "%02hhx", $0) }
+    ///               .joined()
+    ///           // POST hex to your APNs sender so it can push activity
+    ///           // ContentState updates on a cadence the laptop pipeline
+    ///           // controls, bypassing the 8h ActivityKit ceiling.
+    ///       }
+    ///   }
+    ///
+    /// Left as a stub so the call site stays honest about the gap —
+    /// the local-only timers won't make the activity perpetual; only
+    /// push can.
+    private static func capturePushTokenIfAvailable(_ activity: Activity<BandLiveActivityAttributes>) {
+        // Intentionally empty until APNs is wired (see above).
     }
 
     /// Push fresh content (current band) to every alive band activity.

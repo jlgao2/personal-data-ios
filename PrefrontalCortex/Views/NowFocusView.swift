@@ -25,6 +25,12 @@ struct NowFocusView: View {
     @State private var sheet: MomentSheet?
     /// Bumped when a moment is marked done — drives the success haptic.
     @State private var completedPulse = 0
+    /// Foundation-Models-derived calendar load signal (PT, travel,
+    /// surgery, race, etc). Re-computed when a new bundle arrives
+    /// (keyed off `exported_at` so a within-session refresh re-runs).
+    /// Nil while the first detection is in flight or when the calendar
+    /// is empty.
+    @State private var loadSignal: CalendarLoadDetector.Signal?
 
     enum MomentSheet: Identifiable {
         case supplements, mindful, reachOut
@@ -164,6 +170,19 @@ struct NowFocusView: View {
         .sensoryFeedback(.success, trigger: completedPulse)
         .animation(.spring(response: 0.42, dampingFraction: 0.74),
                    value: scrollID)
+        // Foundation Models calendar scan on every fresh bundle. The
+        // detector is no-op on iOS < 26 / Apple Intelligence off — it
+        // falls back to a keyword scan and still produces a Signal.
+        // After detection we also write the signal up to the iCloud
+        // inbox so the laptop pipeline's next refresh can fold it into
+        // its rules (rule_calendar_load_taper in adaptive.py).
+        .task(id: bundle.exported_at) {
+            let signal = await CalendarLoadDetector.detect(from: bundle.calendar ?? [])
+            loadSignal = signal
+            if let signal {
+                try? await iCloudTransport.shared.uploadCalendarSignal(signal)
+            }
+        }
     }
 
     // MARK: - A card
@@ -265,6 +284,17 @@ struct NowFocusView: View {
         )
         .clipShape(RoundedRectangle(cornerRadius: corner, style: .continuous))
         .opacity(done ? 0.62 : (m.isOutside ? 0.5 : 1))
+        // Whole-card tap target ONLY for the workout. The header comment
+        // promises "the workout is always a card in the wheel and always
+        // tappable to start" — without this, only the small "Start →"
+        // button is hittable, and a tap on the card body does nothing.
+        // We scope this to `.startWorkout` so toggle/openSheet cards keep
+        // the explicit-button affordance (avoids accidental mark-done on
+        // a stray tap during a scroll).
+        .contentShape(Rectangle())
+        .onTapGesture {
+            if case .startWorkout = m.action, !done { perform(m) }
+        }
     }
 
     @ViewBuilder
@@ -391,10 +421,45 @@ struct NowFocusView: View {
             // the ACT, not "Train · Day N". Subtext = the adaptive
             // headline: how to show up at your limit today. On a Rest
             // day: the recovery note + no misleading "Start →".
-            let sess = bundle.adapted_session
-            let isRest = sess?.isRestDay ?? true
-            let title = sess?.workoutTitle ?? "Train"
-            let detail = sess?.workoutDetail ?? "Today's prescribed session."
+            // Staleness guard. `adapted_session` is pinned by the
+            // pipeline to whatever day refresh.sh last ran on (see
+            // adaptive.todays_program_day). If the laptop didn't fire
+            // overnight (WatchPaths-only, no inbox movement), it sits
+            // on yesterday's program_day — and the card would render
+            // yesterday's session as "today". When the pin disagrees
+            // with iOS's actual weekday, fall back to today's slot in
+            // `profile.daily_protocol` for the title + rest/train read,
+            // and surface the staleness in the subtext so it's not silent.
+            let todayKey = "Day \(NowFocusView.isoWeekdayNum())"
+            let raw = bundle.adapted_session
+            let pinned = (raw?.program_day ?? "")
+            let isStale = !pinned.isEmpty && pinned != todayKey
+            let todayProto = bundle.profile?.daily_protocol?[todayKey]
+            let isRest: Bool
+            let title: String
+            let detail: String
+            if isStale, let dp = todayProto {
+                let presc = dp.session.trimmingCharacters(in: .whitespacesAndNewlines)
+                isRest = presc.isEmpty || presc.lowercased() == "rest"
+                title = isRest ? "Rest day" : AdaptedSession.titleFromPrescribed(presc)
+                detail = "Plan stale (laptop last ran \(pinned)) — refresh to re-adapt."
+            } else {
+                isRest = raw?.isRestDay ?? true
+                title = raw?.workoutTitle ?? "Train"
+                let base = raw?.workoutDetail ?? "Today's prescribed session."
+                // Foundation Models PT hint goes at the FRONT of detail so
+                // it reads as the lede ("PT today — taper load. Green ·
+                // full intensity"). On a rest day or when no PT context,
+                // the base detail stands as-is. We intentionally do NOT
+                // mutate intensity_modifier here — the pipeline is still
+                // source of truth; the hint just tells the user why the
+                // card should be read with one eye on the brake.
+                if !isRest, let hint = CalendarLoadDetector.hint(loadSignal) {
+                    detail = "\(hint) \(base)"
+                } else {
+                    detail = base
+                }
+            }
             let rhythm = DayRhythm()
             let unresolved = !rhythm.workoutResolved && !isOutside(.workout)
             let scaffold = unresolved
@@ -498,5 +563,13 @@ struct NowFocusView: View {
         let f = DateFormatter(); f.dateFormat = "h:mma"
         f.amSymbol = "am"; f.pmSymbol = "pm"
         return f.string(from: d)
+    }
+
+    /// ISO weekday: Mon=1 … Sun=7. Matches `daily_protocol` keys
+    /// ("Day 1" = Monday) and `adaptive.todays_program_day()`.
+    fileprivate static func isoWeekdayNum() -> Int {
+        // Calendar.weekday returns Sun=1 … Sat=7; rotate to Mon=1 … Sun=7.
+        let w = Calendar.current.component(.weekday, from: Date())
+        return ((w + 5) % 7) + 1
     }
 }

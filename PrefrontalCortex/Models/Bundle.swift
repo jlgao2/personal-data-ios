@@ -213,8 +213,15 @@ extension AdaptedSession {
     /// stays whole; rest → "Rest day".
     var workoutTitle: String {
         if isRestDay { return "Rest day" }
-        let presc = (prescribed ?? "")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return AdaptedSession.titleFromPrescribed(prescribed ?? "")
+    }
+
+    /// Shared with the staleness fallback path in NowFocusView: when
+    /// `adapted_session` is pinned to yesterday, the card renders the
+    /// title from `profile.daily_protocol[today]`.session instead, but
+    /// still wants the same "lead segment before separator" extraction.
+    static func titleFromPrescribed(_ raw: String) -> String {
+        let presc = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !presc.isEmpty else { return "Train" }
         for sep in [" · ", " / ", " — ", ", "] {
             if let r = presc.range(of: sep) {
