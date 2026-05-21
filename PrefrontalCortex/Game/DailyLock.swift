@@ -99,6 +99,22 @@ enum DailyLock {
         }
     }
 
+    // MARK: - Supps mutators
+    //
+    // Historically the AM/PM supps "done" booleans were only written by
+    // StackView's internal PeriodButton tap. The combined Morning /
+    // Evening routine cards in NowFocusView need to toggle the same
+    // keys without instantiating a StackView, so the setters now live
+    // here — same app-group UserDefaults, same key format ("stack_period_
+    // <date>_morning|_evening") that the widget snapshot reads.
+
+    static func setAMSuppsDone(_ done: Bool, date: Date = Date()) {
+        defaults.set(done, forKey: amSuppsKey(date))
+    }
+    static func setPMSuppsDone(_ done: Bool, date: Date = Date()) {
+        defaults.set(done, forKey: pmSuppsKey(date))
+    }
+
     // MARK: - The unified gate
 
     /// Everything required for a "complete day" — built-in slots that

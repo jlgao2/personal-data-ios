@@ -50,6 +50,12 @@ struct NowFocusView: View {
         // (StackView's check-off period buttons) instead of a generic
         // title + "Open" — so the checkboxes are in the wheel itself.
         var inlineSupps: [Supplement]? = nil
+        // When set, the card renders a vertical list of toggle rows
+        // (label + checkbox) inline — used by the Morning routine card
+        // (supps_am + skin_am) and Evening routine card (supps_pm +
+        // skin_pm + every custom slot). One combined card per band
+        // replaces what used to be 2+ standalone toggle moments.
+        var inlineRoutineRows: [RoutineRow]? = nil
         // True when its authorship surface is tagged "from outside".
         // Per Authorship.swift's design these stay VISIBLE (dim, and
         // not auto-focused) rather than disappearing from the wheel.
@@ -59,6 +65,19 @@ struct NowFocusView: View {
         var scaffolded: Bool = false
         // Render the inline WorkoutReconcileRow under the title/detail.
         var reconcile: Bool = false
+    }
+
+    /// One toggle row inside a combined "Morning routine" / "Evening
+    /// routine" card. Each row is a label + optional sub-label (e.g.
+    /// "5 items" for supps) + a tappable checkbox that flips the
+    /// underlying DailyLock / CustomSlotStore state.
+    private struct RoutineRow: Identifiable {
+        let id: String
+        let label: String
+        let subLabel: String?       // small grey count / detail, optional
+        let isOutside: Bool         // grey out if authorship == .outside
+        let isDone: () -> Bool
+        let toggle: () -> Void
     }
 
     private enum Action {
@@ -241,7 +260,18 @@ struct NowFocusView: View {
                         .foregroundStyle(.white)
                         .strikethrough(done, color: .white.opacity(0.5))
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    if let supps = m.inlineSupps {
+                    if let rows = m.inlineRoutineRows {
+                        // Combined routine card (Morning / Evening) — the
+                        // sub-items toggle inline so the user doesn't have
+                        // to scroll through 3+ separate cards for the same
+                        // band. No actionControl underneath — every row is
+                        // its own toggle.
+                        VStack(spacing: 8) {
+                            ForEach(rows) { row in
+                                routineRow(row, accent: accent)
+                            }
+                        }
+                    } else if let supps = m.inlineSupps {
                         // Checkboxes live in the wheel: StackView's own AM/PM
                         // period buttons, not a generic "Open".
                         StackView(items: supps)
@@ -302,6 +332,40 @@ struct NowFocusView: View {
         .onTapGesture {
             if case .startWorkout = m.action, !done { perform(m) }
         }
+    }
+
+    /// A single sub-item row inside the combined routine card. Tap
+    /// anywhere on the row to flip the underlying toggle. Outside-
+    /// authored rows render dimmed (matching the card-level pattern).
+    @ViewBuilder
+    private func routineRow(_ r: RoutineRow, accent: Color) -> some View {
+        let done = r.isDone()
+        Button {
+            r.toggle()
+            tick += 1
+            if !done { completedPulse += 1 }
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: done ? "checkmark.square.fill" : "square")
+                    .font(.title3)
+                    .foregroundStyle(done ? accent : .white.opacity(0.55))
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(r.label)
+                        .font(.callout.weight(.medium))
+                        .foregroundStyle(.white)
+                        .strikethrough(done, color: .white.opacity(0.5))
+                    if let sub = r.subLabel, !sub.isEmpty {
+                        Text(sub)
+                            .font(.caption2.monospaced())
+                            .foregroundStyle(.white.opacity(0.5))
+                    }
+                }
+                Spacer()
+            }
+            .contentShape(Rectangle())
+            .opacity(r.isOutside ? 0.5 : 1.0)
+        }
+        .buttonStyle(.plain)
     }
 
     @ViewBuilder
@@ -386,6 +450,7 @@ struct NowFocusView: View {
         func add(_ id: String, _ band: TimeBand, slot: Int, _ title: String,
                  _ detail: String, eventTime: Date? = nil,
                  inlineSupps: [Supplement]? = nil,
+                 inlineRoutineRows: [RoutineRow]? = nil,
                  outside: Bool = false,
                  scaffolded: Bool = false, reconcile: Bool = false,
                  isDone: @escaping () -> Bool, _ action: Action) {
@@ -394,29 +459,50 @@ struct NowFocusView: View {
                                title: title, detail: detail,
                                eventTime: eventTime, isDone: isDone,
                                action: action, inlineSupps: inlineSupps,
+                               inlineRoutineRows: inlineRoutineRows,
                                isOutside: outside,
                                scaffolded: scaffolded, reconcile: reconcile))
         }
 
-        // One Supplements card — renders StackView (the AM + PM
-        // check-off period buttons) inline in the wheel so the boxes
-        // are right there, not behind an "Open". Done = both periods.
-        // Authorship NEVER removes the card (that hid it for users who
-        // tagged it "from outside"); it only dims + un-focuses it.
-        if let supps = bundle.profile?.supplement_stack, !supps.isEmpty {
-            add("supps", .morning, slot: 0, "Supplements",
-                "", inlineSupps: supps,
-                outside: isOutside(.suppsAM),
-                isDone: { DailyLock.isAMSuppsDone() && DailyLock.isPMSuppsDone() },
+        // ── Morning routine ────────────────────────────────────────
+        // One combined card per band (per user feedback "combine the
+        // morning thing and combine evening things"). Morning collapses
+        // what used to be two standalone moments (`supps` + `skin_am`)
+        // into one card with two toggle rows. Each row is its own
+        // checkbox; the card itself is `.passive` so taps go to the
+        // rows, not a card-level button.
+        let allSupps = bundle.profile?.supplement_stack ?? []
+        let amSupps = allSupps.filter { !StackView.isEvening($0.timing) }
+        let pmSupps = allSupps.filter {  StackView.isEvening($0.timing) }
+        var morningRows: [RoutineRow] = []
+        if !amSupps.isEmpty {
+            morningRows.append(RoutineRow(
+                id: "supps_am",
+                label: "AM supps",
+                subLabel: "\(amSupps.count) item\(amSupps.count == 1 ? "" : "s")",
+                isOutside: isOutside(.suppsAM),
+                isDone: { DailyLock.isAMSuppsDone() },
+                toggle: { DailyLock.setAMSuppsDone(!DailyLock.isAMSuppsDone()) }
+            ))
+        }
+        morningRows.append(RoutineRow(
+            id: "skin_am",
+            label: "Skincare — AM",
+            subLabel: nil,
+            isOutside: isOutside(.skincareAM),
+            isDone: { DailyLock.isSkincareAMDone() },
+            toggle: { DailyLock.setSkincareAMDone(!DailyLock.isSkincareAMDone()) }
+        ))
+        if !morningRows.isEmpty {
+            add("morning_routine", .morning, slot: 0, "Morning routine", "",
+                inlineRoutineRows: morningRows,
+                // Card-level "from outside" only when EVERY row is — a
+                // single outside-tagged sub-item shouldn't dim the whole
+                // card; the row renders dimmed on its own.
+                outside: morningRows.allSatisfy { $0.isOutside },
+                isDone: { morningRows.allSatisfy { $0.isDone() } },
                 .passive)
         }
-        // Toggle cards carry NO subtext (hybrid contract): a clear act
-        // + the toggle, nothing to read. Filler like "Morning routine."
-        // restated the title and earned no decision.
-        add("skin_am", .morning, slot: 1, "Skincare — AM", "",
-            outside: isOutside(.skincareAM),
-            isDone: { DailyLock.isSkincareAMDone() },
-            .toggle { DailyLock.setSkincareAMDone(!DailyLock.isSkincareAMDone()) })
         add("mindful", .midday, slot: 0, "Eat mindfully",
             "One meal, no screen, attention on the food.",
             outside: isOutside(.mindful),
@@ -500,17 +586,47 @@ struct NowFocusView: View {
             outside: isOutside(.embodiment),
             isDone: { DailyLock.isEmbodimentDone() },
             .toggle { DailyLock.setEmbodimentDone(!DailyLock.isEmbodimentDone()) })
-        // (PM supplements are covered by the single Supplements card —
-        // StackView shows both AM + PM period toggles.)
-        add("skin_pm", .night, slot: 1, "Skincare — PM", "",
-            outside: isOutside(.skincarePM),
+        // ── Evening routine ───────────────────────────────────────
+        // The night-band sibling of "Morning routine" — PM supps,
+        // Skincare PM, and every custom slot collapse into one card.
+        // (Previously these were 2 standalone toggles + N custom-slot
+        // moments; the wheel surfaced 3+ near-duplicate cards at night.)
+        var eveningRows: [RoutineRow] = []
+        if !pmSupps.isEmpty {
+            eveningRows.append(RoutineRow(
+                id: "supps_pm",
+                label: "PM supps",
+                subLabel: "\(pmSupps.count) item\(pmSupps.count == 1 ? "" : "s")",
+                isOutside: isOutside(.suppsPM),
+                isDone: { DailyLock.isPMSuppsDone() },
+                toggle: { DailyLock.setPMSuppsDone(!DailyLock.isPMSuppsDone()) }
+            ))
+        }
+        eveningRows.append(RoutineRow(
+            id: "skin_pm",
+            label: "Skincare — PM",
+            subLabel: nil,
+            isOutside: isOutside(.skincarePM),
             isDone: { DailyLock.isSkincarePMDone() },
-            .toggle { DailyLock.setSkincarePMDone(!DailyLock.isSkincarePMDone()) })
-        for (i, slot) in CustomSlotStore.load().enumerated() {
+            toggle: { DailyLock.setSkincarePMDone(!DailyLock.isSkincarePMDone()) }
+        ))
+        for slot in CustomSlotStore.load() {
             let sid = slot.id
-            add("custom_\(sid)", .night, slot: 2 + i, slot.fullName, "",
+            eveningRows.append(RoutineRow(
+                id: "custom_\(sid)",
+                label: slot.fullName,
+                subLabel: nil,
+                isOutside: false,
                 isDone: { CustomSlotStore.isDone(slotID: sid) },
-                .toggle { CustomSlotStore.toggle(slotID: sid) })
+                toggle: { CustomSlotStore.toggle(slotID: sid) }
+            ))
+        }
+        if !eveningRows.isEmpty {
+            add("evening_routine", .night, slot: 1, "Evening routine", "",
+                inlineRoutineRows: eveningRows,
+                outside: eveningRows.allSatisfy { $0.isOutside },
+                isDone: { eveningRows.allSatisfy { $0.isDone() } },
+                .passive)
         }
 
         // Real calendar events — the ONLY moments that carry a clock

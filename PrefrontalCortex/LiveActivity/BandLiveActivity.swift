@@ -69,8 +69,38 @@ enum BandLiveActivity {
                 pushType: nil
             )
             capturePushTokenIfAvailable(activity)
+            observeStateUpdates(activity)
         } catch {
             print("BandLiveActivity.ensureRunning failed: \(error)")
+        }
+    }
+
+    /// Watch the activity's own lifecycle. When iOS ends it (8h non-
+    /// push ceiling, user dismissal from the lock screen, system memory
+    /// pressure) the AsyncSequence yields `.ended` / `.dismissed` —
+    /// recreate immediately so the lock screen is never empty for long
+    /// while the app process is alive. Without this, recreation only
+    /// happens at the next scenePhase.active / band-edge / midnight
+    /// timer fire — which can leave the activity dark for hours.
+    @available(iOS 16.2, *)
+    private static func observeStateUpdates(_ activity: Activity<BandLiveActivityAttributes>) {
+        Task {
+            for await state in activity.activityStateUpdates {
+                switch state {
+                case .ended, .dismissed, .stale:
+                    // Re-arm. `ensureRunning` short-circuits if some
+                    // OTHER activity is already alive (e.g. the user
+                    // dismissed one but iOS spawned a replacement),
+                    // so this is safe to call without coordination.
+                    ensureRunning()
+                    return  // this Task is bound to this activity; the
+                            // new one gets its own observer
+                case .active:
+                    continue
+                @unknown default:
+                    continue
+                }
+            }
         }
     }
 
